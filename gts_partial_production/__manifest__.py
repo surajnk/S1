@@ -29,6 +29,7 @@
         "views/stock_picking_view.xml",
         "views/stock_quant_package_view.xml",
         "views/sale_order_view.xml",
+        "report/report_package_barcode.xml",
     ],
     'images': [
         'static/description/banner.png',
