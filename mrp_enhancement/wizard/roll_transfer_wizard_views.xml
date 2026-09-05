@@ -20,6 +20,8 @@
                             <field name="picking_id" readonly="1"/>
                             <field name="location_id" readonly="1"/>
                             <field name="location_dest_id" readonly="1"/>
+                            <field name="validated_qty" readonly="1"/>
+                            <field name="validated_date" readonly="1"/>
                             <field name="state" readonly="1" widget="badge"
                                    decoration-warning="state == 'waiting'"
                                    decoration-success="state == 'assigned'"

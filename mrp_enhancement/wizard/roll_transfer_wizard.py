@@ -311,3 +311,17 @@ class RollTransferWizardLine(models.TransientModel):
         string='To',
         readonly=True,
     )
+    validated_qty = fields.Float(
+        string='Validated Qty',
+        compute='_compute_validated_qty',
+    )
+    validated_date = fields.Datetime(
+        related='picking_id.date_done',
+        string='Validated Date',
+        readonly=True,
+    )
+
+    @api.depends('picking_id.move_line_ids.qty_done')
+    def _compute_validated_qty(self):
+        for line in self:
+            line.validated_qty = sum(line.picking_id.move_line_ids.mapped('qty_done'))
