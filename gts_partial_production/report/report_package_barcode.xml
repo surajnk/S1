@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+<template id="report_package_barcode_customer_qty" inherit_id="stock.report_package_barcode">
+    <xpath expr="//th[@name='th_quantity']" position="after">
+        <th name="th_customer_qty" class="text-right">Customer Qty</th>
+        <th name="th_customer_uom" groups="uom.group_uom">Customer UOM</th>
+    </xpath>
+    <xpath expr="//td[span[@t-field='l.quantity']]" position="after">
+        <td class="text-right">
+            <span t-field="l.customer_qty"/>
+        </td>
+        <td groups="uom.group_uom">
+            <span t-field="l.x_customer_uom_id.name"/>
+        </td>
+    </xpath>
+</template>
+
+</data>
+</odoo>
