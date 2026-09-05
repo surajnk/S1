@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_wo_scheduling_wizard_view_form" model="ir.ui.view">
+        <field name="name">mrp.wo.scheduling.wizard.form</field>
+        <field name="model">mrp.wo.scheduling.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="set_scheduled_datetime" class="oe_inline"/>
+                    </group>
+                    <group>
+                        <button type="object" name="calc_scheduled_date" class="btn-primary">
+                            <i class="fa fa-search mr-1"/> Calculate Slots
+                        </button>
+                    </group>
+                </group>
+                <group>
+                    <field name="wo_schedule_ids" nolabel='1'>
+                        <tree string="MRP WO Scheduling Items" editable="bottom" edit="0" create="0" default_order="sequence">
+                            <field name="id" optional="hide"/>
+                            <field name="sequence"/>
+                            <field name="wizard_id" invisible="1"/>
+                            <field name="workcenter_id" force_save="1"/>
+                            <field name="workorder_id" force_save="1"/>
+                            <field name="operation_id" force_save="1"/>
+                            <field name="production_id" force_save="1"/>
+                            <field name="duration_expected" invisible="1" force_save="1"/>
+                            <field name="duration_expected_hrs" optional="hide" force_save="1"/>
+                            <!-- Slot preview: populated by Calculate Slots button -->
+                            <field name="date_planned_start_wo" force_save="1" string="Slot Start"/>
+                            <field name="date_planned_finished_wo" force_save="1" string="Slot End"/>
+                            <field name="x_order_customer_mrp_wo_width" force_save="1"/>
+                            <field name="x_order_customer_mrp_wo_length" force_save="1"/>
+                            <field name="x_order_customer_mrp_wo_qty" force_save="1"/>
+                            <field name="width" force_save="1"/>
+                            <field name="trim" force_save="1"/>
+                            <field name="base_avail" force_save="1"/>
+                            <field name="t_c" force_save="1"/>
+                            <field name="rod" force_save="1"/>
+                            <field name="shaded" force_save="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <p class="text-muted">
+                    Click <strong>Calculate Slots</strong> to preview slot assignments,
+                    then <strong>Confirm</strong> to apply them.
+                </p>
+                <footer>
+                    <button name="do_confirm" type="object" string="Confirm" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

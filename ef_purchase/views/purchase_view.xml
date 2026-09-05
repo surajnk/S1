@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Purchase Order Inherit Form View -->
+    <record id="purchase_order_form_view_atc_ef" model="ir.ui.view">
+        <field name="name">purchase.order.form.view.atc.ef</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+        	<field name="partner_ref" position="after">
+                <field name="contact_id" create="0" edit="0"/>
+                <field name="manual_po_number"/>
+                <field name="consignment_po"/>
+                <field name="fob"/>
+                <field name="notes_comments"/>
+            </field>
+            <field name="origin" position="before">
+                <field name="required_date"/>
+                <field name="freight_terms"/>
+                <field name="ship_via_id"/>
+                <field name="sale_order_id"/>
+                <field name="payment_term_id"/>
+
+            </field>
+            <field name="fiscal_position_id" position="after">
+                <field name="ship_to"/>
+            </field>
+            <xpath expr="/form/sheet/notebook/page[@name='products']/field[@name='order_line']/tree/field[@name='price_unit']" position="before">
+                <field name="converted_product_qty"/>
+                <field name="default_product_uom"/>
+                <field name="customer_ref"/>
+                <field name="required_date"/>
+                <field name="notes_comments"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@name='products']/field[@name='order_line']/form/group/group/field[@name='analytic_tag_ids']" position="after">
+                <field name="customer_ref"/>
+                <field name="required_date"/>
+                <field name="notes_comments"/>
+            </xpath>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="editable"/>
+            </xpath>
+            <field name="date_order" position="attributes">
+                <attribute name="string">Ordered Date</attribute>
+            </field>
+            <label for="date_approve" position="attributes">
+                <attribute name="string">Ordered Date</attribute>
+            </label>
+            <field name="date_planned" position="attributes">
+                <attribute name="string">Expected Date</attribute>
+            </field>
+        </field>
+    </record>
+</odoo>

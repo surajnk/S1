@@ -1,0 +1,16 @@
+.o_list_view .freeze-col {
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #888;
+}
+
+.o_list_view .o_frozen_cell {
+    background: inherit;
+    z-index: 2;
+}
+
+.o_list_view th.o_frozen_cell {
+    top: 0;
+    z-index: 3;
+}

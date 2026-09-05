@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product Quantity Tree View -->
+    <record id="product_break_codes_tree_view" model="ir.ui.view">
+        <field name="name">product.break.codes.tree.view</field>
+        <field name="model">product.break.codes</field>
+        <field name="arch" type="xml">
+            <tree string="Quantity Breaks">
+                <field name="name" required="1"/>
+                <field name="no_of_breaks"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Product Quantity Form View -->
+        <record id="product_break_codes_form_view" model="ir.ui.view">
+        <field name="name">product.break.codes.form.view</field>
+        <field name="model">product.break.codes</field>
+        <field name="arch" type="xml">
+            <form string="Quantity Breaks">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+                            <field name="no_of_breaks"/>
+                        </group>
+                        <field name="x_no_of_break_quantities_grid">
+                            <tree editable="bottom">
+                                <field name="x_breakqty"/>
+                            </tree>
+                            <form>
+                                <field name="x_breakqty"/>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Quantity Search View -->
+    <record id="product_break_codes_search_view" model="ir.ui.view">
+        <field name="name">product.break.codes.search.view</field>
+        <field name="model">product.break.codes</field>
+        <field name="arch" type="xml">
+            <search string="Quantity Breaks">
+                <field name="name" string="Quantity Breaks"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Quantity Action View -->
+    <record id="product_break_codes_action_view" model="ir.actions.act_window">
+        <field name="name">Quantity Breaks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.break.codes</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_break_codes_tree_view"/>
+        <field name="search_view_id" ref="product_break_codes_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="product_break_quantity_menu_view"
+        name="Quantity Breaks"
+        action="product_break_codes_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

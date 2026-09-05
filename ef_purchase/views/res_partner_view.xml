@@ -1,0 +1,16 @@
+<odoo>
+  <record id="view_partner_form_inherit_is_default_contact" model="ir.ui.view">
+    <field name="name">res.partner.form.inherit.is.default.contact</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+
+      <!-- Locate the contact_addresses page -->
+      <xpath expr="//notebook/page[@name='contact_addresses']//field[@name='child_ids']/form/sheet/group/group[1]//field[@name='comment']"
+                   position="after">
+        <field name="is_default_contact"/>
+      </xpath>
+
+    </field>
+  </record>
+</odoo>

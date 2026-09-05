@@ -1,0 +1,12 @@
+<odoo>
+    <record id="product_product_att" model="ir.ui.view">
+            <field name="name">product.product.att</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='categ_id']" position="after">
+                    <field name="product_attachment" widget="many2many_binary"/>
+                </xpath>
+            </field>
+        </record>
+</odoo>

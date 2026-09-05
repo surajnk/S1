@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+
+<odoo>
+    <record id="product_normal_form_view" model="ir.ui.view">
+        <field name="name">product.normal.form.view</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <notebook>
+                <page string="MPP Planning Parameters" attrs="{'invisible':[('mpp_parameters', '=' , 0)]}">
+                    <group string="MPP Planning Parameters">
+                        <field name="mpp_parameters_ids" nolabel="1">
+                            <tree multi_edit="1">
+                                <field name="active" invisible="1"/>
+                                <field name="warehouse_id" groups="stock.group_stock_multi_warehouses"/>
+                                <field name="company_id" invisible="1"/>
+                                <field name="user_id" widget="many2one_avatar_user"/>
+                                <field name="activity_ids" widget="list_activity"/>
+                                <field name="bom_id"/>
+                                <field name="sales_lead_time" optional="hide"/>
+                                <field name="total_lead_time" optional="hide"/>
+                                <field name="lot_qty_method"/>
+                                <field name="mpp_coverage_days" optional="hide"/>
+                                <field name="mpp_fixed_order_qty" optional="hide"/>
+                                <field name="mpp_multiple_order_qty" optional="hide"/>
+                                <field name="uom_id" groups="uom.group_uom" optional="hide"/>
+                                <field name="mpp_minimum_stock_qty" optional="hide"/>
+                                <field name="mpp_safety_time" optional="hide"/>
+                                <field name="supplier_id" optional="hide"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group>
+                        <field name="mpp_parameters" invisible="1"/>
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
+
+
+
+
+
+
+
+
+

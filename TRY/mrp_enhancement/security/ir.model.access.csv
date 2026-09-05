@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_roll_lines,access_roll_lines,model_roll_lines,,1,1,1,1
+access_extra_time,access_extra_time,model_extra_time,,1,1,1,1
+access_mrp_wo_roll_line_wiz,access_mrp_wo_roll_line_wiz,model_mrp_wo_roll_line_wiz,,1,1,1,1
+access_final_wo_roll_wiz,access_final_wo_roll_wiz,model_final_wo_roll_wiz,,1,1,1,1
+access_final_wo_roll,access_final_wo_roll,model_final_wo_roll,,1,1,1,1
+access_extra_time_line,access_extra_time_line,model_extra_time_line,,1,1,1,1

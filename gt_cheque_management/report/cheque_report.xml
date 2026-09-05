@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <template id="cheque_manage_report_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.external_layout">
+                        <div class="page">
+                            <div class="oe_structure">
+                                <div class="row">
+                                    <div style="margin-bottom:300px;width:100%">
+                                            <t t-if="doc.cheq_type=='incoming'">
+                                                <h2 class="text-center" style="margin-bottom:30px">Incoming Cheque Report</h2>
+                                            </t>
+                                            <t t-if="doc.cheq_type=='outgoing'">
+                                                <h2 class="text-center" style="margin-bottom:30px">Outgoing Cheque Report</h2>
+                                            </t>
+                                            <div style="width:100%;">
+                                                <t t-if="doc.date_from">
+                                                    <span style="float:left;margin-bottom:20px;width:200px;margin-left:60px;">
+                                                        <strong>Start Date </strong>: <span t-field="doc.date_from"/>
+                                                    </span>
+                                                </t>
+                                                <t t-if="doc.date_to">
+                                                    <span style="float:right;margin-bottom:20px;width:200px;margin-right:50px;">
+                                                        <strong>End Date </strong>: <span t-field="doc.date_to"/>
+                                                    </span>
+                                                </t>
+                                            </div> 
+                                            <table width="100%" style="border: 1px solid #000;text-align:center;">
+                                                <thead>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Payee</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Number</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Date</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Given Date</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Bank Account</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Credit Account</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Debit Account</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Cashed/Bounced Date</th>
+                                                    <th style="padding:5px;border: 1px solid #000" class="text-center">Status</th>
+                                                </thead>
+                                                <tbody>
+                                                <tr t-foreach="doc.print_data()" t-as="c">
+                                                    <td style="padding:5px;border: 1px solid #000">
+                                                        <span t-field="c.payer.name"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000">
+                                                        <span t-field="c.cheque_no"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000">
+                                                        <span t-field="c.cheque_date"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000" >
+                                                        <span t-field="c.cheque_receive_date"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000" >
+                                                        <span t-field="c.bank_account.code"/>
+                                                        <span t-field="c.bank_account.name"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000" >
+                                                        <span t-field="c.credit_account.code"/>
+                                                        <span t-field="c.credit_account.name"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000" >
+                                                        <span t-field="c.debit_account.code"/>
+                                                        <span t-field="c.debit_account.name"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000" >
+                                                        <span t-field="c.cheque_date"/>
+                                                    </td>
+                                                    <td style="padding:5px;border: 1px solid #000">
+                                                        <span t-field="c.state"/>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_cheque_manage_report_document" model="ir.actions.report">
+            <field name="name">Cheque Report</field>
+            <field name="model">cheque.report.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">gt_cheque_management.cheque_manage_report_document</field>
+            <field name="report_file">gt_cheque_management.cheque_manage_report_document</field>
+            <field name="print_report_name">'Cheque'</field>
+            <field name="binding_model_id" ref="model_cheque_report_wizard"/>
+            <field name="binding_type">report</field>
+        </record>
+     
+    </data>
+</odoo>

@@ -1,0 +1,15 @@
+.o_pivot table thead {
+    position: sticky;
+    top: -1px;
+    z-index: 1;
+}
+
+.o_pivot table thead th, .o_pivot table thead td {
+    border-bottom: none;
+    border-top: none;
+    padding: 0.3rem 0.5rem;
+}
+
+.o_pivot table .o_pivot_header_cell_closed, .o_pivot table .o_pivot_measure_row:not(:last-child) {
+    border: none;
+}

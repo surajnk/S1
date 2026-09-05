@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_production_workorder_tree_editable_view_ext" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.mid.point.sche</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+
+            <!-- EXISTING: Add Mid Point Scheduling buttons -->
+            <xpath expr="//tree//button[@name='action_open_wizard']" position="before">
+                <button name="%(mrp_shop_floor_control.action_set_date_wizard)d" type="action"
+                        string="Mid Point Scheduling" class="btn-primary" groups="mrp_enhancement.group_mrp_mps"/>
+                <button name="action_open_operation_description" type="object"
+                        class="fa fa-info-circle" groups="mrp_enhancement.group_mrp_mps"/>
+            </xpath>
+
+            <!-- EXISTING: Rename buttons to wiz variants -->
+            <xpath expr="//tree//button[@name='button_start']" position="attributes">
+                <attribute name="name">button_start_wiz</attribute>
+            </xpath>
+            <xpath expr="//tree//button[@name='button_finish']" position="attributes">
+                <attribute name="name">button_stop_wiz</attribute>
+            </xpath>
+            <xpath expr="//tree//button[@name='button_pending']" position="attributes">
+                <attribute name="string">Stop</attribute>
+                <attribute name="name">button_pending_wiz</attribute>
+            </xpath>
+
+            <!-- EXISTING: Add total_final_yards_qty field -->
+            <xpath expr="//tree//field[@name='total_produce_quantity']" position="after">
+                <field name="total_final_yards_qty" optional="show"/>
+            </xpath>
+
+            <!-- NEW: Remove all action buttons from right side (empty replace = delete) -->
+            <xpath expr="//tree//button[@name='button_start_wiz']" position="replace"/>
+            <xpath expr="//tree//button[@name='button_pending_wiz']" position="replace"/>
+            <xpath expr="//tree//button[@name='button_stop_wiz']" position="replace"/>
+            <xpath expr="//tree//button[@name='339']" position="replace"/>
+            <xpath expr="//tree//button[@name='button_unblock']" position="replace"/>
+
+            <!-- NEW: Move status field - remove from current position -->
+            <xpath expr="//tree//field[@name='state']" position="replace"/>
+
+            <!-- NEW: Re-insert status + all buttons before first field (leftmost) -->
+            <xpath expr="//tree/field[1]" position="before">
+                <field name="state" widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-warning="state == 'progress'"
+                    decoration-info="state not in ('done', 'cancel', 'progress')"/>
+                <button name="button_start_wiz" type="object" string="Start" class="btn-success"
+                    attrs="{'invisible': ['|', '|', '|',
+                        ('production_state','in', ('draft', 'done')),
+                        ('working_state', '=', 'blocked'),
+                        ('state', '=', 'done'),
+                        ('is_user_working', '!=', False)]}"/>
+                <button name="button_pending_wiz" type="object" string="Stop" class="btn-warning"
+                    attrs="{'invisible': ['|', '|',
+                        ('production_state', 'in', ('draft', 'done')),
+                        ('working_state', '=', 'blocked'),
+                        ('is_user_working', '=', False)]}"/>
+                <button name="button_stop_wiz" type="object" string="Done" class="btn-success"
+                    attrs="{'invisible': ['|', '|',
+                        ('production_state', 'in', ('draft', 'done')),
+                        ('working_state', '=', 'blocked'),
+                        ('is_user_working', '=', False)]}"/>
+                <button name="339" type="action" string="Block"
+                    context="{'default_workcenter_id': workcenter_id}" class="btn-danger"
+                    attrs="{'invisible': ['|',
+                        ('production_state', 'in', ('draft', 'done')),
+                        ('working_state', '=', 'blocked')]}"/>
+                <button name="button_unblock" type="object" string="Unblock"
+                    context="{'default_workcenter_id': workcenter_id}" class="btn-danger"
+                    attrs="{'invisible': ['|',
+                        ('production_state', 'in', ('draft', 'done')),
+                        ('working_state', '!=', 'blocked')]}"/>
+            </xpath>
+
+        </field>
+    </record>
+    <!-- <record id="mrp_production_workorder_tree_editable_view_ext" model="ir.ui.view" >
+        <field name="name">mrp.production.work.order.tree.mid.point.sche</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree//button[@name='action_open_wizard']" position="before">
+                <button name="%(mrp_shop_floor_control.action_set_date_wizard)d" type="action"
+                        string="Mid Point Scheduling" class="btn-primary" groups="mrp_enhancement.group_mrp_mps"/>
+                <button name="action_open_operation_description" type="object"
+                        class="fa fa-info-circle" groups="mrp_enhancement.group_mrp_mps"/>
+            </xpath>
+            <xpath expr="//tree//button[@name='button_start']" position="attributes">
+                <attribute name="name">button_start_wiz</attribute>
+            </xpath>
+            <xpath expr="//tree//button[@name='button_finish']" position="attributes">
+                <attribute name="name">button_stop_wiz</attribute>
+            </xpath>
+            <xpath expr="//tree//button[@name='button_pending']" position="attributes">
+                <attribute name="string">Stop</attribute>
+                <attribute name="name">button_pending_wiz</attribute>
+            </xpath>
+            <xpath expr="//tree//field[@name='total_produce_quantity']" position="after">
+                <field name="total_final_yards_qty" optional="show"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="mrp_workorder_form_view_setup_clenup_data" model="ir.ui.view" >
+        <field name="name">mrp.workorder.form.view.setup.clenup.data</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='overall_duration']" position="before">
+                <label for="setup_time"/>
+                <div class="o_row">
+                    <field name="setup_time" widget="float_time" readonly="1"/>
+                    <span>minutes</span>
+                </div>
+                <!--<label for="cleanup_time"/>
+                <div class="o_row">
+                    <field name="cleanup_time" widget="float_time" readonly="1"/>
+                    <span>minutes</span>
+                </div>-->
+            </xpath>
+            <!-- Show sum of quantity field -->
+            <xpath expr="//field[@name='prev_roll_line_ids']//tree//field[@name='quantity']" position="attributes">
+                <attribute name="sum">Total Quantity</attribute>
+            </xpath>
+            <xpath expr="//page[last()]" position="after">
+                <page string="Cust Put-Up">
+                    <group>
+                        <group>
+                            <field name="put_up_rolls"/>
+                            <label for="uom_put_up"/>
+                            <div>
+                                <field name="uom_put_up" class="oe_inline"/> - <field name="put_up_uom_name"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="outs"/>
+                            <field name="put_up_size"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <!-- Show users field in Previous Roll Ids -->
+            <xpath expr="//field[@name='prev_roll_line_ids']//tree//field[@name='roll_id']" position="after">
+                <field name="user_id" options="{'no_open':True,'no_create':True}"/>
+            </xpath>
+            <xpath expr="//page[@name='time_tracking']" position="inside">
+                <group string="Final Yield">
+                    <field name="final_roll_line_ids" nolabel="1">
+                        <tree string="Final Roll Detail" editable="bottom">
+                            <field name="workorder_id" invisible="1"/>
+                            <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"/>
+                            <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
+                            <field name="previous_roll_quantity" sum="Total"/>
+                            <field name="date_start"/>
+                            <field name="is_fully_consumed"/>
+                            <field name="consumed_qty" sum="Total"/>
+                            <field name="total_qty" sum="Total"/>
+                            <field name="yards_qty" sum="Total"/>
+                            <field name="remained_qty" sum="Total" invisible="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <group>
+                    <button name="update_total_produce_quantity"
+                            string="Update Total Produce Quantity" type="object" class="btn-primary"/>
+                </group>
+                <group>
+                    <field name="total_final_yards_qty" readonly="1"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='total_produce_quantity']" position="after">
+                    <field name="total_final_yards_qty" readonly="1"/>
+                    <button name="update_qty_producing"
+                            string="Update Quantity Producing" type="object" class="btn-primary"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_wo_roll_line_tree_view_qty_sum" model="ir.ui.view">
+        <field name="name">mrp.wo.roll.line.tree.qty.sum</field>
+        <field name="model">mrp.wo.roll.line</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_wo_roll_line_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='quantity']" position="attributes">
+                <attribute name="sum">Total Quantity</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='roll_id']" position="attributes">
+                <attribute name="context">{'get_default_roll': True, 'workorder_id': active_id}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='roll_id']" position="after">
+                <field name="workcenter_id" invisible="1"/>
+                <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workcenter_id': workcenter_id}"/>
+                <field name="consumed_qty" sum="Consumed"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Form view of mrp.wo.roll.line -->
+    <record id="mrp_wo_roll_line_form_view" model="ir.ui.view">
+        <field name="name">mrp.wo.roll.line.form.view</field>
+        <field name="model">mrp.wo.roll.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="roll_id" readonly="1"/>
+                            <field name="workorder_id" readonly="1"/>
+                            <field name="date" readonly="1"/>
+                            <field name="user_id" class="oe_inline" options="{'limit': '0', 'no_open': True, 'no_create': True}" readonly="1"/>
+                            <field name="status" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="quantity" readonly="1"/>
+                            <field name="remained_qty" readonly="1"/>
+                            <field name="prev_work_order_id" readonly="1"/>
+                            <field name="date_start" readonly="1"/>
+                            <field name="workcenter_id" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Change schedule date group_by field -->
+    <record id="view_mrp_production_workorder_form_view_filter_scheduled_date" model="ir.ui.view" >
+        <field name="name">mrp.production.work.order.select.scheduled.date</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='scheduled_month']" position="attributes">
+                <attribute name="context">{'group_by': 'date_planned_start_wo'}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Change schedule date group_by field -->
+    <record id="mrp_workorder_capacity_leveling_tree_mps" model="ir.ui.view" >
+        <field name="name">mrp.workorder.capacity.leveling.tree.mps.group</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_workorder_capacity_leveling_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='%(mrp_shop_floor_control.action_set_date_wizard)d']" position="attributes">
+                <attribute name="groups">mrp_enhancement.group_mrp_mps</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_shop_floor_control.seq_mrp_production_roll" model="ir.sequence">
+        <field name="prefix"></field>
+    </record>
+
+    <!-- Inherit Form View to Modify it -->
+    <record id="mrp_production_form_view_inherit_cust_put_up" model="ir.ui.view">
+        <field name="name">mrp.production.form.view.inherit.cust.put.up</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='put_up_size']" position="after">
+                <field name="customer_uom_put_up" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="model_mrp_workorder_action_reset_to_ready" model="ir.actions.server">
+            <field name="name">RESET TO DRAFT</field>
+            <field name="model_id" ref="mrp.model_mrp_workorder"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_workorder"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.action_reset_to_ready()</field>
+    </record>
+
+</odoo>

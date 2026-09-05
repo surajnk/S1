@@ -1,0 +1,9 @@
+
+<odoo>
+    <record id="action_wo_roll_summary" model="ir.actions.act_window">
+        <field name="name">Workorder Rolls</field>
+        <field name="res_model">wo.roll.summary.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

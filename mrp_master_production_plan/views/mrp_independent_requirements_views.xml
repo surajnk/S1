@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record model="ir.ui.view" id="view_mrp_pir_tree">
+        <field name="name">planned.independent.requirements.tree</field>
+        <field name="model">mrp.independent.requirements</field>
+        <field name="arch" type="xml">
+            <tree string="Planned Independent Requirements" multi_edit="1" edit="1" create="1" editable="top">
+                <header>
+                    <button name="button_done" type="object" string="Approve"/>
+                    <button name="button_draft" type="object" string="Reset"/>
+                    <button name="button_cancel" type="object" string="Cancel"/>
+                    <button name="%(action_mrp_pir_massive_create)d" type="action" string="Massive Creation"/>
+                </header>
+                <field name="origin" decoration-bf="1"/>
+                <field name="date_start" widget="date" optional="hide"/>
+                <field name="date_end" widget="date" optional="hide"/>
+                <field name="warehouse_id" groups="stock.group_stock_multi_warehouses" options="{'no_open': True, 'no_create': True}"/>
+                <field name="supply_warehouse_id" groups="stock.group_stock_multi_warehouses" options="{'no_open': True, 'no_create': True}"/>
+                <field name="company_id" invisible="1"/>
+                <field name="product_id" domain="[('type', 'in', ['product', 'consu'])]" options="{'no_open': True, 'no_create': True}"/>
+                <field name="date_planned" widget="date"/>
+                <field name="date_requested" widget="date"/>
+                <field name="product_qty"/>
+                <field name="uom_id"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="pir_revenue" widget="monetary" optional="hide"/>
+                <field name="pir_cost" widget="monetary" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <button name="button_done" type="object" string="Approve" states="draft"/>
+                <button name="button_cancel" type="object" string="Cancel" states="draft"/>
+                <button name="button_draft" type="object" string="Reset" states="done"/>
+                <field name="state" readonly="1" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'draft'" decoration-info="state == 'cancel'"/>
+                <field name="stock_transfer_id" readonly="1" decoration-bf="1" optional="hide"/>
+                <field name="stock_transfer_state" readonly="1" decoration-bf="1" optional="hide"/>
+                <field name="purchase_id" readonly="1" decoration-bf="1" optional="hide"/>
+                <field name="purchase_state" readonly="1" decoration-bf="1" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_mrp_pir_pivot" model="ir.ui.view">
+        <field name="name">planned.independent.requirements.pivot</field>
+        <field name="model">mrp.independent.requirements</field>
+        <field name="arch" type="xml">
+            <pivot string="Planned Independent Requirements">
+                <field name="date_planned" interval="month" type="col"/>
+                <field name="origin" type="row"/>
+                <field name="product_id" type="row"/>
+                <field name="product_qty" type="measure"/>
+                <field name="pir_revenue" type="measure"/>
+                <field name="pir_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_mrp_pir_activity" model="ir.ui.view">
+        <field name="name">mrp.independent.requirements.activity</field>
+        <field name="model">mrp.independent.requirements</field>
+        <field name="arch" type="xml">
+            <activity string="Planned Independent Requirements">
+                <templates>
+                    <div t-name="activity-box">
+                        <div>
+                            <field name="origin" display="full"/>
+                            <field name="product_id" muted="1" display="full"/>
+                            <field name="date_requested" muted="1" display="full" widget="date"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+    <record id="view_filter_mrp_pir" model="ir.ui.view">
+        <field name="name">planned.independent.requirements.filter</field>
+        <field name="model">mrp.independent.requirements</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="origin" string="Version" filter_domain="[('origin', 'ilike', self)]"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Cancel" name="cancel" domain="[('state','=','cancel')]"/>
+                <filter string="Active" name="active" domain="[('state','in',('done','draft'))]"/>
+                <filter string="My Demand Items" name="my_demand_items" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By...">
+                    <filter string="Version" name="groupby_version" domain="[]" context="{'group_by': 'origin'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_pir_action" model="ir.actions.act_window">
+        <field name="name">Demand Management</field>
+        <field name="res_model">mrp.independent.requirements</field>
+        <field name="view_mode">tree,form,pivot,activity</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>

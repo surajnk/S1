@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<odoo>
+    <record id="mrp_production_workorder_tree_editable_view" model="ir.ui.view" >
+        <field name="name">mrp.production.work.order.tree</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+<!--            <field name="operation_id" position="attributes">-->
+<!--                <attribute name="invisible">0</attribute>-->
+<!--            </field>-->
+            <field name="workcenter_id" position="before">
+                <field name="sequence"/>
+            </field>
+            <field name="name" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="workcenter_id" position="after">
+                <field name="operation_id"
+                       domain="[('workcenter_id', '=', workcenter_id)]"/>
+                <field name="date_planned_start_wo"/>
+                <field name="milestone" optional="show"/>
+                <!-- <field name="x_pattern_wo" groups="base.group_no_one"/> -->
+                <field name="date_planned_finished_wo" optional="hide"/>
+                <field name="date_actual_start_wo" optional="hide"/>
+                <field name="date_actual_finished_wo" optional="hide"/>
+            </field>
+            <field name="duration" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="duration" position="after">
+                <field name="duration_hours" widget="mrp_time_counter_hours" readonly="1"/>
+                <field name="overall_duration" optional="show"/>
+                <field name="x_additional" optional="show"/>
+            </field>
+
+            <field name="date_planned_start" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="date_planned_finished" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="duration_expected" position="attributes">
+                <attribute name="attrs">{'readonly':[('state','not in', ('pending', 'ready'))]}</attribute>
+            </field>
+            <field name="duration_expected" position="after">
+                <field name="partial_quantity" groups="mrp_enhancement_report.group_wo_user"/>
+            </field>
+            <field name="state" position="before">
+                <field name="total_produce_quantity"/>
+            </field>
+        </field>
+    </record>
+
+    <!-- <record id="mrp_production_form_force_workorder_tree_shop_floor" model="ir.ui.view">
+        <field name="name">mrp.production.form.force.workorder.tree.shopfloor</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='workorder_ids']" position="attributes">
+                <attribute name="context">
+                    {'tree_view_ref': 'mrp_shop_floor_control.mrp_production_workorder_tree_editable_view'}
+                </attribute>
+            </xpath>
+        </field>
+    </record> -->
+
+
+    <record id="mrp_production_workorder_form_view_inherit" model="ir.ui.view" >
+        <field name="name">mrp.production.workorder.form.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            <field name="date_end" position="after">
+                <field name="production_id" invisible="1"/>
+                <field name="components_id" context="{'only_mrp_components': production_id}"/>
+                 <field name="setup_duration" widget="float_time" optional="hide"/>
+                <field name="working_duration" optional="hide"/>
+                <field name="teardown_duration" optional="hide"/>
+                <field name="overall_duration" optional="show"/>
+                <field name="produce_quantity"/>
+            </field>
+            <label for="date_planned_start" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </label>
+            <field name="date_planned_start" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="date_planned_finished" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="duration_expected" position="attributes">
+                <attribute name="attrs">{'readonly':[('state','not in', ('pending', 'ready'))]}</attribute>
+            </field>
+            <notebook>
+                <page string="Quantities">
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <label for="qty_production"/>
+                            <div class="o_row">
+                                <field name="qty_production"/>
+                                <field name="product_uom_id"/>
+                            </div>
+                            <label for="qty_output_wo"/>
+                            <div class="o_row">
+                                <field name="qty_output_wo" attrs="{'readonly':[('state','not in', ('pending', 'ready'))]}"/>
+                                <field name="product_uom_id"/>
+                            </div>
+                            <field name="total_produce_quantity" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="prev_work_order_id"/>
+                            <label for="qty_output_prev_wo"/>
+                            <div class="o_row">
+                                <field name="qty_output_prev_wo"/>
+                                <field name="product_uom_id"/>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+                <page string="Dates">
+                    <group>
+                        <group>
+                            <label for="date_planned_start_wo" string="Scheduled Dates"/>
+                            <div class="o_row">
+                                <field name="date_planned_start_wo" readonly="1"/>
+                                <field name="date_planned_finished_wo" readonly="1"/>
+                            </div>
+                            <label for="date_start" string="Actual Dates"/>
+                            <div class="o_row">
+                                <field name="date_start" readonly="1"/>
+                                <field name="date_finished" readonly="1"/>
+                            </div>
+                            <label for="date_actual_start_wo" string="Actual Scheduled Dates"/>
+                            <div class="o_row">
+                                <field name="date_actual_start_wo" readonly="1"/>
+                                <field name="date_actual_finished_wo" readonly="1"/>
+                            </div>
+                        </group>
+                        <group>
+                            <label for="duration_expected"/>
+                            <div class="o_row">
+                                <field name="duration_expected" widget="float_time" readonly="1"/>
+                                <span>minutes</span>
+                            </div>
+                            <label for="duration_hours"/>
+                            <div class="o_row">
+                                <field name="duration_hours" widget="mrp_time_counter_hours" readonly="1"/>
+                                <span>hours</span>
+                            </div>
+                            <label for="overall_duration"/>
+                            <div class="o_row">
+                                <field name="overall_duration" widget="float_time" readonly="1"/>
+                                <span>minutes</span>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+                <page string="Capacity">
+                    <group>
+                        <group>
+                            <field name="workcenter_id" readonly="1"/>
+                            <field name="milestone"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <label for="wo_capacity_requirements"/>
+                            <div class="o_row">
+                                <field name="wo_capacity_requirements"/>
+                                <span>hours</span>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
+            <xpath expr="//page[@name='time_tracking']" position="inside">
+                <group string="Input Rolls">
+                    <div><button class="oe_highlight" name="get_previous_roll_ids" type="object" string="Update Previous Roll Ids"/></div>
+                </group>
+                <field name="prev_roll_line_ids" nolabel="1">
+                    <tree string="Roll Label Print" editable="bottom" create="false" delete="false">
+                        <field name="roll_id" required="1" domain="[('name', '=', '')]" context="{'get_default_roll': True}"/>
+                        <field name="date" readonly="1"/>
+                        <field name="quantity" required="1"/>
+                        <field name="workorder_id" invisible="1"/>
+                        <field name="prev_work_order_id" invisible="1"/>
+                    </tree>
+                </field>
+                <group string="Output Rolls">
+                    <!-- <div><button class="oe_highlight" name="update_roll_ids" type="object" string="Update Roll Ids"/></div> -->
+                </group>
+                <field name="roll_line_ids" nolabel="1"/>
+                <!-- <field name="roll_line_ids" nolabel="1">
+                    <tree string="Roll Label Print" editable="bottom">
+                        <field name="workorder_id" invisible="1"/>
+                        <field name="prev_roll_ids" invisible="1"/>
+                        <field name="prev_roll_id"
+                            domain="[('id', 'in', prev_roll_ids)]"
+                            context="{'workorder_id': workorder_id}"/>
+                        <field name="roll_id"
+                            required="1"
+                            domain="[('name', '=', '')]"
+                            context="{'get_default_roll': True, 'workorder_id': active_id}"/>
+                        <field name="workcenter_id" invisible="1"/>
+                        <field name="user_id"
+                            options="{'no_open': True, 'no_create': True}"
+                            context="{'workcenter_id': workcenter_id}"/>
+                        <field name="date" readonly="1"/>
+                        <field name="quantity" required="1" sum="Total Quantity"/>
+                        <field name="prev_work_order_id" invisible="1"/>
+                    </tree>
+                </field> -->
+            </xpath>
+        </field>
+    </record>
+
+    <record id="set_date_wizard_form" model="ir.ui.view">
+        <field name="name">set.date.wizard.form</field>
+        <field name="model">set.date.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Confirm dialog">
+                <group>
+                    <group>
+                        <field name="new_date_planned_start_wo"/>
+                        <field name="workorder_id"/>
+                    </group>
+                </group>
+                <footer>
+                    <button class="oe_highlight" name="set_date" type="object" string="Mid Point Scheduling" />
+                    <button name="set_date_with_previous_work_order" type="object" string="Mid Point Scheduling With Previous Work order" />
+                    <button name="set_date_for_current_work_order" type="object" string="Apply for Current Operation" />
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_set_date_wizard" model="ir.actions.act_window">
+        <field name="name">Mid Point Scheduling</field>
+        <field name="res_model">set.date.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_workorder"/>
+        <field name="binding_view_types">form</field>
+    </record>
+
+    <record id="mrp_workorder_capacity_leveling_tree" model="ir.ui.view" >
+        <field name="name">mrp.workorder.capacity.leveling.tree</field>
+        <field name="model">mrp.workorder</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree string="Work Orders" delete="0" create="0" decoration-success="date_planned_start_wo&gt;=current_date and state == 'ready'" decoration-muted="state in ('done','cancel')" decoration-danger="date_planned_start_wo&lt;current_date and state in ('ready')">
+                <field name="workcenter_id" widget="selection"/>
+                <field name="x_pattern_wo" groups="mrp_enhancement_report.group_wo_user"/>
+                <field name="wo_capacity_requirements" sum="Total Capacity Requirements"/>
+                <field name="hours_uom" string="Capacity UoM"/>
+                <field name="name"/>
+                <field name="production_id"/>
+                <field name="product_id"/>
+                <field name="qty_production" string="Qty"/>
+                <field name="product_uom_id" string="UoM"/>
+                <field name="state"/>
+                <field name="date_planned_start_wo"/>
+                <field name="date_planned_finished_wo"/>
+                <field name="expected_delivery_date"/>
+                <button name="%(action_set_date_wizard)d" type="action" string="Mid Point Scheduling" class="oe_highlight"/>
+            </tree>
+      </field>
+    </record>
+
+    <record id="mrp_workorder_capacity_leveling" model="ir.actions.act_window" >
+        <field name="name">Workorder Capacity Levelling</field>
+        <field name="res_model">mrp.workorder</field>
+        <field name="domain">[('state','in',('ready','pending','progress'))]</field>
+        <field name="search_view_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="mrp_workorder_capacity_leveling_tree_link">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="mrp_workorder_capacity_leveling_tree"/>
+        <field name="act_window_id" ref="mrp_workorder_capacity_leveling"/>
+    </record>
+
+    <menuitem
+        id="menu_mrp_capacity_leveling"
+        sequence="55"
+        parent="mrp.menu_mrp_reporting"
+        action="mrp_workorder_capacity_leveling"
+        groups="mrp.group_mrp_user"/>
+</odoo>
+

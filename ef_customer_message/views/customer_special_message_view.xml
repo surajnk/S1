@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Customer Speical Message Form View -->
+    <record id="customer_special_message_form_view" model="ir.ui.view">
+        <field name="name">customer.special.message.form.view</field>
+        <field name="model">customer.special.message</field>
+        <field name="arch" type="xml">
+            <form string="Special Message">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="customer_id"/>
+                            <field name="description"/>
+                            <field name="message_type" widget='radio'/>
+                        </group>
+                        <group>
+                            <field name="product_commodity_code_id" attrs="{'invisible': [('message_type', '!=', 'commodity_class')]}"/>
+                            <field name="product_item_group_id" attrs="{'invisible': [('message_type', '!=', 'item_group')]}"/>
+                            <field name="product_id" attrs="{'invisible': [('message_type', '!=', 'product')]}"/>
+                            <field name="labor_items_id" attrs="{'invisible': [('message_type', '!=', 'labor_item')]}"/>
+                            <field name="embossing_id" attrs="{'invisible': [('message_type', '!=', 'embossing')]}"/>
+                            <field name="order_type" widget='radio'/>
+                        </group>
+                    </group>
+                    <group string="Message" name="message_tab">
+                        <field name="message_line" nolabel="1">
+                            <tree editable="bottom">
+                                <field name="name" required="1"/>
+                            </tree>
+                            <form>
+                                <sheet>
+                                    <group>
+                                        <group>
+                                            <field name="name"/>
+                                        </group>
+                                        <group/>
+                                    </group>
+                                </sheet>
+                            </form>
+                        </field>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="ma_popup"/>
+                            <field name="ma_confirmation"/>
+                            <field name="ma_sales_order"/>
+                            <field name="ma_manufacturing_order"/>
+                        </group>
+                        <group>
+                            <field name="ri_popup"/>
+                            <field name="ri_confirmation"/>
+                            <field name="ri_sales_order"/>
+                            <field name="ri_manufacturing_order"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Customer Speical Message Tree View -->
+    <record id="customer_special_message_tree_view" model="ir.ui.view">
+        <field name="name">customer.special.message.tree.view</field>
+        <field name="model">customer.special.message</field>
+        <field name="arch" type="xml">
+            <tree string="Special Message">
+                <field name="customer_id"/>
+                <field name="message_type"/>
+                <field name="order_type"/>
+                <field name="product_commodity_code_id" optional="hide"/>
+                <field name="product_item_group_id" optional="hide"/>
+                <field name="product_id" optional="hide"/>
+                <field name="labor_items_id" optional="hide"/>
+                <field name="embossing_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Customer Speical Message Search View -->
+    <record id="customer_special_message_search_view" model="ir.ui.view">
+        <field name="name">customer.special.message.search.view</field>
+        <field name="model">customer.special.message</field>
+        <field name="arch" type="xml">
+            <search string="Special Message">
+                <field name="customer_id" string="Customer"/>
+                <field name="message_type" string="Type"/>
+                <field name="order_type" string="Order Type"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Customer Speical Message Action View -->
+    <record id="action_customer_special_message" model="ir.actions.act_window">
+        <field name="name">Special Message</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">customer.special.message</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="customer_special_message_tree_view"/>
+        <field name="search_view_id" ref="customer_special_message_search_view"/>
+    </record>
+
+    <!-- Customer Speical Message Menu View -->
+    <menuitem id="menu_customer_special_message"
+        name="Special Message"
+        action="action_customer_special_message"
+        parent="sale.menu_sale_config"
+        sequence="10"/>
+
+</odoo>

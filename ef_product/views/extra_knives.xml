@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extra Knives Tree View -->
+    <record id="extra_knives_tree_view" model="ir.ui.view">
+        <field name="name">extra.knives.tree.view</field>
+        <field name="model">extra.knives</field>
+        <field name="arch" type="xml">
+            <tree string="Extra Knives">
+                <field name="name" required="1"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Extra Knives Form View -->
+        <record id="extra_knives_form_view" model="ir.ui.view">
+        <field name="name">extra.knives.form.view</field>
+        <field name="model">extra.knives</field>
+        <field name="arch" type="xml">
+            <form string="Extra Knives">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+                        </group>
+                        <field name="x_no_of_extra_knives_grid">
+                            <tree editable="bottom">
+                                <field name="x_extra_knives_sub" required="1"/>
+                                <field name="x_upcharge_sub"/>
+                            </tree>
+                            <form string="Knife Details">
+                                <group>
+                                    <field name="x_extra_knives_sub"/>
+                                    <field name="x_upcharge_sub"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--Extra Knives Search View -->
+    <record id="extra_knives_search_view" model="ir.ui.view">
+        <field name="name">extra.knives.search.view</field>
+        <field name="model">extra.knives</field>
+        <field name="arch" type="xml">
+            <search string="Extra Knives">
+                <field name="name" string="Knives"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Extra Knives Action View -->
+    <record id="extra_knives_action_view" model="ir.actions.act_window">
+        <field name="name">Extra Knives</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">extra.knives</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="extra_knives_tree_view"/>
+        <field name="search_view_id" ref="extra_knives_search_view"/>
+    </record>
+
+    <!-- Extra Knives Menu View -->
+    <menuitem id="extra_knives_menu_view"
+        name="Extra Knives"
+        action="extra_knives_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

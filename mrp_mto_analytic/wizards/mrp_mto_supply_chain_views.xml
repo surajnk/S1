@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_mto_supply_chain_form" model="ir.ui.view">
+        <field name="name">mrp.mto.supply.chain.form</field>
+        <field name="model">mrp.mto.supply.chain</field>
+        <field name="arch" type="xml">
+            <form>
+                <group string="MTO Supply Chain">
+                    <group>
+                        <field name="sale_id" domain="[('analytic_account_id', '!=', False),('state', 'not in', ('draft', 'sent'))]"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="mrp_mto_supply_chain_explosion" type="object" string="MTO Supply Chain" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_mto_supply_chain_form2" model="ir.ui.view">
+        <field name="name">mrp.mto.supply.chain.form</field>
+        <field name="model">mrp.mto.supply.chain</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="sale_id" readonly="1"/>
+                        <field name="user_id" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="customer_id" readonly="1"/>
+                        <field name="analytic_account_id" readonly="1"/>
+                    </group>
+                </group>
+                <group string="MTO Sales Order Items">
+                    <field name="line_ids" nolabel="1" colspan="2">
+                        <tree create="0" delete="0" editable="0" decoration-muted="mto_indicator == False" >
+                            <field name="level" decoration-bf="1"/>
+                            <field name="product_id"/>
+                            <field name="product_qty"/>
+                            <field name="qty_delivered"/>
+                            <field name="qty_invoiced"/>
+                            <field name="product_uom_id"/>
+                            <field name="date_order" widget="date"/>
+                            <field name="delivery_date" widget="date"/>
+                            <field name="mto_indicator"/>
+                            <field name="so_state" widget="badge" decoration-success="so_state == 'sale' or so_state == 'done'" decoration-warning="so_state == 'cancel'"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="MTO Supply Chain: Manufacturing Orders">
+                    <field name="line_mo_ids" nolabel="1" colspan="2">
+                        <tree create="0" delete="0" editable="0">
+                            <field name="level" decoration-bf="1"/>
+                            <field name="manufacture_id" decoration-bf="1"/>
+                            <field name="source"/>
+                            <field name="product_id"/>
+                            <field name="product_qty"/>
+                            <field name="qty_producing"/>
+                            <field name="product_uom_id"/>
+                            <field name="reservation_state"/>
+                            <field name="date_planned_start_pivot" widget="date" decoration-danger="mo_state == 'confirmed' and date_planned_start_pivot &lt; current_date" decoration-bf="mo_state == 'confirmed' and date_planned_start_pivot &lt; current_date"/>
+                            <field name="date_planned_finished_pivot" widget="date" decoration-danger="mo_state not in ('done', 'cancel') and date_planned_finished_pivot &lt; current_date" decoration-bf="mo_state not in ('done', 'cancel') and date_planned_finished_pivot &lt; current_date"/>
+                            <field name="mo_state" widget="badge" decoration-success="mo_state == 'done'" decoration-warning="mo_state == 'cancel'" decoration-info="mo_state == 'confirmed' or mo_state == 'progress' or mo_state == 'to_close'"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="MTO Supply Chain: Purchase Order Items">
+                    <field name="line_po_ids" nolabel="1" colspan="2">
+                        <tree create="0" delete="0" editable="0">
+                            <field name="level" decoration-bf="1"/>
+                            <field name="purchase_id" decoration-bf="1"/>
+                            <field name="source"/>
+                            <field name="product_id"/>
+                            <field name="product_qty"/>
+                            <field name="poitem_qty_received"/>
+                            <field name="product_uom_id"/>
+                            <field name="partner_id"/>
+                            <field name="date_order" widget="date" decoration-danger="po_state not in ('done', 'purchase', 'cancel') and date_order &lt; current_date" decoration-bf="po_state not in ('done', 'purchase', 'cancel') and date_order &lt; current_date"/>
+                            <field name="date_planned" widget="date" decoration-danger="poitem_qty_received &lt; product_qty and date_planned &lt; current_date" decoration-bf="poitem_qty_received &lt; product_qty and date_planned &lt; current_date"/>
+                            <field name="po_state" widget="badge" decoration-success="po_state == 'done' or po_state == 'purchase'" decoration-warning="po_state == 'cancel'" decoration-info="po_state == 'draft' or po_state == 'sent' or po_state == 'to_approve'"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button special="cancel" string="Close"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_mto_supply_chain_action" model="ir.actions.act_window">
+        <field name="name">MTO Supply Chain</field>
+        <field name="res_model">mrp.mto.supply.chain</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="mrp_mto_supply_chain_menu"
+              action="mrp_mto_supply_chain_action"
+              parent="mrp.menu_mrp_reporting"
+              sequence="70"
+    />
+</odoo>

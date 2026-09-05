@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<odoo>
+    <template id="dev_print_partner_overdue_template">
+            <t t-call="dev_partner_overdue_report.dev_partner_overdue_layout">
+                <div class="page">
+                	<style>
+		                .header_table{
+		                    width:100%;
+		                }
+		                .header_table th{
+		                    padding:5px;
+		                    text-align:center;
+		                    border:1px solid black;
+		                    background:#c8cace;
+		                }
+		                .header_table td{
+		                    padding:5px;
+		                    text-align:center;
+		                    border:1px solid black;
+		                }
+		                .my_table{
+		                    width:100%;
+		                    font-size:11px;}
+		                    
+		                .my_table th{
+		                    padding:5px;
+		                    background:#eff2f7;
+		                    border-bottom:1px solid #000;
+		                }
+		                .my_table td{
+		                    padding:5px;
+		                    border-bottom:1px solid #efefef;
+		                }
+		            </style>
+					<t t-set="lines" t-value="get_lines(o)"/>
+					<div class="row">
+					    <t t-if="o.target_move == 'posted'">
+					        <span style="font-size:14px;padding:5px;">Analysis Type : Posted</span>
+					    </t>
+					    <t t-if="o.target_move == 'all'">
+					        <span style="font-size:14px;padding:5px;">Analysis Type : All</span>
+					    </t>
+					</div>
+					<div class="row">
+						<table class="my_table">
+							<thead>
+								<tr>
+									<th style="width:28%">Customer</th>
+									<th style="width:12%" class="text-right">O/S Amt</th>
+									<th style="width:12%" class="text-right"><span t-esc="get_label()[0]"/></th>
+									<th style="width:12%" class="text-right"><span t-esc="get_label()[1]"/></th>
+									<th style="width:12%" class="text-right"><span t-esc="get_label()[2]"/></th>
+									<th style="width:12%" class="text-right"> Older </th>
+									<th style="width:12%" class="text-right"> Total </th>
+								</tr>
+							</thead>
+							<tbody class="sale_tbody">
+							    <t t-set="t_print" t-value="0"/>
+							    <t t-set="t_not_due" t-value="0"/>
+							    <t t-set="t_0_30" t-value="0"/>
+							    <t t-set="t_31_60" t-value="0"/>
+							    <t t-set="t_61_90" t-value="0"/>
+							    <t t-set="t_91_120" t-value="0"/>
+							    <t t-set="t_total" t-value="0"/>
+								<t t-foreach="lines" t-as="l_line">
+									<tr style="page-break-inside: avoid">
+										<td>
+										    <t t-set="t_print" t-value="1"/>
+											<span t-esc="l_line.get('name')"/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_not_due" t-value="t_not_due + l_line.get('not_due')"/>
+											<span t-esc="l_line.get('not_due')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_0_30" t-value="t_0_30 + l_line.get('0_30')"/>
+											<span t-esc="l_line.get('0_30')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_31_60" t-value="t_31_60 + l_line.get('31_60')"/>
+											<span t-esc="l_line.get('31_60')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_61_90" t-value="t_61_90 + l_line.get('61_90')"/>
+											<span t-esc="l_line.get('61_90')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_91_120" t-value="t_91_120 + l_line.get('91_120')"/>
+											<span t-esc="l_line.get('91_120')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+										<td class="text-right">
+										    <t t-set="t_total" t-value="t_total + l_line.get('total')"/>
+											<span t-esc="l_line.get('total')" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/>
+										</td>
+									</tr>
+								</t>
+								<t t-if="t_print">
+								    <tr style="page-break-inside: avoid">
+										<td class="text-right">
+											<b>TOTAL</b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_not_due" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_0_30" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_31_60" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_61_90" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_91_120" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+										<td class="text-right">
+											<b><span t-esc="t_total" t-options='{"widget": "monetary", 
+														"display_currency":o.company_id.currency_id}'/></b>
+										</td>
+									</tr>
+								</t>
+							</tbody>
+						</table>
+					</div>
+                </div>
+            </t>
+
+    </template>
+    
+    <template id="dev_print_partner_overdue">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="dev_partner_overdue_report.dev_print_partner_overdue_template"/>
+            </t>
+        </t>
+    </template>
+        
+        
+</odoo>

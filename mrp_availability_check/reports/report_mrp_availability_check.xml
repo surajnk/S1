@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="report_mrp_availability_check_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h2>BOM Availabity Check Report</h2>
+                     <t t-foreach="docs" t-as="o">
+                        <div class="row mt32 mb32">
+                            <div class="col-4">
+                                <strong>Product:</strong><br/>
+                                <span t-field="o.product_id.display_name"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Quantity:</strong><br/>
+                                <span t-field="o.requested_qty"/>
+                                <span groups="uom.group_uom" t-field="o.product_uom_id.name"/>
+                            </div>
+                        </div>
+                        <div class="row mt32 mb32">
+                            <div class="col-4">
+                                <strong>BoM:</strong><br/>
+                                <span t-field="o.bom_id.display_name"/>
+                            </div>
+                            <div class="col-4">
+                                <strong>Warehouse:</strong><br/>
+                                <span t-field="o.warehouse_id.display_name"/>
+                            </div>
+                        </div>
+                         <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>On Hand Qty</th>
+                                    <th>Available Qty</th>
+                                    <th>Incoming Qty</th>
+                                    <th>Outgoing Qty</th>
+                                    <th>Forecast Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.sum_line_ids" t-as="l">
+                                    <td>
+                                        <span t-field="l.product_id.display_name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="l.product_qty"/>
+                                        <span t-esc="l.product_uom_id.name" groups="uom.group_uom"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.qty_available_in_source_loc"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.qty_virtual_in_source_loc"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.qty_incoming_in_source_loc"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.qty_outgoing_in_source_loc"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.qty_delta_in_source_loc"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                         </table>
+                     </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <report
+        string="BoM Availability Check PDF"
+        id="action_report_availability_check_pdf"
+        model="mrp.availability.check"
+        name="mrp_availability_check.report_mrp_availability_check_pdf"
+        report_type="qweb-pdf"/>
+</odoo>

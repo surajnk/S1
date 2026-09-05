@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_purchaseorder_document_custom">
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&amp;display=swap');
+            table th{
+            font-family:Times New Roman;
+            padding-top:4px;
+            padding-bottom:4px;
+            }
+            table td{
+            font-family:Times New Roman;
+
+            padding-top:4px;
+            padding-bottom:4px;
+
+            }
+
+        </style>
+        <div t-attf-class="header o_company_#{o.company_id.id}_layout" t-att-style="report_header_style"
+             style="border: 1px solid black;font-family:Times New Roman !important;">
+            <div class="row">
+                <div class="col-12">
+                    <center>
+                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)"
+                             style="max-height: 70px;" alt="Logo"/>
+                    </center>
+                </div>
+                <div class="col-9 text-right" style="margin-top:22px;" t-field="o.company_id.report_header"
+                     name="moto"/>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center" name="company_address">
+                    <t t-if="o.company_id.partner_id">
+                        <!-- Line 1: Address in one line -->
+                        <t t-if="o.company_id.partner_id.name"><t t-esc="o.company_id.partner_id.name"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.street"><t t-esc="o.company_id.partner_id.street"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.street2"><t t-esc="o.company_id.partner_id.street2"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.city"><t t-esc="o.company_id.partner_id.city"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.zip"><t t-esc="o.company_id.partner_id.zip"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.state_id"><t t-esc="o.company_id.partner_id.state_id.name"/>,
+                        </t>
+                        <t t-if="o.company_id.partner_id.country_id">
+                            <t t-esc="o.company_id.partner_id.country_id.name"/>
+                        </t>
+                        <br/>
+
+                        <t t-if="o.company_id.phone">Tel:
+                            <t t-esc="o.company_id.phone"/>
+                        </t>
+                        <t t-if="o.company_id.email">Email:
+                            <t t-esc="o.company_id.partner_id.email"/>
+                        </t>
+                        <br/>
+
+                        <!-- Line 3: Website -->
+                        <t t-if="o.company_id.website">
+                            <t t-esc="o.company_id.website"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+
+
+            <div style="border-bottom: 1px solid black;"/>
+
+
+        </div>
+        <div class="page"
+             style="border: 1px solid black; padding-left: 7px; margin-left: 7px;padding-right: 7px; margin-right: 7px;height: 258mm;">
+            <table width="100%">
+
+                <tr>
+                    <td class="text-left" style="font-size:14pt;text-align:left;">
+                        <span>
+                            <strong>Purchase Order :
+                                <span t-field="o.name"/>
+                            </strong>
+                        </span>
+                    </td>
+                    <td class="text-right" style="font-size:14pt;text-align:right;">
+                        <span>
+                            <strong>P.O. Date :
+                                <span t-esc="o.date_order.strftime('%b %d, %Y')"/>
+                            </strong>
+                        </span>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="text-left" style="font-size:10pt">
+                        <strong>Page :
+                            <span class="page"/>
+                        </strong>
+                    </td>
+                    <td style="font-size:10pt;text-align:right;">
+                        <t t-if="o.required_date">
+                            <strong>Required Date :
+
+                                <span t-esc="o.required_date.strftime('%b %d, %Y')"/>
+                            </strong>
+                        </t>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center" style="font-size:12pt">
+                        <center>
+                            <strong>Purchase Order number must appear on ALL associated paper work.
+                            </strong>
+                        </center>
+                    </td>
+                </tr>
+
+            </table>
+
+            <div style="border-bottom: 1px solid black;"/>
+            <table width="100%">
+                <tr style="font-size:10pt">
+                    <td class="text-left" width="7%"
+                        style="vertical-align: top; padding-top: 1% !important; margin-top: 1% !important;">
+
+                        <strong>Vendor :
+                        </strong>
+
+
+                    </td>
+                    <td class="text-left" width="40%"
+                        style="vertical-align: top; padding-top: 1% !important; margin-top: 1% !important;"
+                        rowspan="3">
+                        <t t-if="o.partner_id.name">
+
+                            <span t-field="o.partner_id.name"/>
+
+                        </t>
+                        <t t-if="o.partner_id.street">
+                            <br/>
+                            <span t-field="o.partner_id.street"/>
+
+                        </t>
+                        <t t-if="o.partner_id.street2">
+                            <br/>
+                            <span t-field="o.partner_id.street2"/>
+
+                        </t>
+                        <t t-if="o.partner_id.city">
+                            <br/>
+                            <span t-field="o.partner_id.city"/>,
+                            <span t-field="o.partner_id.state_id.code"/>
+
+                        </t>
+                        <t t-if="o.partner_id.mobile">
+                            <br/>
+                            <span t-field="o.partner_id.mobile"/>
+                        </t>
+
+                    </td>
+                    <td class="text-right" width="7%"
+                        style="vertical-align: top; padding-top: 1% !important; margin-top: 1% !important;">
+
+                        <strong>Ship To :
+
+                        </strong>
+
+                    </td>
+                    <td class="text-left" width="40%" rowspan="3"
+                        style="vertical-align: top; padding-top: 1% !important; margin-top: 1% !important;">
+                        <span t-field="o.ship_to" style="margin-top:0 !important; padding-top:0 !important;"/>
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td class="text-left">
+
+
+                    </td>
+
+                    <td class="text-right">
+
+
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td class="text-left">
+
+
+                    </td>
+                    <td class="text-right">
+
+
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td class="text-left">
+
+                        <strong>Contact :
+
+                        </strong>
+                    </td>
+                    <td>
+                        <t t-if="o.contact_id">
+                            <t t-esc="o.contact_id.name"/>
+                        </t>
+
+                    </td>
+                    <td class="text-left">
+
+                        <strong>Buyer :
+
+                        </strong>
+                    </td>
+                    <td>
+                        <t t-if="o.user_id">
+                            <t t-esc="o.user_id.name"/>
+                            -
+                            <t t-esc="o.user_id.login"/>
+                        </t>
+
+                    </td>
+                </tr>
+            </table>
+            <div style="border-bottom: 1px solid black;"/>
+            <table width="100%">
+                <tr style="font-size:10pt">
+                    <td width="30%">
+                        <strong>FOB:</strong>
+                        <t t-esc="dict(o._fields['fob'].selection).get(o.fob)"/>
+                    </td>
+                    <td width="30%">
+                        <strong>Payment Terms:</strong>
+                        <t t-esc="o.payment_term_id.name"/>
+                    </td>
+                    <td width="30%">
+                        <strong>Warehouse:</strong>
+                        <t t-esc="o.picking_type_id.warehouse_id.name"/>
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td width="30%">
+                        <strong>Ship Via:</strong>
+                        <t t-esc="o.ship_via_id.x_name"/>
+                    </td>
+                    <td width="30%">
+                        <strong>Frt Terms:</strong>
+                        <t t-esc="o.freight_terms.name"/>
+                    </td>
+                    <td width="30%"></td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td colspan="3">
+                        Remarks:
+                        <t t-esc="notes_comments"/>
+                    </td>
+                </tr>
+            </table>
+            <div style="border-bottom: 1px solid black;"/>
+            <table width="100%">
+                <tr style="font-size:10pt">
+                    <td colspan="5">
+                        <strong>
+                            Material Information:
+                        </strong>
+                    </td>
+                </tr>
+                <t t-set="po_line" t-value="000"/>
+                <t t-foreach="o.order_line" t-as="line">
+                    <t t-set="po_line" t-value="po_line + 1"/>
+                    <tr style="font-size:10pt">
+                        <td style="vertical-align: top;">
+                            <strong>
+                                PO Line:
+
+                            </strong>
+                            <t t-esc="'%03d' % po_line"/>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <strong>
+                                Material:
+                            </strong>
+                        </td>
+                        <td colspan="3">
+
+                            <t t-esc="line.product_id.name"/>
+                            :
+                            <t t-if="line.product_id.x_item_length and line.product_id.x_item_width">
+
+                                <t t-esc="'%.1f' % (line.product_id.x_item_length)"/>
+                                ''
+                                ×
+                                <t t-esc="'%.1f' % (line.product_id.x_item_width)"/>
+                                ''
+                            </t>
+                            <t t-elif="line.product_id.x_item_length">
+
+                                <t t-esc="'%.1f' % (line.product_id.x_item_length)"/>
+                                ''
+                            </t>
+                            <t t-elif="line.product_id.x_item_width">
+
+                                <t t-esc="'%.1f' % (line.product_id.x_item_width)"/>
+                                ''
+                            </t>
+                            <t t-if="line.product_id.x_item_length and line.product_id.x_item_width">
+                                (
+                                <t t-esc="'%.1f' % (line.product_id.x_item_length * 25.4)"/>
+                                mm
+                                ×
+                                <t t-esc="'%.1f' % (line.product_id.x_item_width * 25.4)"/>
+                                mm) -
+                            </t>
+                            <t t-elif="line.product_id.x_item_length">
+                                (
+                                <t t-esc="'%.1f' % (line.product_id.x_item_length * 25.4)"/>
+                                mm) -
+                            </t>
+                            <t t-elif="line.product_id.x_item_width">
+                                (
+                                <t t-esc="'%.1f' % (line.product_id.x_item_width * 25.4)"/>
+                                mm) -
+                            </t>
+                            <t t-esc="line.notes_comments"/>
+                            
+
+
+                        </td>
+                    </tr>
+                    <tr style="font-size:10pt; text-align:left;">
+                        <td colspan="2"></td>
+                        <td colspan="3">
+                            <span t-field="line.name"/>
+                        </td>
+                    </tr>
+                    <tr style="font-size:10pt; text-align:left;">
+                        <td colspan="2"></td>
+                        <td colspan="3">
+                            <t t-if="line.customer_ref">
+                                &amp;
+                                <t t-esc="line.customer_ref"/>
+                            </t>
+                            <t t-set="selection_list"
+                               t-value="line.product_id._fields['x_FSC'].selection(line.product_id)"/>
+                            &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                            <t t-foreach="selection_list" t-as="item">
+                                <t t-if="item[0] == line.product_id.x_FSC">
+                                    <span style="font-style: italic;font-size:7pt !important;">
+                                        **
+                                        <t t-esc="item[1]"/>
+                                        **
+                                    </span>
+                                </t>
+                            </t>
+                        </td>
+
+                    </tr>
+                    <!--                    <tr style="font-size:10pt; text-align:center;">-->
+                    <!--                        <td colspan="5">-->
+                    <!--                            <t t-set="selection_list"-->
+                    <!--                               t-value="line.product_id._fields['x_FSC'].selection(line.product_id)"/>-->
+                    <!--                            <t t-foreach="selection_list" t-as="item">-->
+                    <!--                                <t t-if="item[0] == line.product_id.x_FSC">-->
+                    <!--                                    <span style="font-style: italic;">-->
+                    <!--                                        **-->
+                    <!--                                        <t t-esc="item[1]"/>-->
+                    <!--                                        **-->
+                    <!--                                    </span>-->
+                    <!--                                </t>-->
+                    <!--                            </t>-->
+                    <!--                        </td>-->
+                    <!--                    </tr>-->
+
+                    <tr style="font-size:10pt">
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>Quantity:</strong>
+
+                            <t t-esc="'%.2f' % line.product_qty"/>
+                            <t t-esc="line.product_uom.name"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>Unit Price:</strong>
+                            <t t-esc="'%.5f' % line.price_unit"/>
+                            /
+                            <t t-esc="line.product_id.uom_po_id.name"/>
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>
+                                <t t-esc="'%.2f' % line.price_total"/>
+                                <t t-esc="line.currency_id.name"/>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr style="font-size:10pt">
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td>
+
+                        </td>
+                        <td class="text-center" colspan="2">
+                            <center>
+                                <strong>Date Expected:</strong>
+
+                                <t t-if="o.date_planned">
+
+
+                                    <span t-esc="o.date_planned.strftime('%b %d, %Y')"/>
+
+                                </t>
+                            </center>
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" style="border-top: 1px solid black;"/>
+                    </tr>
+                </t>
+                <tr style="font-size:10pt">
+                    <td colspan="3"/>
+                    <td style="text-align:right;">
+                        <strong>
+                            Purchase Order Total:
+                        </strong>
+                    </td>
+                    <td style="text-align:right;">
+                        <strong>
+                            <t t-esc="o.amount_total"/>
+                            <t t-esc="o.currency_id.name"/>
+                        </strong>
+                    </td>
+                </tr>
+
+
+            </table>
+        </div>
+
+
+    </template>
+
+    <template id="report_purchaseorder_custom">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="ef_purchase.report_purchaseorder_document_custom" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="paperformat_custom_po" model="report.paperformat">
+        <field name="name">Custom PO</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">80</field>
+    </record>
+
+    <record id="action_report_purchase_order_custom" model="ir.actions.report">
+        <field name="name">Custom Purchase Order</field>
+        <field name="model">purchase.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ef_purchase.report_purchaseorder_custom</field>
+        <field name="report_file">ef_purchase.report_purchaseorder_custom</field>
+        <field name="print_report_name">
+            (object.state in ('draft', 'sent') and 'Request for Quotation - %s' % (object.name) or
+            'Purchase Order - %s' % (object.name))
+        </field>
+        <field name="binding_model_id" ref="model_purchase_order"/>
+        <field name="paperformat_id" ref="ef_purchase.paperformat_custom_po"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

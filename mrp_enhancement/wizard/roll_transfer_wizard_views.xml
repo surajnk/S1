@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="roll_transfer_wizard_form_view" model="ir.ui.view">
+        <field name="name">roll.transfer.wizard.form</field>
+        <field name="model">roll.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Roll Transfers">
+                <sheet>
+                    <group>
+                        <field name="frame_no" string="Frame No"/>
+                    </group>
+                    <field name="transfer_line_ids">
+                        <tree editable="top"
+                              decoration-warning="state == 'waiting'"
+                              decoration-success="state == 'assigned'"
+                              decoration-info="state == 'confirmed'">
+                            <field name="selected"/>
+                            <field name="workorder_id" readonly="1"/>
+                            <field name="target_workorder_id"/>
+                            <field name="picking_id" readonly="1"/>
+                            <field name="location_id" readonly="1"/>
+                            <field name="location_dest_id" readonly="1"/>
+                            <field name="state" readonly="1" widget="badge"
+                                   decoration-warning="state == 'waiting'"
+                                   decoration-success="state == 'assigned'"
+                                   decoration-info="state == 'confirmed'"/>
+                        </tree>
+                    </field>
+                </sheet>
+                <footer>
+                    <button name="action_put_on_hold"
+                            string="Put on Hold"
+                            type="object"
+                            class="btn-warning"
+                            invisible="1"/>
+                    <button name="action_release"
+                            string="Release"
+                            type="object"
+                            class="btn-success"
+                            invisible="1"/>
+                    <button name="action_create_reverse_move"
+                            string="Request Downstream Rolls"
+                            type="object"
+                            class="btn-primary"/>
+                    <button string="Close"
+                            class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

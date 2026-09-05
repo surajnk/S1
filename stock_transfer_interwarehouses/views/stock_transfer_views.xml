@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+    <record id="view_stock_transfer_interwarehouses_tree" model="ir.ui.view">
+        <field name="name">stock.transfer.tree</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Transfers">
+                <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                <field name="name" decoration-bf="1"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="warehouse_id" groups="stock.group_stock_multi_warehouses" optional="show"/>
+                <field name="source_warehouse_id" groups="stock.group_stock_multi_warehouses" optional="show"/>
+                <field name="date" widget="date"/>
+                <field name="date_planned" widget="date"
+                    decoration-warning="state not in ('done', 'cancel') and date_planned &lt; now"
+                    decoration-danger="state not in ('done', 'cancel') and date_planned &lt; current_date"
+                    decoration-bf="state not in ('done', 'cancel') and (date_planned &lt; current_date or date_planned &lt; now)"/>
+                <field name="origin"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="show"/>
+                <field name="activity_ids" widget="list_activity" optional="show"/>
+                <field name="state" widget="badge"
+                    decoration-success="state == 'done'"
+                    decoration-warning="state == 'draft'"
+                    decoration-info="state == 'confirm' or state == 'progress'"
+                    decoration-danger="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_stock_transfer_interwarehouses_form" model="ir.ui.view">
+        <field name="name">stock.transfer.form</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <form string="Stock Transfer Document">
+                <header>
+                    <button name="button_confirm" type="object" states="draft" string="Approve" class="oe_highlight" groups="stock.group_stock_manager"/>
+                    <button name="send_approval_email" type="object" string="Request for Approval"
+                        attrs="{'invisible': ['|', '|',('state', '!=', 'draft'), ('approval', '=', True), ('sent', '=', True) ]}"/>
+                    <button name="button_cancel" type="object" states="draft" string="Cancel"/>
+                    <button name="button_draft" type="object" states="confirm" string="Reset to Draft"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,progress,done" readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button type="object" name="action_view_picking" class="oe_stat_button" icon="fa-truck" attrs="{'invisible':[('picking_ids','=',[])]}">
+                            <field name="picking_count" widget="statinfo" string="Pickings"/>
+                            <field name="picking_ids" invisible="1"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="oe_title">
+                        <field name="active" invisible="1"/>
+                        <label for="name" string="Stock Transfer"/>
+                        <h1>
+                            <field name="priority" widget="priority" class="mr-3"/>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id" options="{'no_open':True,'no_create':True}"/>
+                            <field name="approval" invisible="1"/>
+                            <field name="sent" invisible="1"/>
+                            <label for="group_id" groups="base.group_no_one"/>
+                            <div groups="base.group_no_one">
+                                <field name="group_id" groups="stock.group_adv_location"/>
+                            </div>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="date_planned"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_open':True,'no_create':True}"/>
+                            <field name="origin"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="source_warehouse_id" options="{'no_open':True,'no_create':True}" groups="stock.group_stock_multi_warehouses"/>
+                        </group>
+                        <group>
+                            <field name="warehouse_id" options="{'no_open':True,'no_create':True}" groups="stock.group_stock_multi_warehouses"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Stock Transfer Items" name="products">
+                            <field name="stock_transfer_lines" nolabel="1"
+                                attrs="{'readonly': [('state', '!=', 'draft')]}">
+                                <tree string="Stock Transfer Items" editable="bottom">
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id" domain="[('type', '=', 'product'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                    <field name="name"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom" string="UoM" groups="uom.group_uom"/>
+                                    <field name="qty_to_deliver"/>
+                                    <field name="qty_delivered"/>
+                                    <field name="qty_received"/>
+                                </tree>
+                                <form string="Stock Transfer Item">
+                                    <field name="state" invisible="1"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+                                    <field name="company_id" invisible="1"/>
+                                    <group>
+                                        <group>
+                                            <field name="product_id" domain="[('type', '=', 'product'), '|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                                            <field name="name"/>
+                                        </group>
+                                        <group>
+                                            <label for="product_qty"/>
+                                                <div class="o_row">
+                                                    <field name="product_qty"/>
+                                                    <field name="product_uom" groups="uom.group_uom"/>
+                                                </div>
+                                            <label for="qty_to_deliver"/>
+                                                <div class="o_row">
+                                                    <field name="qty_to_deliver"/>
+                                                    <field name="product_uom" groups="uom.group_uom"/>
+                                                </div>
+                                            <label for="qty_delivered"/>
+                                                <div class="o_row">
+                                                    <field name="qty_delivered"/>
+                                                    <field name="product_uom" groups="uom.group_uom"/>
+                                                </div>
+                                            <label for="qty_received"/>
+                                                <div class="o_row">
+                                                    <field name="qty_received"/>
+                                                    <field name="product_uom" groups="uom.group_uom"/>
+                                                </div>
+                                        </group>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_stock_transfer_interwarehouses_calendar" model="ir.ui.view">
+        <field name="name">stock.transfer.calendar</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <calendar color="warehouse_id" date_start="date_planned" string="Stock Transfer" mode="month" hide_time="true" quick_add="False">
+                <field name="name"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_stock_transfer_interwarehouses_search" model="ir.ui.view">
+        <field name="name">stock.transfer.search</field>
+        <field name="model">stock.transfer</field>
+        <field name="arch" type="xml">
+            <search string="Stock Transfer">
+                <field name="name"/>
+                <filter string="My Stock Transfer" name="my_stock_transfers" domain="[('user_id', '=', uid)]"/>
+                <filter string="Draft" name="ready" domain="[('state','=','draft')]"/>
+                <filter string="Open" name="open" domain="[('state','in',('draft','confirm','progress'))]"/>
+                <filter string="Closed" name="done" domain="[('state','=','done')]"/>
+                <filter string="Document Date" name="date" date="date"/>
+                <filter string="Receipt Date" name="date_planned" date="date_planned"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <separator/>
+                <filter string="Late" name="late" domain="['&amp;', ('date_planned','&lt;', current_date), ('state', 'in', ('draft','confirm','progress'))]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_warehouse" string="Destination WH" context="{'group_by': 'warehouse_id'}"/>
+                    <filter name="group_source_warehouse" string="Source WH" context="{'group_by': 'source_warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_stock_transfer_interwarehouses" model="ir.actions.act_window">
+        <field name="name">Stock Transfers</field>
+        <field name="res_model">stock.transfer</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,form,calendar,activity</field>
+        <field name="context">{'search_default_open': True}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <menuitem
+        id="menu_stock_transfer_interwarehouses"
+        action="action_stock_transfer_interwarehouses"
+        name="Stock Transfer Interwarehouses"
+        parent="stock.menu_stock_warehouse_mgmt"
+        sequence="40"
+        groups="stock.group_stock_user"/>
+</odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_shipping_manifest" model="ir.actions.report">
+        <field name="name">Shipping Manifest</field>
+        <field name="model">shipping.manifest.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">shipping_manifest_report.report_manifest</field>
+        <field name="report_file">shipping_manifest_report.report_manifest</field>
+        <field name="print_report_name">'Shipping Manifest - %s' % (object.date)</field>
+        <field name="paperformat_id" ref="shipping_manifest_report.paperformat_shipping_manifest"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+</odoo>

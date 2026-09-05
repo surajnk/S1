@@ -1,0 +1,5 @@
+code,name,user,default tax,tag_ids,group,currency,reconsile,depreated
+10103,Plant,Current Assets,,Operating Activities,Demo Group1,,1,TRUE
+10104,Prepayments,Bank and Cash,,,Demo Group2,,TRUE,FALSE
+10105,Long term,Income,,"Financing Activities,Operating Activities",,,0,1
+10106,Equipments,Credit Card,,,Demo Group4,USD,1,1

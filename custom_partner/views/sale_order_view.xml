@@ -1,0 +1,130 @@
+<odoo>
+    <record id="view_order_line_tree_proforma" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.proforma</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="product_id"/>
+                <field name="product_uom_qty"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_order_form_inherit_attachment" model="ir.ui.view">
+        <field name="name">sale.order.form.attachment</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_approve" string="Approve" class="btn-primary" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['send_for_approval'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="replace">
+
+                <button name="action_quotation_send" string="Send by Email" type="object" states="draft,approve"
+                        class="btn-primary"/>
+            </xpath>
+
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+
+                <field name="partner_attachment" widget="many2many_binary"/>
+
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='analytic_tag_ids']"
+                   position="after">
+                <field name="product_attachment" widget="many2many_binary"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Proforma Invoice">
+                    <field name="proforma_order_line_ids" mode="tree,form" force_save="1">
+                        <tree>
+                            <field name="product_id"/>
+                            <field name="sheet_allowance"/>
+                            <field name="x_approx_material_weight"/>
+                            <field name="grain"/>
+                            <field name="x_class_commodity_group"/>
+                            <field name="x_order_line_tol_over" string=" (+) Allowance"/>
+                            <field name="x_order_line_tol_under" string=" (-) Allowance"/>
+                            <button name="download_proforma_line"
+                                    type="object"
+                                    string=" "
+                                    class="fa fa-download"
+                                    title="Download Proforma Invoice"/>
+                            <button name="action_quotation_send_line"
+                                    type="object"
+                                    string="Send Proforma"
+                                    class="btn "
+                                    title="Send Proforma Invoice"/>
+
+                        </tree>
+                        <form>
+                            <sheet>
+                                <group string="Proforma Invoice">
+                                    <group>
+                                        <field name="order_id" readonly="1"/>
+                                        <field name="customer_id" widget="res_partner_many2one"
+                                               context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}"
+                                               options="{&quot;always_reload&quot;: True}"/>
+
+                                    </group>
+                                    <group>
+                                        <field name="request_date"/>
+                                    </group>
+                                </group>
+                                <group string="Details Items">
+                                    <group>
+                                        <field name="id" string="Detail Line"/>
+                                        <field name="product_id"/>
+                                        <field name="company_id" invisible="1"/>
+                                        <field name="display_description" string="Product"/>
+                                    </group>
+                                    <group>
+                                        <field name="x_customer_order_width"/>
+                                        <field name="x_customer_order_length"/>
+
+                                        <field name="x_customer_order_width_mm"/>
+                                        <field name="x_customer_order_length_mm"/>
+                                    </group>
+
+
+                                </group>
+                                <field name="skid_ids" force_save="1">
+                                    <tree editable="bottom">
+                                        <field name="packaging_id"/>
+                                        <field name="number_of_skids"/>
+                                        <field name="skid_width"/>
+                                        <field name="skid_length"/>
+                                        <field name="skid_height"/>
+                                        <field name="skid_weight"/>
+                                        <field name="skid_total_wight"/>
+                                    </tree>
+                                </field>
+                                <group>
+                                    <group>
+
+                                        <field name="sheet_allowance"/>
+                                        <field name="x_order_line_tol_over" string=" (+) Allowance"/>
+                                        <field name="freight_amount"/>
+                                        <field name="dei_comment"/>
+                                        <field name="meterial_weight_per_unit"/>
+                                        <field name="meterial_weight"/>
+
+                                    </group>
+                                    <group>
+
+                                        <field name="grain"/>
+                                        <field name="x_order_line_tol_under" string=" (-) Allowance"/>
+                                        <field name="x_class_commodity_group"/>
+                                        <field name="kg_for_net_weight"/>
+                                        <field name="kg_for_gross_weight"/>
+                                    </group>
+                                </group>
+                            </sheet>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

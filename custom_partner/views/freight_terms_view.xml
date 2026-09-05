@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	
+   <!-- >>>>>>>>>>>>>>> List View Freight Terms >>>>>>>>>>>>>> -->
+    <record id="view_freight_terms_tree" model="ir.ui.view">
+        <field name="name">freight.terms</field>
+        <field name="model">freight.terms</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Freight Terms">
+               <field name="x_name" />
+               <field name="x_description" /> 
+            </tree>
+        </field>
+    </record>
+<!-- >>>>>>>>>>>>>>> Form View  Freight Terms >>>>>>>>>>>>>> -->
+    <record id="view_freight_terms_form" model="ir.ui.view">
+        <field name="name">freight.terms.form</field>
+        <field name="model">freight.terms</field>
+        <field name="arch" type="xml">
+            <form string="Freight Terms">
+                <sheet>
+                    <group name="main">
+                       <field name="x_name" />
+                       <field name="x_description" /> 
+                    </group>
+                   
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>> Action  Freight Terms>>>>>>>>>>>>>> -->
+    <record id="action_freight_terms" model="ir.actions.act_window">
+        <field name="name">Freight Terms</field>
+        <field name="res_model">freight.terms</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>>  Freight Terms  Menu  >>>>>>>>>>>>>> -->
+    <menuitem  id="menu_freight_terms"
+              name="Freight Terms"
+              parent="sale.menu_sale_config"
+              action="action_freight_terms"
+              sequence="7"/>
+</odoo>

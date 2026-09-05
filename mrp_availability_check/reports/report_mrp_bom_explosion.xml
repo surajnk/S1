@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <template id="report_mrp_bom_explosion_pdf">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <h2>BOM Explosion Report</h2>
+                     <t t-foreach="docs" t-as="o">
+                         <table class="table table-condensed">
+                            <thead>
+                                <tr>
+                                    <th>Level</th>
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Parent BoM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="font-weight: bold;">
+                                    <td>0</td>
+                                    <td>
+                                        <span t-field="o.product_id.display_name"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.requested_qty"/>
+                                        <span groups="uom.group_uom" t-field="o.product_uom_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span/>
+                                    </td>
+                                </tr>
+                                <tr t-foreach="o.line_ids" t-as="l">
+                                    <td>
+                                        <span t-field="l.bom_level"/>
+                                    </td>
+                                    <td>
+                                        <span style="color: white;"
+                                              t-esc="'... '*(l.bom_level)"/>
+                                        <span t-esc="l.product_id.display_name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="l.product_qty"/>
+                                        <span t-esc="l.product_uom_id.name" groups="uom.group_uom"/>
+                                    </td>
+                                    <td>
+                                        <span t-field="l.bom_id.display_name"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                         </table>
+                     </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <report
+        string="BoM Explosion PDF"
+        id="action_report_bom_explosion_pdf"
+        model="mrp.availability.check"
+        name="mrp_availability_check.report_mrp_bom_explosion_pdf"
+        report_type="qweb-pdf"/>
+</odoo>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="assets_backend1" name="web_widget_color assets1" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/mrp_enhancement/static/src/js/timer.js"></script>
+             <script type="text/javascript" src="/mrp_enhancement/static/src/js/many2one_barcode_lot.js"></script>
+        </xpath>
+    </template>
+</odoo>

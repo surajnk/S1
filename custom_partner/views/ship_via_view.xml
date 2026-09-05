@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	
+   <!-- >>>>>>>>>>>>>>> List View Ship-Via >>>>>>>>>>>>>> -->
+    <record id="view_ship_via_tree" model="ir.ui.view">
+        <field name="name">ship.via</field>
+        <field name="model">ship.via</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Ship Via">
+               <field name="x_name" />
+               <field name="x_description" />
+               <field name="x_reference"/>
+            </tree>
+        </field>
+    </record>
+<!-- >>>>>>>>>>>>>>> Form View  Ship-Via >>>>>>>>>>>>>> -->
+    <record id="view_ship_via_form" model="ir.ui.view">
+        <field name="name">ship.via</field>
+        <field name="model">ship.via</field>
+        <field name="arch" type="xml">
+            <form string="Ship Via">
+                <sheet>
+                    <group name="main">
+                       <field name="x_name" />
+                       <field name="x_description" />
+                       <field name="x_reference"/> 
+                    </group>
+                   
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>> Action  Ship-Via>>>>>>>>>>>>>> -->
+    <record id="action_ship_via" model="ir.actions.act_window">
+        <field name="name">Ship-Via</field>
+        <field name="res_model">ship.via</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>>  Ship-Via  Menu  >>>>>>>>>>>>>> -->
+    <menuitem  id="menu_ship_via"
+              name="Ship-Via"
+              parent="sale.menu_sale_config"
+              action="action_ship_via"
+              sequence="8"/>
+</odoo>

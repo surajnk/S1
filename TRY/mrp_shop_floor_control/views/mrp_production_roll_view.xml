@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_mrp_production_roll" model="ir.sequence">
+        <field name="name">Mrp Production Roll</field>
+        <field name="code">mrp.production.roll</field>
+        <field name="prefix">ROLL</field>
+        <field name="padding">4</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <!-- mrp.production.roll -->
+    <record id="mrp_production_roll_form_view" model="ir.ui.view">
+        <field name="name">mrp.production.roll.form.view</field>
+        <field name="model">mrp.production.roll</field>
+        <field name="arch" type="xml">
+            <form string="Mrp Production Roll">
+                <sheet>
+                    <group>
+                        <field name="name" required="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+        <record id="group_ncr_user" model="res.groups">
+            <field name="name">NCR</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+    </data>
+</odoo>

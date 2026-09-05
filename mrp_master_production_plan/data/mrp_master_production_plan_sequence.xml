@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo noupdate="1">
+    <record id="seq_mrp_sop_item" model="ir.sequence">
+        <field name="name">Sales and Operations Plan</field>
+        <field name="code">mrp.sales.operations.plan</field>
+        <field name="prefix">SOP/%(range_year)s/</field>
+        <field name="padding">10</field>
+        <field name="implementation">no_gap</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_mrp_mpp_item" model="ir.sequence">
+        <field name="name">Master Production Plan</field>
+        <field name="code">mrp.production.plan</field>
+        <field name="prefix">MPP/%(range_year)s/</field>
+        <field name="padding">10</field>
+        <field name="implementation">no_gap</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_availability_check_view_form" model="ir.ui.view">
+        <field name="name">mrp.availability.check.form</field>
+        <field name="model">mrp.availability.check</field>
+        <field name="arch" type="xml">
+            <form>
+                <group string="Availability Check">
+                    <group>
+                        <field name="product_id" domain="[('bom_ids','!=',False),('bom_ids.type','!=','phantom')]"/>
+                        <field name="product_tmpl_id" invisible="1"/>
+                        <field name="bom_id"
+                            domain="['&amp;', '|', ('product_id','=',product_id),
+                            '&amp;', ('product_tmpl_id.product_variant_ids','=',product_id),
+                            ('product_id','=',False), ('type', '=', 'normal')]"/>
+                        <field name="warehouse_id"/>
+                    </group>
+                    <group>
+                        <label for="requested_qty" string="Quantity"/>
+                        <div class="o_row">
+                            <field name="requested_qty"/><field name="product_uom_id"/>
+                        </div>
+                    </group>
+                </group>
+                <footer>
+                    <button name="do_bom_summarized" type="object" string="Check" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_availability_check_view_form2" model="ir.ui.view">
+        <field name="name">mrp.availability.check.form2</field>
+        <field name="model">mrp.availability.check</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="product_id" readonly="1"/>
+                    <field name="bom_id" readonly="1"/>
+                    <field name="warehouse_id" readonly="1"/>
+                    <label for="requested_qty" string="Quantity"/>
+                    <div class="o_row">
+                        <field name="requested_qty" readonly="1"/><field name="product_uom_id"/>
+                    </div>
+                </group>
+                <group string="BOM Explosion">
+                    <field name="line_ids" nolabel="1" colspan="2">
+                        <tree create="0" delete="0" editable="0">
+                            <field name="bom_level"/>
+                            <field name="product_id"/>
+                            <field name="product_qty"/>
+                            <field name="product_uom_id"/>
+                            <field name="product_type"/>
+                            <field name="Buy"/>
+                            <field name="Make"/>
+                            <field name="MTO"/>
+                            <field name="reorder_point"/>
+                            <field name="produce_delay"/>
+                            <field name="purchase_delay"/>
+                            <field name="bom_id"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="Availability Check Result">
+                    <field name="sum_line_ids" nolabel="1" colspan="2">
+                        <tree create="0" delete="0" editable="0" decoration-danger="available == False">
+                            <field name="product_id" />
+                            <field name="product_qty"/>
+                            <field name="product_uom_id" groups="uom.group_uom"/>
+                            <field name="qty_available_in_source_loc"/>
+                            <field name="qty_virtual_in_source_loc" />
+                            <field name="qty_incoming_in_source_loc"/>
+                            <field name="qty_outgoing_in_source_loc" />
+                            <field name="qty_delta_in_source_loc"/>
+                            <field name="available" invisible="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <footer>
+                    <button name="%(mrp_availability_check.action_report_bom_explosion_pdf)d" type="action"
+                        string="Print BoM Explosion PDF" class="oe_highlight"/>
+                    <button name="%(mrp_availability_check.action_report_availability_check_pdf)d" type="action"
+                        string="Print BoM Availability Check PDF" class="oe_highlight"/>
+                    <button special="cancel" string="Close"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_availability_check_action" model="ir.actions.act_window">
+        <field name="name">BoM Availability Check</field>
+        <field name="res_model">mrp.availability.check</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="mrp_availability_check_menu"
+              action="mrp_availability_check_action"
+              parent="mrp.menu_mrp_reporting"
+              sequence="60"/>
+</odoo>

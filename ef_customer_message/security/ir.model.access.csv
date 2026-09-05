@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_customer_special_message,access.customer.special.message,model_customer_special_message,,1,1,1,1
+access_customer_special_message_line,access.customer.special.message.line,model_customer_special_message_line,,1,1,1,1

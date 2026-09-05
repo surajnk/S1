@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_nmfc_density_class_tree" model="ir.ui.view">
+        <field name="name">nmfc.density.class.tree</field>
+        <field name="model">nmfc.density.class</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" string="NMFC Density to Class Table">
+                <field name="sequence" widget="handle"/>
+                <field name="name" string="Class"/>
+                <field name="density_from"/>
+                <field name="density_to"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_nmfc_density_class_form" model="ir.ui.view">
+        <field name="name">nmfc.density.class.form</field>
+        <field name="model">nmfc.density.class</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" string="Class"/>
+                        <field name="density_from"/>
+                        <field name="density_to"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_nmfc_density_class">
+        <field name="name">NMFC Density to Class Table</field>
+        <field name="res_model">nmfc.density.class</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_nmfc_density_class"
+              action="action_nmfc_density_class"
+              sequence="150"
+              parent="stock.menu_stock_config_settings"/>
+
+</odoo>

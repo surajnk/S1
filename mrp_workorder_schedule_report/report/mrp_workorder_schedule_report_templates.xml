@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <template id="mrp_workorder_schedule_pdf">
+    <t t-call="web.html_container">
+      <t t-set="data" t-value="docs and docs[0]._prepare_report_data() or doc._prepare_report_data()"/>
+
+      <div class="row" style="margin-bottom:6px; text-align:center;">
+        <div class="col-12" style="text-align:center;">
+          <h3 style="margin:0; font-weight:700;">Weekly Summary</h3>
+          <div style="font-size:12px; margin-top:2px;">
+            <t t-esc="data.get('date_from')"/> – <t t-esc="data.get('date_to')"/>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        .sched-table { width:100%; border-collapse:collapse; font-size:11px; }
+        .sched-table th, .sched-table td { border:1px solid #000; padding:2px 4px; vertical-align:top; }
+        .sched-head th { background:#f5f5f5; }
+        .sched-day-title { font-weight:700; border-bottom:1px solid #000; margin:8px 0 4px; padding-bottom:2px; }
+        .sched-totals { margin-top:6px; font-size:11px; }
+        .text-right { text-align:right; }
+        .wc-chip { display:inline-block; padding:0 3px; border-radius:2px; margin-right:3px; }
+        .wc-done { background-color:#b3b3b3; color:black; }
+        .weekly-header { text-align:center; margin-top:20px; margin-bottom:10px; }
+      </style>
+
+      <!-- ================== WEEK BY WEEK: DAILY PAGES, THEN THAT WEEK'S SUMMARY ================== -->
+      <t t-set="weekly" t-value="data.get('weekly_summary', [])"/>
+
+      <t t-foreach="weekly" t-as="weekblk"
+         t-key="str(weekblk['year']) + '-' + str(weekblk['week'])">
+
+      <t t-foreach="weekblk['days']" t-as="dayblk" t-key="dayblk['date']">
+        <!-- <div class="page"> -->
+        <div class="page" t-att-style="'page-break-before:always;' if (dayblk_index == 0 and weekblk_index != 0) else 'page-break-inside:avoid;'">
+          <div class="sched-day-title">
+            <span><t t-esc="dayblk['date'].strftime('%A, %b %d, %Y')"/></span>
+          </div>
+
+          <table class="sched-table">
+            <thead class="sched-head">
+              <tr>
+                <th style="width:13%;">Order #</th>
+                <th style="width:12%;">Part #</th>
+                <th style="width:20%;">Customer</th>
+                <th style="width:8%;"  class="text-right">W/O Yards</th>
+                <th style="width:8%;"  class="text-right">Remain Yd</th>
+                <th style="width:5%;">Ctr</th>
+                <th style="width:5%;">Plt</th>
+                <th style="width:5%;">Lam</th>
+                <th style="width:5%;">Prt</th>
+                <th style="width:9%;">Embossing</th>
+                <th style="width:5%;">Roll</th>
+                <th style="width:5%;">Sht</th>
+              </tr>
+            </thead>
+            <tbody>
+              <t t-foreach="dayblk['rows']" t-as="r" t-key="r['order_no'] + '-' + r['wc_name']">
+                <tr>
+                  <td><t t-esc="r['order_no']"/></td>
+                  <td><t t-esc="r['part_no']"/></td>
+                  <td><t t-esc="r['customer']"/></td>
+                  <td class="text-right"><t t-esc="r['wo_yards_s']"/></td>
+                  <td class="text-right"><t t-esc="r['remain_yd_s']"/></td>
+
+                  <td>
+                    <t t-foreach="r['ctr']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['plt']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['lam']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['prt']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['embossing']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['roll']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+
+                  <td>
+                    <t t-foreach="r['sht']" t-as="cell">
+                      <span t-att-class="'wc-chip ' + (cell['is_done'] and 'wc-done' or '')">
+                        <t t-esc="cell['label']"/>
+                      </span>
+                    </t>
+                  </td>
+                </tr>
+              </t>
+            </tbody>
+          </table>
+
+          <!-- Daily footer (per-day totals) -->
+          <div class="sched-totals">
+            <table style="width:100%; border-collapse:collapse; font-size:11px; border:none; margin-top:4px;">
+              <tr>
+                <td style="border:none; width:40%; white-space:nowrap;">
+                  <strong>Totals for: </strong>
+                  <t t-esc="dayblk['date'].strftime('%A, %b %d, %Y')"/>
+                </td>
+
+                <td style="border:none; text-align:right; white-space:nowrap;">
+                  Embossings:
+                  <t t-esc="dayblk['footer']['embossings']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['embossings']['count']"/> )
+                  &#160;&#160;&#160;
+                  Sheeter 1/2:
+                  <t t-esc="dayblk['footer']['sheeter_12']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['sheeter_12']['count']"/> )
+                </td>
+              </tr>
+
+              <tr><td style="border:none; height:6px;"></td><td style="border:none; height:6px;"></td></tr>
+
+              <tr>
+                <td style="border:none;"></td>
+                <td style="border:none; text-align:right; white-space:nowrap;">
+                  Rewind/Slit/Ins:
+                  <t t-esc="dayblk['footer']['rewind_slit_ins']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['rewind_slit_ins']['count']"/> )
+                  &#160;&#160;&#160;
+                  Sheeter 3:
+                  <t t-esc="dayblk['footer']['sheeter_3']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['sheeter_3']['count']"/> )
+                </td>
+              </tr>
+
+              <tr><td style="border:none; height:6px;"></td><td style="border:none; height:6px;"></td></tr>
+
+              <tr>
+                <td style="border:none;"></td>
+                <td style="border:none; text-align:right; white-space:nowrap;">
+                  Plating:
+                  <t t-esc="dayblk['footer']['plating']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['plating']['count']"/> )
+                  &#160;&#160;&#160;
+                  Sheeter 4:
+                  <t t-esc="dayblk['footer']['sheeter_4']['qty_s']"/>
+                  ( <t t-esc="dayblk['footer']['sheeter_4']['count']"/> )
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </t>
+
+          <!-- ================== THIS WEEK'S SUMMARY PAGE ================== -->
+          <!-- force new page for each week's summary -->
+          <div class="page" style="page-break-before:always;">
+
+            <div class="weekly-header">
+              <div style="font-size:14px; font-weight:bold;">Weekly Summary</div>
+              <div style="margin-top:3px;">
+                Week #
+                <t t-esc="weekblk['week']"/>
+                &#160;&#160;
+                <t t-esc="weekblk['week_date_from'].strftime('%A, %b %d, %Y')"/>
+                &#160;–&#160;
+                <t t-esc="weekblk['week_date_to'].strftime('%A, %b %d, %Y')"/>
+              </div>
+            </div>
+
+            <table style="width:100%; font-size:11px; border-collapse:collapse; border:none;">
+              <tr>
+                <!-- LEFT COLUMN: Embossings broken down by operation -->
+                <td style="border:none; width:60%; vertical-align:top;">
+                  <div style="font-weight:bold; margin-bottom:4px;">
+                    Embossings:
+                  </div>
+                  <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                    <tbody>
+                      <t t-if="not weekblk['emb_ops']">
+                        <tr>
+                          <td style="border:none; padding:0;">(none)</td>
+                        </tr>
+                      </t>
+                      <t t-foreach="weekblk['emb_ops']" t-as="emb">
+                        <tr>
+                          <td style="border:none; padding:0 4px 0 0;">
+                            <t t-esc="emb['name']"/>
+                          </td>
+                          <td style="border:none; padding:0 4px;">:</td>
+                          <td style="border:none; padding:0 4px; text-align:right;">
+                            <t t-esc="emb['qty_s']"/>
+                            ( <t t-esc="emb['count']"/> )
+                          </td>
+                        </tr>
+                      </t>
+                      <!-- total line for embossings -->
+                      <tr>
+                        <td style="border:none; padding-top:4px; font-weight:bold;">Totals</td>
+                        <td style="border:none; padding-top:4px;">:</td>
+                        <td style="border:none; padding-top:4px; text-align:right; font-weight:bold;">
+                          <t t-esc="weekblk['totals']['embossings']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['embossings']['count']"/> )
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+
+                <!-- RIGHT COLUMN: other workcenters (rewind, sheeter, plating) -->
+                <td style="border:none; width:40%; vertical-align:top;">
+                  <table style="width:100%; border-collapse:collapse; font-size:11px;">
+                    <tbody>
+                      <tr>
+                        <td style="border:none; padding:0 4px 0 0;">Rewind / Slit / Ins</td>
+                        <td style="border:none; padding:0 4px;">:</td>
+                        <td style="border:none; padding:0 4px; text-align:right;">
+                          <t t-esc="weekblk['totals']['rewind_slit_ins']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['rewind_slit_ins']['count']"/> )
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border:none; padding:0 4px 0 0;">Sheeter 1/2</td>
+                        <td style="border:none; padding:0 4px;">:</td>
+                        <td style="border:none; padding:0 4px; text-align:right;">
+                          <t t-esc="weekblk['totals']['sheeter_12']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['sheeter_12']['count']"/> )
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border:none; padding:0 4px 0 0;">Sheeter 3</td>
+                        <td style="border:none; padding:0 4px;">:</td>
+                        <td style="border:none; padding:0 4px; text-align:right;">
+                          <t t-esc="weekblk['totals']['sheeter_3']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['sheeter_3']['count']"/> )
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border:none; padding:0 4px 0 0;">Sheeter 4</td>
+                        <td style="border:none; padding:0 4px;">:</td>
+                        <td style="border:none; padding:0 4px; text-align:right;">
+                          <t t-esc="weekblk['totals']['sheeter_4']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['sheeter_4']['count']"/> )
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="border:none; padding:4px 4px 0 0;">Plating</td>
+                        <td style="border:none; padding:4px 4px 0;">:</td>
+                        <td style="border:none; padding:4px 4px 0; text-align:right;">
+                          <t t-esc="weekblk['totals']['plating']['qty_s']"/>
+                          ( <t t-esc="weekblk['totals']['plating']['count']"/> )
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+
+      </t>
+
+    </t>
+  </template>
+
+  <record id="action_report_mrp_workorder_schedule" model="ir.actions.report">
+    <field name="name">Workorder Schedule</field>
+    <field name="model">mrp.workorder.schedule.wizard</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">mrp_workorder_schedule_report.mrp_workorder_schedule_pdf</field>
+    <field name="print_report_name">'Workorder Schedule - %s' % (object.date_from)</field>
+  </record>
+
+</odoo>

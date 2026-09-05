@@ -1,0 +1,460 @@
+<odoo>
+
+    <template id="report_saleorder_document_sale">
+        <!--        <t t-call="web.external_layout">-->
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&amp;display=swap');
+            table th{
+            font-family:Times New Roman;
+            padding-top:3px;
+            padding-bottom:3px;
+            border:none;
+            }
+            table td{
+            font-family:Times New Roman;
+            border:none;
+
+            padding-top:3px;
+            padding-bottom:3px;
+
+            }
+
+        </style>
+        <div t-attf-class="header o_company_#{doc.company_id.id}_layout" t-att-style="report_header_style"
+             style="border: 1px solid black; font-family:Times New Roman !important;">
+            <div class="row">
+                <!-- Left Side: Logo and Company Address -->
+                <div class="col-8" style="margin-left: 10%;padding-left: 10%;">
+                    <center>
+                        <img t-if="doc.company_id.logo"
+                             t-att-src="image_data_uri(doc.company_id.logo)"
+                             style="max-height: 70px;" alt="Logo"/>
+                    </center>
+                    <div class="text-center" name="company_address" style="margin-top: 10px;">
+                        <t t-if="doc.company_id.partner_id">
+                            <t t-if="doc.company_id.partner_id.street"><t
+                                    t-esc="doc.company_id.partner_id.street"/>,
+                            </t>
+                            <t t-if="doc.company_id.partner_id.street2"><t
+                                    t-esc="doc.company_id.partner_id.street2"/>,
+                            </t>
+                            <t t-if="doc.company_id.partner_id.city"><t
+                                    t-esc="doc.company_id.partner_id.city"/>,
+                            </t>
+                            <t t-if="doc.company_id.partner_id.zip"><t
+                                    t-esc="doc.company_id.partner_id.zip"/>,
+                            </t>
+                            <t t-if="doc.company_id.partner_id.state_id"><t
+                                    t-esc="doc.company_id.partner_id.state_id.name"/>,
+                            </t>
+                            <t t-if="doc.company_id.partner_id.country_id">
+                                <t t-esc="doc.company_id.partner_id.country_id.name"/>
+                            </t>
+                            <br/>
+                            <t t-if="doc.company_id.phone">Tel:
+                                <t t-esc="doc.company_id.phone"/>
+                            </t>
+                            <t t-if="doc.company_id.email">Email:
+                                <t t-esc="doc.company_id.partner_id.email"/>
+                            </t>
+                            <br/>
+                            <t t-if="doc.company_id.website">
+                                <t t-esc="doc.company_id.website"/>
+                            </t>
+                        </t>
+                    </div>
+                </div>
+
+                <!-- Right Side: Exporter Info -->
+                <div class="col-4 text-left">
+                    <strong>Mfr/Exporter/USPPI:</strong>
+                    <br/>
+                    <strong>Ecological Fibers, Inc.</strong>
+                    <br/>
+                    EIN# 04-253 4139
+                    <br/>
+                    Parties Not Related
+                    <br/>
+                    ECCN Exception - EAR 99
+                    <br/>
+                    No License Required
+                    <br/>
+                </div>
+            </div>
+        </div>
+
+        <t t-set="doc" t-value="doc.with_context(lang=doc.partner_id.lang)"/>
+
+
+        <div class="page"
+             style="border: 1px solid black; height: 197.5mm; margin-left: 3px;margin-right:3px;margin-top:0px;padding-top:0px">
+            <table width="100%">
+                <tr style="font-size:11pt">
+                    <td class="text-left" width="8%">
+                        <strong>Sold To:</strong>
+                    </td>
+                    <td class="text-left" width="70%">
+                        <t t-esc="doc.partner_id.name"/>
+                    </td>
+                    <td class="text-right" colspan="2">
+                        <strong>Proforma Invoice</strong>
+                    </td>
+                </tr>
+
+                <t t-if="doc.partner_id.street">
+                    <tr style="font-size:11pt">
+                        <td class="text-left"/>
+                        <td class="text-left">
+                            <t t-esc="doc.partner_id.street"/>
+                        </td>
+                        <td class="text-right" style="text-align:right;">Number:</td>
+                        <td class="text-left">
+                            <t t-esc="doc.name"/>
+                        </td>
+                    </tr>
+                </t>
+
+                <t t-if="doc.partner_id.street2">
+                    <tr style="font-size:11pt">
+                        <td class="text-left"/>
+                        <td class="text-left">
+                            <t t-esc="doc.partner_id.street2"/>
+                        </td>
+                        <td class="text-right" style="text-align:right;">Date:</td>
+                        <td class="text-left">
+                            <span t-esc="doc.date_order.strftime('%b %d, %Y')"/>
+                        </td>
+                    </tr>
+                </t>
+
+                <t t-if="doc.partner_id.city or doc.partner_id.state_id.code">
+                    <tr style="font-size:11pt">
+                        <td class="text-left"/>
+                        <td class="text-left">
+                            <t t-esc="doc.partner_id.city"/>,
+                            <t t-esc="doc.partner_id.state_id.code"/>
+                        </td>
+                        <td class="text-right"/>
+                        <td class="text-left"/>
+                    </tr>
+                </t>
+
+                <t t-if="doc.partner_id.mobile">
+                    <tr style="font-size:11pt">
+                        <td class="text-left"/>
+                        <td class="text-left">
+                            <t t-esc="doc.partner_id.mobile"/>
+                        </td>
+                        <td class="text-right"/>
+                        <td class="text-left"/>
+                    </tr>
+                </t>
+
+                <t t-if="doc.partner_id.email">
+                    <tr style="font-size:11pt">
+                        <td class="text-left"/>
+                        <td class="text-left">
+                            <t t-esc="doc.partner_id.email"/>
+                        </td>
+                        <td class="text-right"/>
+                        <td class="text-left"/>
+                    </tr>
+                </t>
+            </table>
+            <table style="width:100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color:#f2f2f2;font-size:9pt">
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;text-align:right;width:10%;text-align:right;">
+                            Quantity
+                        </th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;text-align:center;width:7%;">
+                            Unit
+                        </th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:20%;text-align:left">
+                            Description
+                        </th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:30%;"></th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:10%;"></th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:10%;text-align:right;">
+                            Price
+                        </th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:10%;">Per</th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:10%;"></th>
+                        <th style="border-top:1px solid #000; border-bottom:1px solid #000;width:10%;text-align:right;">
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <tr style="font-size:9pt">
+                            <td style="text-align:right;">
+                                <t t-esc="line.product_uom_qty" t-options='{"widget": "float", "precision": 2}'/>
+
+                            </td>
+                            <td style="text-align:center;">
+                                <t t-esc="line.product_uom.name"/>
+                            </td>
+                            <td>
+
+                                <t t-esc="line.x_customer_order_width" t-options='{"widget": "float", "precision": 2}'/>
+                                mm
+                            </td>
+                            <td style="text-align:center;">
+                                <t t-esc="line.name"/>
+                            </td>
+                            <td style="text-align:center;">
+                                <t t-esc="line.currency_id.name"/>
+                            </td>
+                            <td style="text-align:right;">
+                                <t t-esc="line.price_subtotal" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                            <td style="text-align:center;">
+                                <t t-esc="line.x_order_customer_uom.name"/>
+                            </td>
+                            <td style="text-align:center;">
+                                <t t-esc="line.currency_id.name"/>
+                            </td>
+                            <td style="text-align:right;">
+                                <t t-esc="line.price_total" t-options='{"widget": "float", "precision": 2}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align:center;font-size:7pt">
+                                <strong>Grain Long</strong>
+
+                            </td>
+                            <td colspan="6">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align:center;font-size:7pt">
+                                <strong>Quantity Allowance is +
+                                    <t t-esc="line.x_order_line_tol_over or 0"/>
+                                    % -
+                                    <t t-esc="line.x_order_line_tol_under or 0"/>
+                                    %
+                                </strong>
+
+                            </td>
+                            <td colspan="6" style="font-size:7pt">
+                                <strong>HS :
+                                    <t t-esc="line.product_id.hs_code"/>
+                                </strong>
+                            </td>
+                        </tr>
+                        <tr style="font-size:7pt">
+                            <td colspan="3" style="text-align:center;">
+
+
+                            </td>
+                            <td colspan="6">
+                                <t t-set="selection_list"
+                                   t-value="line.product_id._fields['x_FSC'].selection(line.product_id)"/>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #000;font-size:7pt">
+                            <td colspan="3" style="text-align:center;">
+
+
+                            </td>
+                            <td colspan="6">
+                                * * 1 ROLL IN CARTON * *
+                                <br/>
+                                <t t-if="line.skid_ids">
+                                    <t t-esc="line.skid_ids[0].number_of_skids"/>
+                                    Pallets:
+                                    <t t-esc="line.skid_ids[0].skid_width"/>
+                                    ×
+                                    <t t-esc="line.skid_ids[0].skid_height"/>
+                                    ×
+                                    <t t-esc="line.skid_ids[0].skid_length"/>
+                                    mm
+                                    <br/>
+                                    <strong>
+                                        Approximate Weight :
+                                        <t t-esc="line.kg_for_net_weight"
+                                           t-options='{"widget": "float", "precision": 2}'/>
+
+                                    </strong>
+                                </t>
+
+                            </td>
+                        </tr>
+                    </t>
+                    <tr style="font-size:9pt">
+                        <td colspan="5" style="text-align:left;">
+
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                            <strong>
+                                TOTAL EXWORKS USD
+                            </strong>
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>
+                                <t t-esc="doc.amount_total" t-options='{"widget": "float", "precision": 2}'/>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr style="font-size:9pt">
+                        <td colspan="5" style="text-align:center;">
+                            <t t-esc="doc.payment_term_id.name"/>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                            <strong>
+                                TOTAL INVOICE USD
+                            </strong>
+                        </td>
+                        <td style="text-align:right;">
+                            <strong>
+                                <t t-esc="sum(doc.invoice_ids.mapped('amount_total'))"
+                                   t-options='{"widget": "float", "precision": 2}'/>
+                            </strong>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+
+        </div>
+
+        <div class="footer"
+             style="border: 1px solid black; font-family: 'Times New Roman', serif;margin-top:0px;padding-top:0px">
+            <table width="100%">
+                <tr style="font-size:10pt">
+                    <td class="text-right" width="30%">
+
+                        Country of Origin:
+
+
+                    </td>
+                    <td class="text-left" width="20%">
+                        <t t-esc="user.partner_id.country_id.name"/>
+
+                    </td>
+                    <td class="text-right" width="30%">
+
+                        Freight Terms:
+
+                    </td>
+                    <td class="text-left" width="20%">
+
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td class="text-right">
+
+                        Country of Ultimate Destination:
+
+
+                    </td>
+                    <td class="text-left">
+                        <t t-esc="doc.partner_id.country_id.name"/>
+
+                    </td>
+                    <td class="text-right">
+
+                        Transit Method:
+
+                    </td>
+                    <td>
+                        <t t-esc="doc.x_sale_ship_via.x_name"/>
+
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td class="text-right">
+
+                        Payment Terms:
+
+
+                    </td>
+                    <td class="text-left">
+                        <t t-esc="doc.payment_term_id.name"/>
+
+                    </td>
+                    <td class="text-right">
+
+                        Pricing is shown in:
+
+                    </td>
+                    <td>
+                        <t t-esc="doc.currency_id.name"/>
+
+                    </td>
+                </tr>
+
+                <tr style="margin-top: 10px;font-size:10pt">
+                    <td colspan="4">
+                        <center>
+                            Instructions for Payment: Enterprise Bank, 222 Merrimack Street, Lowell, MA 01852 USA
+                        </center>
+                    </td>
+                </tr>
+                <tr style="font-size:10pt">
+                    <td colspan="4">
+                        <center>
+                            Beneficiary: Ecological Fibers, Inc. - Account No: 910284 ABA Routing No: 011302742 - Swift
+                            Code: EBTCUS33
+                        </center>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-12" style="margin-top: 10px; margin-bottom: 10px;">
+                    <img src="/custom_partner/static/images/image3.png"
+                         style="height: 150px; width: 600px; object-fit: contain;"/>
+                </div>
+                <div class="col-4 text-left" style="font-size:16pt;">
+                    <t t-esc="user.partner_id.name"/>
+                </div>
+            </div>
+        </div>
+
+
+    </template>
+
+
+    <template id="report_saleorder_pro_forma_sale">
+        <t t-call="web.html_container">
+            <t t-set="is_pro_forma" t-value="True"/>
+            <t t-set="docs" t-value="docs.with_context(proforma=True)"/>
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="custom_partner.report_saleorder_document_sale" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="paperformat_sale" model="report.paperformat">
+        <field name="name">Sale A4 low margin</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">45</field>
+        <field name="margin_bottom">60</field>
+        <field name="margin_left">4</field>
+        <field name="margin_right">4</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">40</field>
+        <field name="dpi">80</field>
+    </record>
+
+    <record id="action_report_pro_forma_invoice_sale" model="ir.actions.report">
+        <field name="name">PRO-FORMA Invoice Custom</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_partner.report_saleorder_pro_forma_sale</field>
+        <field name="report_file">custom_partner.report_saleorder_pro_forma_sale</field>
+        <field name="print_report_name">'PRO-FORMA - %s' % (object.name)</field>
+        <field name="binding_type">report</field>
+        <field name="binding_model_id" ref="model_sale_order"/>
+        <field name="paperformat_id" ref="custom_partner.paperformat_sale"/>
+    </record>
+
+</odoo>

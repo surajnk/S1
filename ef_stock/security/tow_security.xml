@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_tow_operator" model="res.groups">
+        <field name="name">TOW Operator</field>
+        <field name="category_id" ref="base.module_category_inventory_inventory"/>
+    </record>
+
+    <record id="stock_picking_tow_rule" model="ir.rule">
+        <field name="name">TOW User Picking Visibility</field>
+        <field name="model_id" ref="stock.model_stock_picking"/>
+        <field name="groups" eval="[(4, ref('ef_stock.group_tow_operator'))]"/>
+        <field name="domain_force">
+            ['|', ('tow_user_id', '=', False), ('tow_user_id', '=', user.id)]
+        </field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+</odoo>

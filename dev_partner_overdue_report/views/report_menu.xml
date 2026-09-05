@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<odoo>
+        <record id="paperformat_partner_overdue" model="report.paperformat">
+            <field name="name">Partner Overdue Report</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">25</field>
+            <field name="margin_bottom">12</field>
+            <field name="margin_left">07</field>
+            <field name="margin_right">07</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">20</field>
+            <field name="dpi">90</field>
+        </record>
+        
+		
+		
+		<report id="action_print_dev_partner_overdue"
+            string="Partner Overdue"
+            model="dev.partner.overdue.detail" 
+            report_type="qweb-pdf"
+            name="dev_partner_overdue_report.dev_print_partner_overdue"
+            file="dev_partner_overdue_report.dev_print_partner_overdue"
+        />
+        
+        <record id="dev_partner_overdue_report.action_print_dev_partner_overdue" model="ir.actions.report">
+			<field name="paperformat_id" ref="dev_partner_overdue_report.paperformat_partner_overdue" />
+		</record>
+		
+		<report id="action_print_dev_partner_overdue_break"
+            string="Partner Overdue Break Down"
+            model="dev.partner.overdue.detail" 
+            report_type="qweb-pdf"
+            name="dev_partner_overdue_report.dev_print_overdue_break"
+            file="dev_partner_overdue_report.dev_print_overdue_break"
+        />
+        
+        <record id="dev_partner_overdue_report.action_print_dev_partner_overdue_break" model="ir.actions.report">
+			<field name="paperformat_id" ref="dev_partner_overdue_report.paperformat_partner_overdue" />
+		</record>   
+        
+</odoo>

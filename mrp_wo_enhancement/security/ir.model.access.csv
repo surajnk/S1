@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_wo_scheduling_wizard,access_mrp_wo_scheduling_wizard,model_mrp_wo_scheduling_wizard,mrp.group_mrp_user,1,1,1,1
+access_mrp_wo_scheduling,access_mrp_wo_scheduling,model_mrp_wo_scheduling,mrp.group_mrp_user,1,1,1,1
+access_update_frame_wizard,update.frame.wizard,model_update_frame_wizard,base.group_user,1,1,1,1

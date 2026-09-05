@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	
+   <!-- >>>>>>>>>>>>>>> List View Publisher >>>>>>>>>>>>>> -->
+    <record id="view_publisher_tree" model="ir.ui.view">
+        <field name="name">publisher</field>
+        <field name="model">publisher</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Publisher">
+               <field name="x_name" />
+          
+            </tree>
+        </field>
+    </record>
+<!-- >>>>>>>>>>>>>>> Form View Publisher >>>>>>>>>>>>>> -->
+    <record id="view_publisher_form" model="ir.ui.view">
+        <field name="name">publisher</field>
+        <field name="model">publisher</field>
+        <field name="arch" type="xml">
+            <form string="Publisher">
+                <sheet>
+                    <group name="main">
+                       <field name="x_name" />
+                       
+                    </group>
+                   
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>> Action  Publisher>>>>>>>>>>>>>> -->
+    <record id="action_publisher" model="ir.actions.act_window">
+        <field name="name">Publisher</field>
+        <field name="res_model">publisher</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>>  Publisher  Menu  >>>>>>>>>>>>>> -->
+    <menuitem  id="menu_publisher"
+              name="Publisher"
+              parent="sale.menu_sale_config"
+              action="action_publisher"
+              sequence="9"/>
+</odoo>

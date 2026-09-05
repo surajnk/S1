@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_set_filter_user,set.filter.user,model_set_filter,base.group_user,1,1,1,1
+access_set_filter_group,set.filter.group,model_set_filter,ae_advance_date_filter.group_access_advance_date_filter,1,1,1,1

@@ -1,0 +1,37 @@
+<odoo>
+	<record id="inv_order_appr_form_view" model="ir.ui.view">
+		<field name="name">inv.order.appr.form.inhrt</field>
+		<field name="model">account.move</field>
+		<field name="inherit_id" ref="account.view_move_form"/>
+		<field name="arch" type="xml">
+			<xpath expr="//button[@name='action_post']" position="before">
+				<button name="button_send_inv_app"
+                    string="Send Bill For Approval"
+                    type="object" attrs="{'invisible': ['&amp;', ('state', '!=', 'draft'), '|', ('skip_approval', '=', True), ('skip_approval', '=', False)]}"/>
+				<button name="button_inv_approve"
+                    string="Approve"
+                    type="object" attrs="{'invisible': ['&amp;', ('state', '!=', 'to_approve'), '|', ('skip_approval', '=', True), ('skip_approval', '=', False)]}"/>
+                <button name="button_reject"
+                    string="Reject"
+                    type="object" attrs="{'invisible': ['|', ('state', '!=', 'to_approve'),('is_user_approver','=',False)]}"/>
+			</xpath>
+			<xpath expr="//field[@name='name']" position="after">
+                <field name="inv_appr_ids" widget="many2many_tags" invisible="1"/>
+                <field name="is_user_approver" invisible="1"/>
+			</xpath>
+			<xpath expr="//div[@name='journal_div']" position="after">
+                <field name="skip_approval"/>
+                <field name="approver_id"/>
+			</xpath>
+			<xpath expr="//field[@name='state']" position="attributes">
+                <attribute name="statusbar_visible">draft,to_approve,approved,posted</attribute>
+            </xpath>
+			<xpath expr="//button[@name='action_post'][2]" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', '!=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='button_draft']" position="attributes">
+                <attribute name="attrs">{'invisible': [('state', 'not in', ('posted', 'approved'))]}</attribute>
+            </xpath>
+		</field>
+	</record>
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_machine_stops,access.machine.stops,model_machine_stops,,1,1,1,1
+access_mrp_frames,access.mrp.frames,model_mrp_frames,,1,1,1,1
+access_shift_details,access.shift.details,model_shift_details,,1,1,1,1
+access_manufacturing_workorder_filter_wizard,access.manufacturing.workorder.filter.wizard,model_manufacturing_workorder_filter_wizard,,1,1,1,1

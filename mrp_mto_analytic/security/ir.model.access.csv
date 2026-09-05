@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_mto_supply_chain_user,mrp.mto.supply.chain.user,model_mrp_mto_supply_chain,mrp.group_mrp_user,1,1,1,0
+access_mrp_mto_supply_chain_line_user,mrp.mto.supply.chain.line.user,model_mrp_mto_supply_chain_line,mrp.group_mrp_user,1,1,1,0
+access_mrp_mto_supply_chain_line_mo_user,mrp.mto.supply.chain.line.mo.user,model_mrp_mto_supply_chain_line_mo,mrp.group_mrp_user,1,1,1,0
+access_mrp_mto_supply_chain_line_po_user,mrp.mto.supply.chain.line.po.user,model_mrp_mto_supply_chain_line_po,mrp.group_mrp_user,1,1,1,0
+access_mrp_multi_size,access.mrp.multi.size,model_mrp_multi_size,,1,1,1,1
+access_workorder_week_field,access.workorder.week.field,model_workorder_week_field,,1,1,1,1
+access_mrp_order_message,access.mrp.order.message,model_mrp_order_message,,1,1,1,1

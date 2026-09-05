@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_mrp_bom_operation_tree" model="ir.ui.view">
+            <field name="name">mrp.routing.workcenter.operation.tree</field>
+            <field name="model">mrp.routing.workcenter</field>
+            <field name="arch" type="xml">
+                <tree string="BoM Operations">
+                    <field name="bom_id" string="BoM"/>
+                    <field name="name" string="Operation"/>
+                    <field name="workcenter_id"/>
+                    <field name="sequence"/>
+                    <field name="company_id" optional="hide"/>
+                    <field name="time_cycle_manual" optional="show"/>
+                    <field name="time_cycle" optional="hide"/>
+                    <field name="time_mode" optional="hide"/>
+                    <field name="note" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_mrp_bom_operation_search" model="ir.ui.view">
+            <field name="name">mrp.routing.workcenter.operation.search</field>
+            <field name="model">mrp.routing.workcenter</field>
+            <field name="arch" type="xml">
+                <search string="BoM Operations">
+                    <field name="bom_id"/>
+                    <field name="workcenter_id"/>
+                    <field name="company_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_mrp_bom_operation" model="ir.actions.act_window">
+            <field name="name">BoM Operations</field>
+            <field name="res_model">mrp.routing.workcenter</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_bom_operation_tree"/>
+            <field name="search_view_id" ref="view_mrp_bom_operation_search"/>
+            <field name="domain">[('bom_id', '!=', False)]</field>
+        </record>
+
+        <menuitem id="menu_mrp_bom_operation"
+                  name="BoM Operations"
+                  parent="mrp.menu_mrp_bom"
+                  action="action_mrp_bom_operation"
+                  sequence="15"/>
+    </data>
+</odoo>

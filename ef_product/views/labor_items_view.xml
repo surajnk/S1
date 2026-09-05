@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Labor Items Tree View -->
+    <record id="labor_items_tree_view" model="ir.ui.view">
+        <field name="name">labor.items.tree.view</field>
+        <field name="model">labor.items</field>
+        <field name="arch" type="xml">
+            <tree string="Labor Items">
+                <field name="name" required="1"/>
+                <field name="x_Description"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Product Quantity Form View -->
+        <record id="labor_items_form_view" model="ir.ui.view">
+        <field name="name">labor.items.form.view</field>
+        <field name="model">labor.items</field>
+        <field name="arch" type="xml">
+            <form string="Labor Items">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="x_labor_account"/>
+                            <field name="x_qty_break"/>
+                            <field name="x_m2_extra_knives"/>
+                        </group>
+                        <group>
+                            <field name="x_Description"/>
+                            <field name="x_product_labor_commodity"/>
+                            <field name="x_min_charge"/>
+                            <field name="x_in_sales"/>
+                            <field name="x_customer_units"/>
+                        </group>
+                        <field name="x_no_of_break_quantities_grid" widget="one2many">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="name" force_save="1"/>
+                                <field name="x_charge"/>
+                            </tree>
+                            <form string="Break Quantities">
+                                <group>
+                                    <field name="name" force_save="1"/>
+                                </group>
+                                <group>
+                                    <field name="x_charge"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Quantity Search View -->
+    <record id="labor_items_search_view" model="ir.ui.view">
+        <field name="name">labor.items.search.view</field>
+        <field name="model">labor.items</field>
+        <field name="arch" type="xml">
+            <search string="Labor Items">
+                <field name="name" string="Labor Code"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Quantity Action View -->
+    <record id="labor_items_action_view" model="ir.actions.act_window">
+        <field name="name">Labor Items</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">labor.items</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="labor_items_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="labor_items_menu_view"
+        name="Labor Items"
+        action="labor_items_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

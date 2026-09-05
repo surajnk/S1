@@ -1,0 +1,300 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.ui.view" id="crm_case_claims_tree_view">
+        <field name="name">CRM - Complaints Tree</field>
+        <field name="model">crm.claim</field>
+        <field name="arch" type="xml">
+            <tree string="Complaints">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="status"/>
+                <field name="activity_date_deadline"/>
+                <field name="activity_summary"/>
+                <field name="categ_id" string="Type"/>
+                <field name="date_deadline" invisible="1"/>
+                <field name="date_closed" invisible="1"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="crm_case_claims_form_view">
+        <field name="name">CRM - Complaint Form</field>
+        <field name="model">crm.claim</field>
+        <field name="arch" type="xml">
+            <form string="Complaints">
+                <header>
+                    <button name="action_submit_complaint" type="object" string="Submit for Approval" class="btn-primary" attrs="{'invisible': [('status', '!=', 'new')]}"/>
+                    <button name="action_approve_complaint" type="object" string="Approval" class="btn-primary" attrs="{'invisible': [('status', '!=', 'in_progress')]}"/>
+                    <button name="action_reject_complaint" type="object" string="Reject" class="btn-primary" attrs="{'invisible': [('status', '!=', 'in_progress')]}"/>
+                    <field
+                            name="status"
+                            widget="statusbar"
+                    />
+                </header>
+                <sheet string="Complaints">
+                    <div class="oe_button_box" name="button_box">
+                        <button name="create_invoice_action" type="object" class="oe_stat_button" string="Invoice"
+                                icon="fa-pencil-square-o">
+                        </button>
+                        <button name="action_credit_not" type="object" class="oe_stat_button"
+                                icon="fa-pencil-square-o" attrs="{'invisible': [('credit_not_count','=',0)]}">
+                            <field name="credit_not_count" widget="statinfo" string="Credit Note"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <field name="name"/>
+                        <field name="date"/>
+                        <field name="company_id" groups="base.group_multi_company"/>
+
+                    </group>
+                    <group colspan="4" col="4" groups="base.group_user">
+                        <field name="priority" widget="priority"/>
+                        <field name="date_deadline"/>
+                        <field name="group_comp_user_id"/>
+                    </group>
+                     <!-- <group colspan="4" col="4" groups="base.group_user">
+                        <field name="type" widget="radio"/>
+                        <field name="invoice_id"/>
+                    </group> -->
+                    <group colspan="4" col="4">
+                        <notebook>
+                            <page string="Complaint Description">
+                                <group colspan="2" col="2" groups="base.group_user">
+                                    <separator colspan="2" string="Complaint Reporter"/>
+                                    <field name="partner_id" string="Partner"/>
+                                    <field name="partner_phone"/>
+                                    <field name="email_from" widget="email"/>
+                                </group>
+                                <group colspan="2" col="2" groups="base.group_user">
+                                    <separator colspan="2" string="Responsibilities"/>
+                                    <field
+                                            name="user_id"
+                                            context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'base.group_sale_salesman_all_leads']}"
+                                    />
+                                    <field name="user_fault"/>
+                                    <field
+                                            name="categ_id"
+                                            options="{'no_create': True, 'no_open': True}"
+                                    />
+                                    <field name="team_id"/>
+                                    <field name="model_ref_id" widget="reference"/>
+                                </group>
+                                <separator
+                                        colspan="4"
+                                        string="Complaint/Action Description"
+                                        groups="base.group_user"
+                                />
+                                <field name="description" colspan="4" nolabel="1"/>
+                            </page>
+                            <page string="Lines">
+                                <group>
+                                        <field name="complaints_lines_option" widget="radio"/>
+                                        <field name="move_type_filter" invisible="1"/>
+                                        <field name="sale_order_id" attrs="{'invisible':[('complaints_lines_option','!=','sale_orders')], 'required':[('complaints_lines_option','=','sale_orders')]}"/>
+                                        <field name="sale_order_line_id" attrs="{'invisible':[('complaints_lines_option','!=','sale_orders')]}"/>
+                                        <field name="manufacturing_order_id" attrs="{'invisible':[('complaints_lines_option','!=','manufacturing_order')]}"/>
+                                        <field name="lots"/>
+                                        <field name="invoice_line_ids" widget="many2many_list" mode="tree" context="{'default_move_type_filter': move_type_filter}" attrs="{'invisible':[('complaints_lines_option','not in', ('customer_invoices','purchase_bills'))]}">
+                                            <tree string="Invoice/Bill Lines" editable="bottom">
+                                                <field name="name"/>
+                                                <field name="quantity"/>
+                                                <field name="price_unit"/>
+                                                <field name="price_subtotal"/>
+                                                <field name="complained_qty"/>
+                                            </tree>
+                                        </field>
+                                        <field name="invoices_ids" widget="many2many_list" mode="tree" context="{'default_move_type_filter': move_type_filter}" attrs="{'invisible':[('complaints_lines_option','not in', ('purch_bills','cust_bills'))]}">
+                                            <tree string="Invoices/Bills" editable="bottom">
+                                                <field name="name"/>
+                                            </tree>
+                                        </field>
+                                </group>
+                            </page>
+                            <page string="Related Orders">
+                                <group>
+                                    <field name="customer_po_number"/>
+                                    <field name="sale_order_ids" widget="many2many_list" readonly="1">
+                                        <tree string="Sale Orders">
+                                            <field name="name"/>
+                                            <field name="state"/>
+                                        </tree>
+                                    </field>
+                                    <field name="mrp_production_ids" widget="many2many_list" readonly="1">
+                                        <tree string="Manufacturing Orders">
+                                            <field name="name"/>
+                                            <field name="state"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                            </page>
+                            <page string="Follow Up" groups="base.group_user">
+                                <group colspan="2" col="2">
+                                    <separator colspan="2" string="Actions"/>
+                                    <field name="activity_date_deadline"/>
+                                    <field name="activity_summary"/>
+                                </group>
+                                <group colspan="2" col="2" groups="base.group_no_one">
+                                    <separator colspan="2" string="Dates"/>
+                                    <field name="create_date"/>
+                                    <field name="date_closed" invisible="1"/>
+                                    <field name="write_date"/>
+                                </group>
+                                <group colspan="2" col="2">
+                                    <separator colspan="2" string="Root Causes"/>
+                                    <field name="cause" colspan="2" nolabel="1"/>
+                                </group>
+                                <group colspan="2" col="2">
+                                    <separator
+                                            colspan="2"
+                                            string="Resolution Actions"
+                                    />
+                                    <field name="type_action"/>
+                                    <field
+                                            name="resolution"
+                                            colspan="2"
+                                            nolabel="1"
+                                            placeholder="Action Description..."
+                                    />
+                                </group>
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field
+                            name="message_ids"
+                            widget="mail_thread"
+                            options="{'post_refresh': 'recipients'}"
+                    />
+                </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="crm_case_claims_calendar_view">
+        <field name="name">Complaints Actions</field>
+        <field name="model">crm.claim</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <calendar
+                    string="Complaints"
+                    date_start="activity_date_deadline"
+                    color="user_id"
+            >
+                <field name="name"/>
+            </calendar>
+        </field>
+    </record>
+    <record id="view_crm_case_claims_filter" model="ir.ui.view">
+        <field name="name">CRM - Claims Search</field>
+        <field name="model">crm.claim</field>
+        <field name="arch" type="xml">
+            <search string="Search Complaints">
+                <field name="name" string="Complaints"/>
+                <separator/>
+                <filter
+                        string="Unassigned Complaints"
+                        name="Unassigned Complaints"
+                        domain="[('user_id','=', False)]"
+                        help="Unassigned Claims"
+                />
+                <field
+                        name="partner_id"
+                        filter_domain="[('partner_id','child_of',self)]"
+                />
+                <field name="user_id"/>
+                <group expand="0" name="claims" string="Group By">
+                    <filter
+                            string="Partner"
+                            name="partner"
+                            domain="[]"
+                            help="Partner"
+                            context="{'group_by':'partner_id'}"
+                    />
+                    <filter
+                            string="Responsible"
+                            name="responsible"
+                            domain="[]"
+                            help="Responsible User"
+                            context="{'group_by':'user_id'}"
+                    />
+                    <filter
+                            string="Status"
+                            name="status"
+                            domain="[]"
+                            context="{'group_by':'status'}"
+                    />
+                    <filter
+                            string="Type"
+                            name="type"
+                            domain="[]"
+                            context="{'group_by':'categ_id'}"
+                    />
+                    <filter
+                            string="Complaint Month"
+                            name="claim_month"
+                            domain="[]"
+                            help="Claim Date by Month"
+                            context="{'group_by':'date'}"
+                    />
+                    <filter
+                            string="Deadline"
+                            name="deadline"
+                            domain="[]"
+                            context="{'group_by':'date_deadline'}"
+                    />
+                    <filter
+                            string="Closure"
+                            name="closure"
+                            domain="[]"
+                            help="Date Closed"
+                            context="{'group_by':'date_closed'}"
+                            groups="base.group_no_one"
+                            invisible="1"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="crm_claim_category_claim0">
+        <field name="name">Complaint</field>
+        <field name="res_model">crm.claim</field>
+        <field name="view_mode">tree,calendar,form</field>
+        <field name="view_id" ref="crm_case_claims_tree_view"/>
+        <field name="context">
+            {&quot;search_default_user_id&quot;:uid, &quot;stage_type&quot;: 'claim'}
+        </field>
+        <field name="search_view_id" ref="crm_claim.view_crm_case_claims_filter"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Record and track your customers' complaints.
+                Complaints may be linked to a sales order or a MO.
+                You can send emails with attachments and keep the full history for a complaint (emails sent, intervention
+                type and so on).
+                Complaint may automatically be linked to an email address using the mail gateway module.
+            </p>
+        </field>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_crm_tag_tree_claim0">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="crm_case_claims_tree_view"/>
+        <field name="act_window_id" ref="crm_claim_category_claim0"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_crm_tag_calendar_claim0">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">calendar</field>
+        <field name="view_id" ref="crm_case_claims_calendar_view"/>
+        <field name="act_window_id" ref="crm_claim_category_claim0"/>
+    </record>
+    <record model="ir.actions.act_window.view" id="action_crm_tag_form_claim0">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="crm_case_claims_form_view"/>
+        <field name="act_window_id" ref="crm_claim_category_claim0"/>
+    </record>
+</odoo>

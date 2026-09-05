@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_routing_workcenter_tree_view" model="ir.ui.view">
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_routing_workcenter_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="time_cycle" position="before">
+                <field name="capacity" />
+                <field name="time_start" widget="float_time" />
+                <field name="time_stop" widget="float_time" />
+            </field>
+        </field>
+    </record>
+
+    <record id="mrp_routing_workcenter_form_view" model="ir.ui.view">
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='time_mode_batch']/.." position="after">
+                <field name="capacity" />
+                <label for="time_start"/>
+                <div>
+                    <field name="time_start" widget="float_time" class="oe_inline"/> minutes
+                </div>
+                <label for="time_stop"/>
+                <div>
+                    <field name="time_stop" widget="float_time" class="oe_inline"/> minutes
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='milestone']" position="after">
+                <field name="occupied"/>
+            </xpath>
+            <xpath expr="//page[@name='worksheet']" position="after">
+                <page string="Components" name="components">
+                    <group>
+                        <field name="operation_products_ids" widget="many2many_tags"/>
+                    </group>
+                </page>
+                <page string="Product Details" name="product_details">
+                    <field name="routing_wc_product_line_ids">
+                        <tree editable="bottom">
+                            <field name="commodity_categ_id" required="1"/>
+                            <field name="capacity"/>
+                            <field name="time_start"/>
+                            <field name="time_stop"/>
+                            <field name="time_cycle_manual"/>
+                            <field name="mrp_routing_workcenter_id" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Operation Interval Details" name="interval_details">
+                    <field name="routing_operation_interval_ids">
+                        <tree editable="bottom">
+                            <field name="qty_prod_gap" required="1"/>
+                            <field name="qty_prod_gap_hrs"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

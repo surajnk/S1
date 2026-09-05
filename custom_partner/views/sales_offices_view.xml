@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	
+   <!-- >>>>>>>>>>>>>>> List View Sales Offices >>>>>>>>>>>>>> -->
+    <record id="view_professional_tree" model="ir.ui.view">
+        <field name="name">sales.offices.tree</field>
+        <field name="model">sales.offices</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Sales Offices">
+               
+                <field name="x_sales_office"/>
+               
+            </tree>
+        </field>
+    </record>
+<!-- >>>>>>>>>>>>>>> Form View Sales Offices >>>>>>>>>>>>>> -->
+    <record id="view_sales_offices_form" model="ir.ui.view">
+        <field name="name">sales.offices.form</field>
+        <field name="model">sales.offices</field>
+        <field name="arch" type="xml">
+            <form string="Sales Offices">
+                <sheet>
+                    <group name="main">
+                       
+                        <field name="x_sales_office"/>
+                    </group>
+                   
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>> Action Sales Offices>>>>>>>>>>>>>> -->
+    <record id="action_sales_offices" model="ir.actions.act_window">
+        <field name="name">Sales Offices</field>
+        <field name="res_model">sales.offices</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+<!-- >>>>>>>>>>>>>>> Sales Offices  Menu  >>>>>>>>>>>>>> -->
+    <menuitem  id="menu_sales_offices"
+              name="Sales Offices"
+              parent="sale.menu_sale_config"
+              action="action_sales_offices"
+              sequence="6"/>
+</odoo>

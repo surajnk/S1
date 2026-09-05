@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_mrp_wo" model="report.paperformat">
+        <field name="name">WO report A4</field>
+        <field name="default" eval="True"/>
+        <field name="format">A3</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">2</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">80</field>
+    </record>
+
+    <record id="paperformat_mrp_wc" model="report.paperformat">
+        <field name="name">WC report A4</field>
+        <field name="default" eval="True"/>
+        <field name="format">A3</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">6</field>
+        <field name="margin_bottom">2</field>
+        <field name="margin_left">2</field>
+        <field name="margin_right">2</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">80</field>
+    </record>
+
+    <record id="report_workorder" model="ir.actions.report">
+        <field name="name">WorkOrder Report</field>
+        <field name="model">mrp.wo.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mrp_enhancement_report.workorder_custom_report_template</field>
+        <field name="report_file">mrp_enhancement_report.workorder_custom_report_template</field>
+        <field name="print_report_name">Workorder Report</field>
+        <field name="paperformat_id" ref="mrp_enhancement_report.paperformat_mrp_wo"/>
+        <field name="binding_model_id" ref="model_mrp_wo_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="report_workcenter_prod" model="ir.actions.report">
+        <field name="name">WorkCenter Production Report</field>
+        <field name="model">mrp.wc.prod.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mrp_enhancement_report.workcenter_prod_custom_report_template</field>
+        <field name="report_file">mrp_enhancement_report.workcenter_prod_custom_report_template</field>
+        <field name="print_report_name">WorkCenter Production Report</field>
+        <field name="paperformat_id" ref="mrp_enhancement_report.paperformat_mrp_wc"/>
+        <field name="binding_model_id" ref="model_mrp_wc_prod_report_wizard"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

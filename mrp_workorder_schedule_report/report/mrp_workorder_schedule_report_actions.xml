@@ -1,0 +1,11 @@
+<odoo>
+    <report
+        id="action_report_mrp_workorder_schedule"
+        model="mrp.workorder.schedule.wizard"
+        string="Workorder Schedule"
+        report_type="qweb-pdf"
+        file="mrp_workorder_schedule_report.mrp_workorder_schedule_pdf"
+        name="mrp_workorder_schedule_report.mrp_workorder_schedule_pdf"
+        print_report_name="'workorder_schedule_%s' % (object.date_from or '')"
+    />
+</odoo>

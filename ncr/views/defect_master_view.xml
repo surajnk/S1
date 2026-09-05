@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="defect_master_form_view" model="ir.ui.view">
+        <field name="name">Defect Master</field>
+        <field name="model">defect.master</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="work_id"/>
+                        <field name="defect"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="defect_master_tree_view">
+        <field name="name">Defect Master</field>
+        <field name="model">defect.master</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="work_id"/>
+                <field name="defect"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="defect_master_action" model="ir.actions.act_window">
+        <field name="name">Defect Table</field>
+        <field name="res_model">defect.master</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Create Defect Table
+            </p>
+        </field>
+    </record>
+    <menuitem id="defect_master_menu"
+              parent="mrp.menu_mrp_configuration"
+              name="Defect Masters"
+              action="defect_master_action"
+    />
+</odoo>

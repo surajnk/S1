@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="sale_return_form_view" model="ir.ui.view">
+        <field name="name">Res NCR</field>
+        <field name="model">res.nrc</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Close" name="close_ncr" type="object"
+                            attrs="{'invisible': [('status', '!=', 'open')]}"
+                            class="oe_highlight"/>
+
+                    <button string="Send Email" name="send_ncr" type="object"
+                            attrs="{'invisible': [('status', '!=', 'open')]}"
+                            class="oe_highlight"/>
+
+                    <field name="status" widget="statusbar" statusbar_visible="open,closed"/>
+
+                </header>
+                <sheet>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="model_selection" widget="radio"/>
+                        <field name="purchase_id" options="{'no_quick_create':True,'no_create_edit':True}" attrs="{'invisible': [('model_selection', '!=', 'po')]}"/>
+                        <field name="mrp_id" options="{'no_quick_create':True,'no_create_edit':True}"  attrs="{'invisible': [('model_selection', '!=', 'mo')]}"/>
+                        <field name="created_by"/>
+                        <field name="material_mo" attrs="{'invisible': [('model_selection', '=', 'po')]}"
+                               force_save="1"/>
+                        <field name="material_po" attrs="{'invisible': [('model_selection', '!=', 'po')]}"
+                               domain="product_domain" options="{'no_create': True}"/>
+                        <field name="product_domain" invisible="1"/>
+                        <field name="mo_status" readonly="1" force_save="1"
+                               attrs="{'invisible': [('model_selection', '=', 'po')]}"/>
+                        <field name="partner_id" readonly="1" force_save="1"
+                               attrs="{'invisible': [('model_selection', '=', 'po')]}"/>
+                        <field name="vendor_id" readonly="1" attrs="{'invisible': [('model_selection', '!=', 'po')]}"
+                               force_save="1"/>
+
+                        <field name="operation_id" options="{'no_create': True}" domain="operation_id_domain"
+                               attrs="{'invisible': [('model_selection', '=', 'po')]}"/>
+                        <field name="operation_id_domain" invisible="1"/>
+                        <field name="work_id" attrs="{'invisible': [('model_selection', '=', 'po')]}"/>
+                        <field name="defect_id" context="{'default_work_id':work_id}"
+                               attrs="{'invisible': [('model_selection', '=', 'po')]}" domain="defect_domain"/>
+                        <field name="defect_domain" invisible="1"/>
+                        <field name="x_pattern_wo" readonly="1"
+                               attrs="{'invisible': [('model_selection', '=', 'po')]}"/>
+                        <field name="lot_ids_multiple" >
+                            <tree editable="bottom">
+                                <field name="nrc_id" invisible="1"/>
+                                <field name="stock_lot_id" options="{'no_create_edit': True}" domain="stock_lot_id_domain"/>
+                                <field name="stock_lot_id_domain" invisible="1"/>
+                                <field name="product_id"/>
+                                <field name="actual_quantity"/>
+                                <field name="quantity"/>
+                            </tree>
+                        </field>
+                        <field name="lot_ids" invisible="1">
+                            <tree editable="top">
+                                <field name="lot_details" options="{'no_create': True}"
+                                       attrs="{'column_invisible': [('parent.model_selection', '=', 'po')]}"
+                                       domain="lot_details_domain"/>
+                                <field name="lot_details_domain" invisible="1"/>
+                                <field name="lot_po_details" options="{'no_create': True}"
+                                       attrs="{'column_invisible': [('parent.model_selection', '!=', 'po')]}"
+                                       domain="lot_po_details_domain"/>
+                                <field name="lot_po_details_domain" invisible="1"/>
+                                <field name="qty"/>
+                            </tree>
+                        </field>
+
+                        <field name="sample_provided"/>
+                        <field name="order_pulled"/>
+                        <field name="warehouse_ncr_id" readonly="1" force_save="1"/>
+                        <field name="assignee" domain="assignee_domain" options="{'no_create': True}"/>
+                        <field name="assignee_domain" invisible="1"/>
+                        <field name="deposition_by" domain="assignee_domain" options="{'no_create': True}"/>
+                        <field name="deposition_code"/>
+                        <field name="closed_by" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Log Entries">
+                            <field name="data_id">
+                                <tree editable="top">
+                                    <field name="date_entry"/>
+                                    <field name="data_selection"/>
+                                    <field name="remarks"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="product_customisation_tree_view">
+        <field name="name">product.customisation</field>
+        <field name="model">res.nrc</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="mrp_id"/>
+                <field name="material_mo"/>
+                <field name="purchase_id"/>
+                <field name="material_po"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="product_product_tree_view" model="ir.ui.view">
+        <field name="name">product.product.tree.view</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="uom_id" position="before">
+                <field name="nrc_quantity"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_production_lot_tree_ncr" model="ir.ui.view">
+        <field name="name">stock.production.lot.tree.ncr</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="nrc_quantity" string="NCR"/>
+                <button name="action_view_ncr_details" type="object"
+                        icon="fa-search-plus" title="View NCR Details"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_ncr_action" model="ir.actions.act_window">
+        <field name="name">NCR</field>
+        <field name="res_model">res.nrc</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Create NCR
+            </p>
+        </field>
+    </record>
+    <menuitem id="res_ncr_menu"
+              parent="mrp.menu_mrp_root"
+              name="NCR"
+              action="res_ncr_action"
+    />
+    <menuitem id="res_ncr_menu_purchase"
+              parent="purchase.menu_purchase_root"
+              name="NCR"
+              action="res_ncr_action"
+    />
+</odoo>

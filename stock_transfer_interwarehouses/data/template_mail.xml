@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+        <template id="mail_stock_transfer_approval_request">
+<tbody>
+    <!-- HEADER -->
+    <tr>
+        <tr><td valign="middle">
+            <span style="font-size: 10px;"><t t-esc="model_description or 'document'"/></span><br/>
+            <span style="font-size: 20px; font-weight: bold;">
+                <t t-esc="message.record_name and message.record_name.replace('/','-') or ''"/>
+            </span>
+        </td></tr>
+        <tr><td align="center" style="min-width: 590px; padding: 0 8px 0 8px; font-size:11px;">
+            <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin:4px 0px 32px 0px;"/>
+        </td></tr>
+    </tr>
+    <!-- CONTENT -->
+    <tr>
+        <td style="min-width: 590px;">
+            <t t-raw="message.body"/>
+        </td>
+    </tr>
+    <!-- FOOTER -->
+    <tr>
+        <td align="center" style="min-width: 590px; padding: 0 8px 0 8px; font-size:11px;">
+            <hr width="100%" style="background-color:rgb(204,204,204);border:medium none;clear:both;display:block;font-size:0px;min-height:1px;line-height:0; margin: 4px 0px 32px 0px;"/>
+        </td>
+    </tr>
+</tbody>
+        </template>
+
+    <data noupdate="0">
+        <record id="mail_template_data_stock_request_approval" model="mail.template">
+            <field name="name">Stock Transfer Request for Approval: Send by Email</field>
+            <field name="model_id" ref="model_stock_transfer"/>
+            <field name="subject">${object.company_id.name} Stock Transfer Document (Ref ${object.name or 'n/a' })</field>
+            <field name="partner_to">${object.user_id.partner_id.id}</field>
+            <field name="body_html" type="html">
+<div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Please approve the stock transfer: ${object.name or 'n/a' }.<br/><br/>
+        %if object.notes:
+            ${object.notes}<br/><br/>
+        %endif
+        Thank you<br/><br/>
+    </p>
+</div>
+            </field>
+        </record>
+    </data>
+</odoo>

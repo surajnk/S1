@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="wo_roll_summary_line_document">
+        <t t-call="web.external_layout">
+            <main>
+                <t t-foreach="docs.workorder_line_ids" t-as="line">
+                    <div class="page">
+                        <h2>Workorder: <span t-field="line.workorder_id"/></h2>
+                        <h3>Output Rolls</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Input Roll</th>
+                                    <th>Output Roll</th>
+                                    <th class="text-right">Qty on Roll</th>
+                                    <th class="text-right">Consumed Qty</th>
+                                    <th>Date</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="line.roll_line_ids" t-as="rl">
+                                    <td><span t-field="rl.prev_roll_id"/></td>
+                                    <td><span t-field="rl.product_id"/></td>
+                                    <td><span t-field="rl.roll_id"/></td>
+                                    <td class="text-right"><span t-field="rl.remained_qty"/></td>
+                                    <td class="text-right"><span t-field="rl.consumed_qty"/></td>
+                                    <td><span t-field="rl.date"/></td>
+                                    <td><span t-field="rl.user_id"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h3>Final Output Rolls</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Input Roll</th>
+                                    <th>User</th>
+                                    <th class="text-right">Remained Qty</th>
+                                    <th>Fully Consumed</th>
+                                    <th class="text-right">Consumed Qty</th>
+                                    <th class="text-right">Customer Qty</th>
+                                    <th class="text-right">Qty(Yards)</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="line.final_roll_line_ids" t-as="fr">
+                                    <td><span t-field="fr.previous_roll_id"/></td>
+                                    <td><span t-field="fr.user_id"/></td>
+                                    <td class="text-right"><span t-field="fr.remained_qty"/></td>
+                                    <td><span t-field="fr.is_fully_consumed"/></td>
+                                    <td class="text-right"><span t-field="fr.consumed_qty"/></td>
+                                    <td class="text-right"><span t-field="fr.total_qty"/></td>
+                                    <td class="text-right"><span t-field="fr.yards_qty"/></td>
+                                    <td><span t-field="fr.date"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </main>
+        </t>
+    </template>
+
+    <record id="action_report_wo_roll_summary_line" model="ir.actions.report">
+        <field name="name">Workorder Roll Summary</field>
+        <field name="model">wo.roll.summary.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mo_workorder_rolls_final.wo_roll_summary_line_document</field>
+        <field name="report_file">mo_workorder_rolls_final.wo_roll_summary_line_document</field>
+    </record>
+</odoo>

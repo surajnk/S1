@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <!-- Package Inherit Form View to Modify it -->
+    <record id="view_quant_package_image_form" model="ir.ui.view">
+        <field name="name">view.quant.package.image.form</field>
+        <field name="model">stock.quant.package</field>
+        <field name="inherit_id" ref="stock.view_quant_package_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button class="oe_stat_button"
+                        name="action_view_package_image" string="Package Images" type="object"
+                        widget="statinfo" icon="fa-image"/>
+            </xpath>
+            <xpath expr="//field[@name='owner_id']" position="before">
+                <field name="x_height"/>
+                <field name="x_width"/>
+                <field name="x_length"/>
+            </xpath>            
+        </field>
+    </record>
+
+    <!-- Image class KANBAN view -->
+    <record id="full_package_images_kanban_view" model="ir.ui.view">
+        <field name="name">package.images.kanban.view</field>
+        <field name="model">package.images</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="image"/>
+                <field name="filename"/>
+                <field name="quant_package_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_attachment oe_kanban_global_click o_website_sale_image_card">
+                            <div class="o_image_box">
+                                <div class="o_kanban_image">
+                                    <img t-att-src="kanban_image('package.images', 'image', record.id.raw_value)" alt="Product"/>
+                                </div>
+                                <field name="name"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Image class Full FORM view -->
+    <record id="full_package_images_form_view" model="ir.ui.view">
+        <field name="name">package.images.form.view</field>
+        <field name="model">package.images</field>
+        <field name="priority" eval="1" />
+        <field name="arch" type="xml">
+            <form string="Package Images">
+                <sheet>
+                    <div class="row o_website_sale_image_modal">
+                        <div class="col-md-6 col-xl-5">
+                            <group>
+                                <h2><field name="name" placeholder="Image Name" required="True"/></h2>
+                                <field name="quant_package_id" invisible="1"/>
+                        </group>
+                        </div>
+                        <div class="col-md-6 col-xl-7 text-center o_website_sale_image_modal_container">
+                            <field name="image" widget="image" filename="filename" />
+                            <field name="filename" invisible="1"/>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+<!--    <menuitem id="menu_images_config" name="Images" parent="stock.menu_stock_config_settings" groups="stock.group_stock_manager" sequence="99"/>-->
+</odoo>

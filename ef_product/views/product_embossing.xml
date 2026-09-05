@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product Item Tree View -->
+    <record id="product_embossing_tree_view" model="ir.ui.view">
+        <field name="name">product.embossing.tree.view</field>
+        <field name="model">product.embossing</field>
+        <field name="arch" type="xml">
+            <tree string="Product Embossing">
+                <field name="name" required="1"/>
+                <field name="x_embossing_code"/>
+            </tree>
+        </field>
+    
+    <!-- Product Item Form View -->
+    </record>
+
+    <record id="product_embossing_form_view" model="ir.ui.view">
+        <field name="name">product.embossing.form.view</field>
+        <field name="model">product.embossing</field>
+        <field name="arch" type="xml">
+            <form string="Product Embossing">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="x_embossing_code"/>
+                            <field name="x_embossing_frame"/>
+                            <field name="x_no_of_cylinders"/>
+                        </group>
+                        <group>
+                            <field name="x_pattern_embossing_number"/>
+                            <field name="x_max_width"/>
+                            <field name="x_embossing_branch_id"/>
+                            <field name="state"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Item Search View -->
+    <record id="product_embossing_search_view" model="ir.ui.view">
+        <field name="name">product.embossing.search.view</field>
+        <field name="model">product.embossing</field>
+        <field name="arch" type="xml">
+            <search string="Product Embossing">
+                <field name="name" string="Product Embossing"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Item Action View -->
+    <record id="product_embossing_action_view" model="ir.actions.act_window">
+        <field name="name">Product Embossing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.embossing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_embossing_tree_view"/>
+        <field name="search_view_id" ref="product_embossing_search_view"/>
+    </record>
+
+    <!-- Product Item Menu View -->
+    <menuitem id="product_embossing_menu_view"
+        name="Product Embossings"
+        action="product_embossing_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

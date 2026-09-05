@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequences for bill.of.leading -->
+        <record id="seq_bill_of_leading" model="ir.sequence">
+            <field name="name">Bill Of Leading</field>
+            <field name="code">bill.of.leading</field>
+            <field name="prefix">BOL</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

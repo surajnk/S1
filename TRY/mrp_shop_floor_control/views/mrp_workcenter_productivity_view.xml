@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Mrp WorkCenter -->
+    <record id="mwp_down_street_operations_tree" model="ir.ui.view">
+        <field name="name">down.street.operations.tree.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="arch" type="xml">
+            <tree string="Down stream Operations">
+                <field name="production_id" decoration-bf="1"/>
+                <field name="workcenter_id"/>
+                <field name="workorder_id"/>
+                <field name="components_id"/>
+                <field name="produce_quantity"/>
+                <field name="next_work_order_id" invisible="1"/>
+                <field name="next_work_center_id"/>
+                <field name="process_by_id"/>
+                <field name="status" widget="badge" decoration-success="status == 'done'" decoration-warning="status == 'in_progress'" decoration-info="status == 'draft'"/>
+                <button name="action_in_progress" type="object" string="In Progress" class="btn-success" attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+                <button name="action_done" type="object" string="Done" class="btn-success" attrs="{'invisible': [('status', '!=', 'in_progress')]}"/>
+                <button name="action_draft" type="object" string="Reset to Draft" class="btn-info" attrs="{'invisible': [('status', 'not in', ['in_progress', 'done'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="down_street_oee_search_view" model="ir.ui.view">
+        <field name="name">down.street.oee.search.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="inherit_id" ref="mrp.oee_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter" position="after">
+                <filter name="pending" string="Pending" domain="[('status', '!=', 'done')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- -->
+    <record id="action_down_street_operations" model="ir.actions.act_window">
+        <field name="name">Down stream Operation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.workcenter.productivity</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="mwp_down_street_operations_tree"/>
+        <field name="context">{'search_default_pending': True}</field>
+    </record>
+
+    <menuitem
+        id="menu_down_street_operations"
+        action="action_down_street_operations"
+        name="Down stream Operation"
+        parent="stock.menu_stock_warehouse_mgmt"
+        sequence="150"
+        groups="stock.group_stock_user"/>
+
+</odoo>

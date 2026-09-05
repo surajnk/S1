@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="roll_lines_form_view" model="ir.ui.view">
+        <field name="name">roll.lines.form</field>
+        <field name="model">roll.lines</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="workorder_id" invisible="1"/>
+                        <field name="workcenter_id" invisible="1"/>
+                        <field name="user_id" class="oe_inline"
+                                options="{'limit': '0', 'no_open': True, 'no_create': True}"
+                                context="{'workcenter_id': workcenter_id}"/>
+                        <field name="x_wiz_yards_in" class="oe_inline"/>
+                        <field name="x_wiz_yards_out" class="oe_inline"/>
+                    </group>
+                <group>
+                    <field name="roll_line_ids">
+                            <tree editable="bottom">
+                                <field name="parent_roll_id" invisible="1"/>
+                                <field name="prev_roll_ids" invisible="1"/>
+                                <field name="prev_roll_id" domain="[('id', 'in', prev_roll_ids)]" context="{'workorder_id': context.get('active_id')}"/>
+                                <field name="prev_roll_remained_qty"/>
+                                <field name="full_consumed"/>
+                                <field name="consumed_qty" sum="Consumed"/>
+                                <field name="roll_id"
+                                       options="{'limit': 0}"
+                                       context="{'workorder_id': context.get('active_id')}"/>
+                                <field name="existing_roll_id"
+                                       context="{'get_existing_roll_from_workorder_id': context.get('active_id')}"/>
+                                <!-- <field name="roll_id"
+                                       context="{'workorder_id': context.get('active_id')}"
+                                       domain="[('id', 'in', existing_roll_ids)]"/> -->
+                                <field name="user_id" options="{'no_open':True,'no_create':True}"
+                                       context="{'workcenter_id': context.get('workcenter_id')}"
+                                       readonly='0' force_save="1"/>
+                                <field name="quantity" sum="Total quantity"/>
+                                <!-- <field name="date_start"/> -->
+                            </tree>
+                    </field>
+                </group>
+                <group>
+                    <field name="final_roll_line_ids">
+                        <tree string="Final Roll Detail" editable="bottom">
+                            <field name="parent_roll_id" invisible="1"/>
+                            <field name="workorder_id" invisible="1"/>
+                            <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"/>
+                            <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
+                            <field name="remained_qty" sum="Total"/>
+                            <!-- <field name="previous_roll_quantity"/> -->
+                            <!-- <field name="date_start"/> -->
+                            <field name="is_fully_consumed"/>
+                            <field name="consumed_qty" sum="Total"/>
+                            <field name="total_qty" sum="Total"/>
+                            <field name="yards_qty" sum="Total"/>
+                            
+                        </tree>
+                    </field>
+                </group>
+            </sheet>
+            <footer>
+                <button name="add_roll_lines" type="object" string="Add" class="btn-primary"/>
+                <button name="add_roll_lines_without_pause" type="object" string="Add and Continue" class="btn-primary"/>
+                <!-- <button name="add_roll_lines" type="object" string="Add Final" class="btn-primary"/> -->
+                <button string="Close" class="btn btn-secondary" special="cancel"/>
+            </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

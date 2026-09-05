@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="wo_report">
+        <div class="o_wc_capacity_report">
+            <t t-set="titles" t-value="widget.Titles.titles"/>
+            <t t-set="weeks_title" t-value="widget.Titles.weeks_title"/>
+            <div class="text-nowrap mr0 ml0">
+                <table class="table o_fps_product_table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center pr-4 border font-weight-bold bg-500" rowspan="4" scope="col" t-foreach="titles" t-as="tit">
+                                <div><t t-esc="tit"/></div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="o_mps_content">
+                        <t t-set="MainData" t-value="widget.Datas"/>
+                        <t t-foreach="MainData" t-as="wc_datas">
+                            <t t-foreach="wc_datas" t-as="wo_line">
+
+                                        <tr t-att-data-line_id="wo_line.work_order_name">
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.workorder_name"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.work_order_name"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.mo_name"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.product"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.date"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.elapsed"/>
+                                            </td>
+                                            <td class="text-center pr-4">
+                                                <t t-esc="wo_line.ovarall_duration"/>
+                                            </td>
+                                             <td class="text-center pr-4">
+                                                <t t-esc="wo_line.qo_quantities"/>
+                                            </td>
+                                        </tr>
+
+                            </t>
+                        </t>
+                        <tr class="o_po_footer">
+                            <td class="bg-500" colspan="14"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="wo_control_panel_buttons">
+        <div role="toolbar" aria-label="Control panel buttons" class="o_cp_buttons">
+            <div class="o_calendar_buttons">
+                <span class="o_calendar_navigation_buttons">
+                    <button class="o_wcc_button_change_date btn btn-primary" aria-label="Move to Specific Date"
+                            title="Move to Specific Date">
+                        Generate Report
+                    </button>
+                </span>
+            </div>
+        </div>
+    </t>
+
+</templates>

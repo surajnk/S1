@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Pricelist Item Inherit Form View -->
+    <record id="product_pricelist_item_form_view_atc_ef" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form.view.atc.ef</field>
+        <field name="model">product.pricelist.item</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/group/group[@name='pricelist_rule_target']/field[@name='applied_on']" position="after">
+                <field name="product_item_group_id" attrs="{'invisible': [('applied_on', '!=', '4_item_group')], 'required':[('applied_on', '=', '4_item_group')]}" options="{'no_create': 1}"/>
+            </xpath>
+        <xpath expr="/form/sheet/group/group[@name='pricelist_rule_target']/field[@name='applied_on']" position="after">
+                <field name="labor_item_id" attrs="{'invisible': [('applied_on', '!=', '5_labor_item')], 'required':[('applied_on', '=', '5_labor_item')]}" options="{'no_create': 1}"/>
+        </xpath>
+        <xpath expr="/form/sheet/group/group[@name='pricelist_rule_target']/field[@name='applied_on']" position="after">
+                <field name="product_commodity_id" attrs="{'invisible': [('applied_on', '!=', '7_commodity_group')], 'required':[('applied_on', '=', '7_commodity_group')]}" options="{'no_create': 1}"/>
+        </xpath>
+        <xpath expr="/form/sheet/group/group[@name='pricelist_rule_target']/field[@name='applied_on']" position="after">
+                <field name="price_group_id" attrs="{'invisible': [('applied_on', '!=', '6_price_group')], 'required':[('applied_on', '=', '6_price_group')]}" options="{'no_create': 1}"/>
+        </xpath>
+        </field>
+    </record>
+
+</odoo>

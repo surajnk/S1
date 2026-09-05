@@ -1,0 +1,18 @@
+<!-- views/auditlog_parent_ref_views.xml -->
+<odoo>
+  <record id="view_auditlog_log_form_inherit_parent" model="ir.ui.view">
+    <field name="name">auditlog.log.form.parent.ref</field>
+    <field name="model">auditlog.log</field>
+    <field name="inherit_id" ref="auditlog.view_auditlog_log_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet/group" position="after">
+        <group string="Parent">
+          <field name="parent_model_id"/>
+          <field name="parent_res_id"/>
+          <field name="parent_res_name"/>
+          <field name="parent_field_id"/>
+        </group>
+      </xpath>
+    </field>
+  </record>
+</odoo>

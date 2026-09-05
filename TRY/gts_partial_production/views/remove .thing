@@ -1,0 +1,2 @@
+attrs="{'invisible': ['|', ('is_locked', '=', True), '|',
+                        ('state', 'in', ('done', 'cancel')), ('routing_id', '=', False)]}

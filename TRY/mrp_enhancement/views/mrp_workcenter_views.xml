@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mrp_workcenter_view_add_location" model="ir.ui.view">
+        <field name="name">mrp.workcenter.form.add.location</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="before">
+                <field name="location_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="work_operation_sheet_view_form" model="ir.ui.view">
+        <field name="name">work.operation.sheet.view.form</field>
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="arch" type="xml">
+            <form string="Operation Description">
+                <sheet>
+                    <group>
+                        <field name="worksheet_type" widget="radio"/>
+                        <field name="worksheet" help="Upload your PDF file." widget="pdf_viewer" attrs="{'invisible':  [('worksheet_type', '!=', 'pdf')], 'required':  [('worksheet_type', '=', 'pdf')]}"/>
+                        <field name="worksheet_google_slide" placeholder="Google Slide Link" widget="embed_viewer" attrs="{'invisible':  [('worksheet_type', '!=', 'google_slide')], 'required': [('worksheet_type', '=', 'google_slide')]}"/>
+                        <field name="note" attrs="{'invisible':  [('worksheet_type', '!=', 'text')]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

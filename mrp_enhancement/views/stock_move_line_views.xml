@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <record id="view_line_detailed_operation_tree" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.ext</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree//field[@name='lot_id']" position="attributes">
+                <attribute name="string">Lot/Serial Number/Roll ID</attribute>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="view_line_detailed_operation_tree" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.ext</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree//field[@name='lot_id']" position="attributes">
+                <attribute name="string">Lot/Serial Number/Roll ID</attribute>
+                <attribute name="widget">mrp_lot_barcode_scan</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="before">
+                <xpath expr="//tree//field[@name='lot_id']" position="move"/>
+            </xpath>
+            <xpath expr="//tree//field[@name='location_dest_id']" position="attributes">
+                <attribute name="widget">mrp_location_barcode_scan</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Manage the lots based on the From location -->
+    <record id="view_stock_move_line_operation_tree_location" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.location</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="context">{'product_from_detailed_operation': product_id, 'from_location_id': location_id}</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

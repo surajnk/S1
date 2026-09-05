@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="external_layout_standard_bol">
+            <div t-attf-class="header">
+                <div class="row" width="100%">
+                    <div class="col-7 mb4">
+                        <div class="text-center border-bottom border-dark">
+                            <h4>STRAIGHT BILL OF LADING - SHORT FORM</h4>
+                            <h5>ORIGINAL - NON NEGOTIABLE</h5>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <h4>
+                                    <b>B.O.L : <t t-esc="data.get('bill_no', '')"/></b>
+                                </h4>
+                            </div>
+                            <div class="col-6 text-right">
+                                <h4>
+                                    <b>Ship Date: <t t-esc="data.get('ship_date', '')"/></b>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <center>
+                                <h3>
+                                    <b><t t-esc="data.get('ship_via_name')"/></b>
+                                </h3>
+                            </center>
+                        </div>
+                        <div class="text-center">
+                            <small>RECEIVED, subject to the classifications and tariffs in effect on the date of
+                                issue of this Original Bill of Lading.
+                            </small>
+                        </div>
+                        <div>
+                            <h5>
+                                <b>
+                                    <div>At: <t t-esc="data.get('bol_at')"/></div>
+                                    <div>From: <t t-esc="data.get('bol_from')"/></div>
+                                </b>
+                            </h5>
+                        </div>
+                    </div>
+                    <div class="col-5 text-center border border-dark rounded mt-2 mr-4" name="moto">
+                        Place PRO label here.
+                    </div>
+                </div>
+                <div class="row border-bottom border-dark col-12">
+                        <p>
+                            <small>the property described below, in apparent good order, except as noted (contents and condition of contents of packages unknown), marked, consigned, and destined as indicated
+                                below, which said carrier (the word carrier being understood throughout this contract as meaning any person or corporation in possession of
+                                the property under contract) agrees to carry to its usual place of delivery at said destination, if on its route, otherwise to deliver to
+                                another carrier on the route to said destination. It is, mutually agreed, as to each carrier of all or any of said property over all or any portion of said route to destination, and as
+                                to each party at any time interested in all or any of said property. that every service to be performed hereunder shall be subject to all of the
+                                terms and conditions of the Uniform Domestic Straight Bill of Lading set forth (1) in Uniform Freight Classification in effect on the date
+                                hereof, if this is a rail-water shipment, or (2) in the applicable motor carrier classification or tariff if this is a motor carrier shipment.
+                            </small>
+                        </p>
+                        <p>
+                            <small>Shipper hereby certifies that he is familiar with all terms and conditions of the said
+                                bill of lading set forth in the classification or tariff which governs the transportation of
+                                this shipment, and the said terms and conditions are
+                                hereby agreed to by the shipper and accepted for himself and his assigns.
+                            </small>
+                        </p>
+                </div>
+            </div>
+
+            <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout">
+                <div class="pt-5">
+                    <!-- This div ensures that the address is not cropped by the header. -->
+                    <t t-call="web.address_layout"/>
+                </div>
+                <t t-raw="0"/>
+            </div>
+<!--            <div class="footer">-->
+<!--&lt;!&ndash;                    <div class="row">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <div class="col-12"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img src='/ef_stock/static/img/atc_bill_of_lead_footer.png' style="max-height: 55px;"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <img src="/ef_stock/static/img/atc_bill_of_lead_footer.png" style="max-height: 155px;max-width: 250px;"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                             style="background-image: url('/website/static/src/img/apps_thumbs/website_slide.svg');"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                             t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % '/ef_stock/static/img/atc_bill_of_lead_footer.png' }});"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                    <div t-if="report_type == 'pdf'" class="text-muted">-->
+<!--                        Page:-->
+<!--                        <span class="page"/>-->
+<!--                        /-->
+<!--                        <span class="topage"/>-->
+<!--                    </div>-->
+<!--            </div>-->
+        </template>
+
+
+        <template id="external_layout_bol">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <t t-if="not company">
+                <!-- Multicompany -->
+                <t t-if="company_id">
+                    <t t-set="company" t-value="company_id"/>
+                </t>
+                <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                </t>
+                <t t-else="else">
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+            </t>
+            <t t-call="ef_stock.external_layout_standard_bol">
+                <t t-raw="0"/>
+            </t>
+        </template>
+
+        <!-- Report Picking -->
+        <template id="report_bill_of_leading">
+            <t t-call="web.html_container">
+<!--                <t t-foreach="docs" t-as="o">-->
+                    <t t-set="o" t-value="data"/>
+                    <t t-call="ef_stock.external_layout_bol">
+                        <br/>
+                        <table width="100%" class="mt-2">
+                            <tr>
+                                <td>
+                                    <span><strong>Consigned To:</strong></span>
+                                </td>
+                                <td>
+                                    <span t-esc="data.get('partner_name')"/>
+                                </td>
+                                <td>
+                                    <span><strong>FOR PAYMENT, SEND BILL TO</strong></span>
+                                </td>
+                                <td>
+                                    <t t-esc="data.get('for_payment_send_bill_to')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="pt-5">
+                                    <span><strong>Destination:</strong></span>
+                                </td>
+                                <td>
+                                    <t t-if="data.get('address_partner_name')">
+                                        <span t-esc="data.get('address_partner_name')"/><br/>
+                                    </t>
+                                    <t t-if="data.get('address_partner_street')">
+                                        <span t-esc="data.get('address_partner_street')"/><br/>
+                                    </t>
+                                    <t t-if="data.get('address_partner_street2')">
+                                        <span t-esc="data.get('address_partner_street2')"/><br/>
+                                    </t>
+                                    <t t-if="data.get('address_partner_mobile')">
+                                        Mobil : <span t-esc="data.get('address_partner_mobile')"/><br/>
+                                    </t>
+                                    <t t-if="data.get('address_partner_email')">
+                                        Email : <span t-esc="data.get('address_partner_email')"/><br/>
+                                    </t>
+
+                                </td>
+                                <td colspan="2"><center>* * FREIGHT COLLECT * *</center></td>
+                            </tr>
+                        </table>
+                        <style>
+                            .tr_bol {
+                              border: 1px solid black;
+                              border-collapse: collapse;
+                              padding:9px;
+                            }
+                            .td_bol {
+                              border: 1px solid black;
+                              border-collapse: collapse;
+                              padding:9px;
+                            }
+                        </style>
+                        <table width="100%" class="mt-2 mb16">
+                            <tr class="tr_bol">
+                                <td class="td_bol text-center">
+                                    <span><strong>No. Packages</strong></span>
+                                </td>
+                                <td class="td_bol">
+                                    <span>
+                                        <strong>
+                                            Kind of Packages, Description of Articles
+                                        </strong>
+                                    </span>
+                                </td>
+                                <td class="td_bol text-center">
+                                    <span><strong>CLASS OR RATE</strong></span>
+                                </td>
+                                <td class="td_bol text-center">
+                                    <span><strong>*Weight (Subject to Corr.)</strong></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <t t-foreach="data.get('no_package').keys()" t-as="pkg_key">
+                                        <span t-esc="data.get('no_package').get(pkg_key)"/> <span t-esc="pkg_key"/>
+                                        <br/>
+                                    </t>
+                                </td>
+                                <td>
+                                    <t t-esc="data.get('kind_of_package')"/>
+                                </td>
+                                <td class="text-center">
+                                    <t t-esc="data.get('class_or_rate')"/>
+                                </td>
+                                <td class="text-right" style="padding:8px;">
+                                    <t t-esc="data.get('pack_weight')"/> Lbs
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Purchase Order(s):
+                                </td>
+                                <td colspan="99">
+                                    <t t-esc="data.get('purchase_rec')"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="10" class="border-bottom border-dark" style="padding-top: 60px;">
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:215px"></div>
+                        <div style="border-top: 1px solid black;border-top-style: double;" class="row">
+                            <div class="col-6">
+                                    <small>
+                                        Subject to Section 7 of the conditions, if this shipment is to be delivered to the consignee without
+                                        recourse on the consignor, the consignor shall sign the following statement: The carrier shall not make
+                                        delivery of this shipment without payment of freight and all other lawful charges.
+                                    </small>
+                            </div>
+                            <div class="col-6">
+                                <small>
+                                    This is to certify that the above-named materials are properly classified, described, packaged, marked
+                                    and labeled, and are in proper condition for transportation according to the applicable regulations of
+                                    the Department of Transportation.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="row mb-1" style="border-bottom: 1px solid black;padding-top:30px;">
+                            <div class="col-6">
+                                <small>Signature :</small>
+                            </div>
+                            <div class="col-6">
+                                <small>Signature :</small>
+                            </div>
+                        </div>
+                        <div class="row mb-1" style="border-bottom: 1px;border-top-style: double;">
+                            <div class="col-6">
+                                <small class="col-8">
+                                    *If the shipment moves between two ports by a carrier by water,
+                                    the law requires that the bill of lading shall state whether it is "carrier's or
+                                    shipper's weight."
+                                </small>
+                            </div>
+                            <div class="col-2"></div>
+                            <div class="col-6">
+                                <small>
+                                    NOTE: Where the rate is dependent on value, shippers are required to state specifically
+                                    in writing the agreed or declared value of the property. The agreed or decalred value of
+                                    the property is hereby specifically stated by shipper to be not exceeding.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-6" style="padding-top:60px;">
+                                <center>
+                                    <b><h3>* * FREIGHT COLLECT * *</h3></b>
+                                </center>
+                            </div>
+                            <div class="col-6 pt-2">
+                                <div style="border-top: 1px solid black;margin-top:18px;margin-bottom:18px;">
+                                    <small>Trucker</small>
+                                </div>
+                                <div style="border-top: 1px solid black;margin-bottom:18px;">
+                                    <small>Signature</small>
+                                </div>
+                                <div style="border-top: 1px solid black;margin-bottom:18px;">
+                                    <small>Date</small>
+                                </div>
+                                <div style="border-top: 1px solid black;margin-bottom:18px;">
+                                    <small>Trailer #</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center" width="100%" style="border-bottom:1px solid black;">
+                            <b><h2>Carrier Copy</h2></b>
+                        </div>
+
+                    </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

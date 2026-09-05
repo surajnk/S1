@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_cheque_manage" model="ir.sequence">
+            <field name="name">Cheque Incoming Manage</field>
+            <field name="code">cheque.manage.incoming</field>
+            <field name="prefix">IN-/%(range_year)s/</field>
+            <field eval="1" name="number_next"/>
+            <field eval="3" name="padding"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="True" name="use_date_range"/>
+            <field eval="False" name="company_id"/>
+        </record>
+        
+        <record id="seq_cheque_outgoing_manage" model="ir.sequence">
+            <field name="name">Cheque Outgoing Manage</field>
+            <field name="code">cheque.manage.outgoing</field>
+            <field name="prefix">OUT-/%(range_year)s/</field>
+            <field eval="1" name="number_next"/>
+            <field eval="3" name="padding"/>
+            <field eval="1" name="number_increment"/>
+            <field eval="True" name="use_date_range"/>
+            <field eval="False" name="company_id"/>
+        </record>
+
+    </data>
+</odoo>

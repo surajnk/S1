@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherited_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//h2[2]" position="before">
+                <h2>Cheque Management</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Outgoing Account</span>
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <!--                                        <label for="credit_inc_account" class="col-lg-4 o_light_label"/>
+                                    <field name="credit_inc_account"/>-->
+                                    <label for="debit_inc_account" class="col-lg-4 o_light_label"/>
+                                    <field name="debit_inc_account"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Incoming Account</span>
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="credit_out_account" class="col-lg-4 o_light_label"/>
+                                    <field name="credit_out_account"/>
+                                    <!--                                        <label for="debit_out_account" class="col-lg-4 o_light_label"/>
+                                    <field name="debit_out_account"/>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane"/>
+                        <div class="o_setting_right_pane">
+                            <span class="o_form_label">Account Cheque Configuration</span>
+                            <div class="content-group">
+                                <div class="row mt16">
+                                    <label for="deposite_account" class="col-lg-4 o_light_label"/>
+                                    <field name="deposite_account"/>
+                                    <label for="journal_id" class="col-lg-4 o_light_label"/>
+                                    <field name="journal_id"/>
+                                    <!--<field name="journal_id" domain="[('type','in',('bank','cash'))]"/>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="inherit_res_partner_md" model="ir.ui.view">
+        <field name="name">res.partner.view</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='sale']/field[@name='user_id']" position="before">
+                <field name="customer"/>
+            </xpath>
+        </field>        
+    </record>
+
+    <record id="inherit_account_res_partner" model="ir.ui.view">
+        <field name="name">res.partner.view</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account.view_partner_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_supplier_payment_term_id']" position="before">
+                <field name="supplier"/>
+            </xpath> 
+        </field>        
+    </record>
+    
+    <record id="account.res_partner_action_customer" model="ir.actions.act_window">
+      <field name="context">{'search_default_customer': 1,'res_partner_search_mode': 'customer', 'default_is_company': True, 'default_customer_rank': 1,'default_customer': True}</field>
+    </record>
+    
+    <record id="account.res_partner_action_supplier" model="ir.actions.act_window">
+      <field name="context">{'search_default_supplier': 1,'res_partner_search_mode': 'supplier', 'default_is_company': True, 'default_supplier_rank': 1, 'default_supplier':True}</field>
+    </record>  
+    
+</odoo>

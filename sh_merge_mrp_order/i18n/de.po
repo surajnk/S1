@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* sh_merge_mrp_order
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 12.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-02-15 08:21+0000\n"
+"PO-Revision-Date: 2021-02-15 08:21+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sh_merge_mrp_order
+#: model_terms:ir.ui.view,arch_db:sh_merge_mrp_order.sh_merge_mrp_order_wizard_form
+msgid "Cancel"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model,name:sh_merge_mrp_order.model_res_company
+msgid "Companies"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__location_src_id
+msgid "Components Location"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model,name:sh_merge_mrp_order.model_res_config_settings
+msgid "Config Settings"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_res_company__merge_type
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_res_config_settings__merge_type
+msgid "Default Merge Type"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "Existing Order and Cancel selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "Existing Order and Do Nothing with selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "Existing Order and Remove selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__location_dest_id
+msgid "Finished Products Location"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__id
+msgid "ID"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model_terms:ir.ui.view,arch_db:sh_merge_mrp_order.sh_mrp_config_setting_view
+msgid "Manufacturing Order Merge Configuration"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: code:addons/sh_merge_mrp_order/wizard/merge_mrp_order.py:116
+#, python-format
+msgid "Manufacturing Orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model_terms:ir.ui.view,arch_db:sh_merge_mrp_order.sh_merge_mrp_order_wizard_form
+msgid "Merge"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model,name:sh_merge_mrp_order.model_sh_merge_mrp_order_wizard
+msgid "Merge MRP Order Wizard"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.actions.act_window,name:sh_merge_mrp_order.sh_merge_mrp_order_multi_action
+#: model_terms:ir.ui.view,arch_db:sh_merge_mrp_order.sh_merge_mrp_order_wizard_form
+msgid "Merge Mrp Orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__merge_type
+msgid "Merge Type"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__mrp_order_id
+msgid "Mrp Order"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__mrp_order_ids
+msgid "Mrp Orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "New Order and Cancel selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "New Order and Do Nothing with selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: selection:res.company,merge_type:0
+#: selection:sh.merge.mrp.order.wizard,merge_type:0
+msgid "New Order and Remove selected mrp orders"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_res_company__notify_in_chatter
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_res_config_settings__notify_in_chatter
+msgid "Notify in Chatter ?"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: code:addons/sh_merge_mrp_order/wizard/merge_mrp_order.py:136
+#, python-format
+msgid "Please Select atleast two mrp orders to perform merge operation."
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: model:ir.model.fields,field_description:sh_merge_mrp_order.field_sh_merge_mrp_order_wizard__product_id
+msgid "Product"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: code:addons/sh_merge_mrp_order/wizard/merge_mrp_order.py:132
+#, python-format
+msgid "Programming error: wizard action executed without active_ids in context."
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: code:addons/sh_merge_mrp_order/wizard/merge_mrp_order.py:142
+#, python-format
+msgid "You can only merge mrp orders which are in Draft/Confirmed/In Progress state"
+msgstr ""
+
+#. module: sh_merge_mrp_order
+#: code:addons/sh_merge_mrp_order/wizard/merge_mrp_order.py:151
+#, python-format
+msgid "You can only merge mrp orders which are in same product/bill of material. "
+msgstr ""
+

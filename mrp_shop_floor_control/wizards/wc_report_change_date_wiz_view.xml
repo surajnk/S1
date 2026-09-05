@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="wc_report_change_date_wiz_form_view" model="ir.ui.view">
+        <field name="name">wc.report.change.date.wiz.form.view</field>
+        <field name="model">wc.report.change.date.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Wc Report Change Date">
+                <p class="oe_gray">
+                    Move Work Center Capacity Report with specific Date.
+                </p>
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_wc_report_with_start_date"
+                            string="Open Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="wo_report_view" model="ir.ui.view">
+        <field name="name">wo.report.form.view</field>
+        <field name="model">wo.report.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Wc Report Change Date">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="product_id"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_show_report"
+                            string="Open Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

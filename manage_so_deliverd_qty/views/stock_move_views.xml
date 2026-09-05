@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="stock_picking_form_view_ext" model="ir.ui.view">
+        <field name="name">stock.picking.form.view.ext</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_ids_without_package']//tree//field[@name='product_uom_qty']" position="after">
+                <button name="open_on_hand_qtyst" type="object" class="fa fa-fw o_button_icon fa-cubes"/>
+                <field name="cust_qty" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
+

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Machine Stops Tree View -->
+    <record id="machine_stop_tree_view" model="ir.ui.view">
+        <field name="name">machine.stop.tree.view</field>
+        <field name="model">machine.stops</field>
+        <field name="arch" type="xml">
+            <tree string="Machine Stops">
+                <field name="x_machine_st" required="1"/>
+            </tree>
+        </field>
+    
+    <!-- Machine Stops Form View -->
+    </record>
+
+        <record id="machine_stop_form_view" model="ir.ui.view">
+        <field name="name">machine.stop.form.view</field>
+        <field name="model">machine.stops</field>
+        <field name="arch" type="xml">
+            <form string="Machine Stops">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="x_machine_st" required="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Machine Stops Search View -->
+    <record id="machine_stop_search_view" model="ir.ui.view">
+        <field name="name">machine.stop.search.view</field>
+        <field name="model">machine.stops</field>
+        <field name="arch" type="xml">
+            <search string="Machine Stops">
+                <field name="x_machine_st" string="Machine Stops"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Commodity Action View -->
+    <record id="machine_stop_action_view" model="ir.actions.act_window">
+        <field name="name">Machine Stops</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">machine.stops</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="machine_stop_tree_view"/>
+        <field name="search_view_id" ref="machine_stop_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="machine_stops_menu_view"
+        name="Machine Stops"
+        action="machine_stop_action_view"
+        parent="mrp.menu_mrp_configuration"
+        sequence="4"/>
+
+    <record id="mrp_routing_workcenter_select_from_exist_wc" model="ir.ui.view">
+        <field name="name">mrp.routing.select.from.exist.wc</field>
+        <field name="model">mrp.routing.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_routing_workcenter_form_view" />
+        <field name="arch" type="xml">
+            <field name="name" position="before">
+                <field name="from_exist_workcenter" invisible="1"/>
+                <field name="exist_workcenter_id" widget="selection" attrs="{'invisible': [('from_exist_workcenter', '!=', True)]}"/>
+                <p attrs="{'invisible': [('from_exist_workcenter', '!=', True)]}">or</p>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_mrp_workcenter_view_ef" model="ir.ui.view">
+        <field name="name">mrp.workcenter.ef.form</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view" />
+        <field name="arch" type="xml">
+            <field name="resource_calendar_id" position="after">
+                <field name="x_embosser"/>
+            </field>
+            <xpath expr="//notebook/page[@name='general_info']" position="after">
+                <page string="Frame Details" name="frame_info">
+                    <group>
+                        <group>
+                            <field name="x_frame_wc_id"/>
+                            <field name="x_frame_wc_type"/>
+                            <field name="x_frame_wc_number" attrs="{'invisible': ['|',('x_frame_wc_type', '=', 'single'),('x_frame_wc_type', '=', '')]}"/>
+                            <field name="x_cylinder_wc_slot" attrs="{'invisible': ['|','|',('x_frame_wc_type', '=', ''),('x_frame_wc_type', '=', 'single'),('x_frame_wc_type', '=', 'plater')]}"/>
+                        </group>
+                        <group>
+                            <field name="x_frame_wc_status"/>
+                            <field name="x_pattern_wc"/>
+                            <field name="x_bottom_wc_roll"/>
+                            <field name="x_pattern_wc_number"/>
+                            <field name="x_frame_branch_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+        <!-- Machine Frames Tree View -->
+    <record id="mrp_frames_tree_view" model="ir.ui.view">
+        <field name="name">mrp.frames.tree.view</field>
+        <field name="model">mrp.frames</field>
+        <field name="arch" type="xml">
+            <tree string="Frames">
+                <field name="x_frame_id" required="1"/>
+                <field name="x_pattern_number" required="1"/>
+                <field name="x_bottom_roll" required="1"/>
+                <field name="x_frame_status" required="1"/>
+            </tree>
+        </field>
+    </record>
+
+   <!-- Machine Frames Form View -->
+        <record id="mrp_frames_form_view" model="ir.ui.view">
+        <field name="name">mrp.frames.form.view</field>
+        <field name="model">mrp.frames</field>
+        <field name="arch" type="xml">
+            <form string="Frames">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="x_frame_id" required="1"/>
+                            <field name="x_frame_type"/>
+                            <field name="x_frame_number" attrs="{'invisible': ['|',('x_frame_type', '=', 'single'),('x_frame_type', '=', '')]}"/>
+                            <field name="x_cylinder_slot" attrs="{'invisible': ['|','|',('x_frame_type', '=', ''),('x_frame_type', '=', 'single'),('x_frame_type', '=', 'plater')]}"/>
+                        </group>
+                        <group>
+                            <field name="x_frame_status"/>
+                            <field name="x_bottom_roll"/>
+                            <field name="x_pattern_number"/>
+                            <field name="x_frame_branch_id"/>
+                            <field name="x_current_workorder"/>
+                            <field name="x_wo_date"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Machine Stops Search View -->
+    <record id="mrp_frames_search_view" model="ir.ui.view">
+        <field name="name">mrp.frames.search.view</field>
+        <field name="model">mrp.frames</field>
+        <field name="arch" type="xml">
+            <search string="Frames">
+                <field name="x_frame_id" string="Frames"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Commodity Action View -->
+    <record id="mrp_frames_action_view" model="ir.actions.act_window">
+        <field name="name">Machine Frames</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.frames</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="mrp_frames_tree_view"/>
+        <field name="search_view_id" ref="mrp_frames_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="mrp_frames_menu_view"
+        name="Machine Frames"
+        action="mrp_frames_action_view"
+        parent="mrp.menu_mrp_bom"
+        sequence="4"/>
+
+    <record id="view_workcenter_frames_ef" model="ir.ui.view">
+        <field name="name">mrp.workcenter.frames.form</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+        <field name="arch" type="xml">
+          <xpath expr="//page[@name='general_info']" position="after">
+            <page string="Embossing Details" name="frames" attrs="{'invisible': [('x_embosser','=',False)]}">
+                <group>
+                    <group>
+                        <field name="x_machine_frame"/>
+                    </group>
+                </group>
+            </page>
+          </xpath>
+        </field>
+    </record>
+
+
+    <record id="mrp_production_workorder_form_yards_view_inherit" model="ir.ui.view" >
+        <field name="name">mrp.production.workorder.form.yards.view</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            <field name="duration" position="after">
+                <field name="x_yards_in"/>
+                <field name="x_yards_out"/>
+                <field name="x_shift_time"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="mrp_bom_form_view_inherit" model="ir.ui.view" >
+        <field name="name">mrp.bom.form.view.inherit</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page/field[@name='bom_line_ids']/tree/field[@name='bom_product_template_attribute_value_ids']" position="after">
+                 <field name="workcenter_capacities" optional="hide" widget="many2many_tags" options="{'no_create': True}"/>
+            </xpath> 
+        </field>
+    </record>
+
+
+    <!-- Shift Details Tree View -->
+    <record id="shift_details_tree_view" model="ir.ui.view">
+        <field name="name">shift.details.tree.view</field>
+        <field name="model">shift.details</field>
+        <field name="arch" type="xml">
+            <tree string="Shift Details">
+                <field name="x_shift_name" required="1"/>
+                <field name="x_shift_branch"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="shift_details_form_view" model="ir.ui.view">
+        <field name="name">shift.details.form.view</field>
+        <field name="model">shift.details</field>
+        <field name="arch" type="xml">
+            <form string="Machine Stops">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="x_shift_name" required="1"/>
+                            <field name="x_shift_branch"/>
+                            <field name="x_start_time" widget="float_time"/>
+                            <field name="x_end_time" widget="float_time"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Shift Details Search View -->
+    <record id="shift_details_search_view" model="ir.ui.view">
+        <field name="name">shift.details.search.view</field>
+        <field name="model">shift.details</field>
+        <field name="arch" type="xml">
+            <search string="Machine Stops">
+                <field name="x_shift_name" string="Shift Name"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Shift Details Action View -->
+    <record id="shift_details_action_view" model="ir.actions.act_window">
+        <field name="name">Shift Details</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">shift.details</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="shift_details_tree_view"/>
+        <field name="search_view_id" ref="shift_details_search_view"/>
+    </record>
+
+    <!-- Shift Detailsr Menu View -->
+    <menuitem id="shift_det_action_view"
+        name="Shift Details"
+        action="shift_details_action_view"
+        parent="mrp.menu_mrp_configuration"
+        sequence="4"/>
+
+
+    <record id="custom_view_resource_calendar_attendance_tree" model="ir.ui.view">
+        <field name="name">custom.view.resource.calendar.attendance.tree</field>
+        <field name="model">resource.calendar.attendance</field>
+        <field name="inherit_id" ref="resource.view_resource_calendar_attendance_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='hour_to']" position="after">
+                 <field name="x_shift" optional="hide"/>
+                 <field name="x_capacity" string="Capacity" optional="show"/>
+            </xpath>              
+        </field>
+    </record>
+
+    <!--Resource Timesheets-->
+    <record id="mrp_workcenter_productivity_tree_view" model="ir.ui.view">
+        <field name="name">mrp.workcenter.productivity.tree.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="arch" type="xml">
+            <tree string="Workorder Timesheets" editable="top">
+                <field name="production_id"/>
+                <field name="workorder_id"/>
+                <field name="company_id" optional="hide"/>
+                <field name="user_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <!-- <field name="setup_duration"/> -->
+                <field name="duration"/>
+                <field name="x_yards_in"/>
+                <field name="x_yards_out"/>
+                <field name="x_shift_time"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="mrp_workcenter_productivity_search_view" model="ir.ui.view">
+        <field name="name">mrp.workcenter.productivity.search.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="arch" type="xml">
+            <search string="User Timesheets">
+                <field name="workorder_id" string="Name"/>
+                <field name="user_id" string="User"/>
+                <group expand="0" string="Group By">
+                    <filter string="User" name="user" domain="[]" context="{'group_by': 'user_id'}"/>
+                    <filter string="Shift" name="shift" domain="[]" context="{'group_by': 'x_shift_time'}"/>
+                </group>
+                <searchpanel>
+                  <field name="company_id" groups="base.group_multi_company" icon="fa-building" enable_counters="1"/>
+                  <field name="user_id" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_workcenter_productivity_action_view" model="ir.actions.act_window">
+        <field name="name">Resource Timesheets</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.workcenter.productivity</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="mrp_workcenter_productivity_tree_view"/>
+        <field name="search_view_id" ref="mrp_workcenter_productivity_search_view"/>
+    </record>
+
+    <menuitem id="res_timesheets_action_view"
+        name="Resource Timesheets"
+        action="mrp_workcenter_productivity_action_view"
+        parent="mrp.menu_mrp_configuration"
+        sequence="4"/>
+
+
+    <!--Workcenter Timesheets-->
+    <record id="mrp_workcenter_machines_productivity_tree_view" model="ir.ui.view">
+        <field name="name">mrp.workcenter.productivity.tree.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="arch" type="xml">
+            <tree string="Workcenter Timesheets" editable="top">
+                <field name="production_id"/>
+                <field name="workorder_id"/>
+                <field name="company_id" optional="hide"/>
+                <field name="workcenter_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <!-- <field name="setup_duration"/> -->
+                <field name="duration"/>
+                <field name="x_yards_in"/>
+                <field name="x_yards_out"/>
+                <field name="x_shift_time"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="mrp_workcenter_machines_productivity_search_view" model="ir.ui.view">
+        <field name="name">mrp.workcenter.productivity.search.view</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="arch" type="xml">
+            <search string="Workcenter Timesheets">
+                <field name="workorder_id" string="Name"/>
+                <field name="workcenter_id" string="Workcenter"/>
+                <group expand="0" string="Group By">
+                    <filter string="Workcenter" name="user" domain="[]" context="{'group_by': 'workcenter_id'}"/>
+                    <filter string="Shift" name="shift" domain="[]" context="{'group_by': 'x_shift_time'}"/>
+                </group>
+                <searchpanel>
+                  <field name="company_id" groups="base.group_multi_company" icon="fa-building" enable_counters="1"/>
+                  <field name="workcenter_id" icon="fa-users" enable_counters="1"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_workcenter_machines_productivity_action_view" model="ir.actions.act_window">
+        <field name="name">Workcenter Timesheets</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.workcenter.productivity</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="mrp_workcenter_machines_productivity_tree_view"/>
+        <field name="search_view_id" ref="mrp_workcenter_machines_productivity_search_view"/>
+    </record>
+
+    <menuitem id="res_wc_timesheets_action_view"
+        name="Workcenter Timesheets"
+        action="mrp_workcenter_machines_productivity_action_view"
+        parent="mrp.menu_mrp_configuration"
+        sequence="4"/>
+
+
+</odoo>

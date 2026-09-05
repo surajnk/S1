@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">view_order_form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <button name="action_confirm" position="after">
+                <button name="button_create_analytic_account" string="Create Analytic Account" type="object" class="oe_highlight"
+                    attrs="{'invisible': ['|',('analytic_account_id','!=', False),('state','not in', ('sent', 'draft'))]}"/>
+            </button>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button class="oe_stat_button" name="action_view_analytic_lines" type="object" icon="fa-usd" string="Cost/Revenue" attrs="{'invisible': [('analytic_account_id','=', False),('state','in', ('sent', 'draft'))]}" groups="analytic.group_analytic_accounting"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_analytic_line_sales_order_tree" model="ir.ui.view">
+            <field name="name">account.analytic.line.sales.order.tree</field>
+            <field name="model">account.analytic.line</field>
+            <field name="arch" type="xml">
+                <tree string="Analytic Entries">
+                    <field name="date"/>
+                    <field name="name"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="account_id" optional="hide"/>
+                    <field name="general_account_id" optional="hide"/>
+                    <field name="product_id"/>
+                    <field name="unit_amount"/>
+                    <field name="product_uom_id"/>
+                    <field name="manufacture_order_id"/>
+                    <field name="partner_id"/>
+                    <field name="amount" sum="Total"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="move_id" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+    <record id="mrp_production_form_view_inherit_master_yards" model="ir.ui.view">
+        <field name="name">mrp.mrp.production.form.view.inherit.master.yards</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='bom_id']" position="before">
+                <field name="x_order_master_yards"/>
+                <field name="x_mrp_order_slit"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='miscellaneous']" position="after">
+                <page string="Order Comments" name="mrp_order_comments">
+                    <field name="x_mrp_order_comments"/>
+                </page>
+                <page string="Multiple Slit Sizes" name="mrp_multi_sizes">
+                    <group>
+                        <field name="x_mrp_order_multi_slit_size">
+                            <tree editable="bottom" limit="20">
+                                <field name="x_order_mrp_outs"/>
+                                <field name="x_order_mrp_size"/>
+                                <field name="x_total_mrp_size"/>
+                            </tree>
+                            <form>
+                                <group>
+                                <field name="x_order_mrp_outs"/>
+                                <field name="x_order_mrp_size"/>
+                                <field name="x_total_mrp_size"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+                <page string="Special Messages" name="mrp_spl_msgs">
+                    <group>
+                        <field name="x_mrp_customer_msg"/>
+                        <field name="x_mrp_messages">
+                            <tree limit="20">
+                                <field name="x_mrp_special_message"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="x_mrp_special_message"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+                <page string="Operation Info" name="wo_week">
+                    <group>
+                        <field name="workorder_week_field_ids">
+                            <tree limit="20">
+                                <field name="operation_name"/>
+                                <field name="week_year"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//notebook/page[@name='miscellaneous']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="after">
+                <field name="x_order_customer_mrp_qty"/>
+                <field name="x_order_customer_mrp_width"/>
+                <field name="x_order_customer_mrp_length"/>
+                <field name="x_order_mrp_over"/>
+                <field name="x_order_mrp_under"/>
+                <field name="x_so_delivery_date"/>
+                <field name="x_mrp_confirmed_date"/>
+                <field name="week_year"/>
+                <field name="x_mrp_confirmed_date_boolean"/>
+                <field name="x_mrp_confirmed_date_notify_boolean"/>
+            </xpath>
+        </field>
+    </record>
+
+<!--     <record id="mrp_production_workorder_quantity_tree_view_custom" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.quantity.tree.custom</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="operation_id" position="after">
+                <field name="x_order_customer_mrp_wo_qty"/>
+                <field name="x_order_customer_mrp_wo_width"/>
+                <field name="x_order_customer_mrp_wo_length"/>
+            </field>
+        </field>
+    </record>
+ -->
+    <record model="ir.ui.view" id="inherit_mrp_production_workorder_quantity_tree_editable_view_custom">
+        <field name="name">inherit.mrp.production.work.order.quantity.tree.editable.custom</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <field name="workcenter_id" position="after">
+                <field name="x_order_customer_mrp_wo_qty" groups="mrp_enhancement_report.group_wo_mgr_user,mrp_enhancement_report.group_wo_user"/>
+                <field name="x_order_customer_mrp_wo_width" groups="mrp_enhancement_report.group_wo_user"/>
+                <field name="x_order_customer_mrp_wo_length" groups="mrp_enhancement_report.group_wo_user"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="mrp_production_tree_view_mto" model="ir.ui.view">
+        <field name="name">mrp.production.tree</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_customer_name"/>
+                <field name="x_so_delivery_date"/>
+                <field name="x_mrp_confirmed_date"/>
+            </xpath>
+            <xpath expr="//field[@name='product_uom_id']" position="replace">
+                <field name="x_order_customer_uom"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="model_mrp_production_wip" model="ir.actions.server">
+        <field name="name">In Progress</field>
+        <field name="model_id" ref="mrp.model_mrp_workorder"/>
+        <field name="binding_model_id" ref="mrp.model_mrp_workorder"/>
+        <field name="binding_view_types">form,list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_wip()</field>
+    </record>
+
+
+</odoo>

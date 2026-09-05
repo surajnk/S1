@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- 1. Action FIRST -->
+    <record id="action_zebra_printer" model="ir.actions.act_window">
+        <field name="name">Zebra Printers</field>
+        <field name="res_model">zebra.printer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p>Manage Zebra / ZPL printers, queues, darkness, speed, etc.</p>
+        </field>
+    </record>
+
+    <!-- 2. Views (tree + form) -->
+    <record id="view_zebra_printer_tree" model="ir.ui.view">
+        <field name="name">zebra.printer.tree</field>
+        <field name="model">zebra.printer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence"/>
+                <field name="name"/>
+                <field name="queue_name"/>
+                <field name="dpi"/>
+                <field name="label_width_mm"/>
+                <field name="label_height_mm"/>
+                <field name="darkness"/>
+                <field name="speed"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_zebra_printer_form" model="ir.ui.view">
+        <field name="name">zebra.printer.form</field>
+        <field name="model">zebra.printer</field>
+        <field name="arch" type="xml">
+            <form string="Zebra Printer">
+                <header>
+                    <button name="action_test_print"
+                            type="object"
+                            string="Test Print"
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="General">
+                            <field name="active"/>
+                            <field name="sequence"/>
+                            <field name="name"/>
+                            <field name="queue_name"/>
+                            <field name="notes"/>
+                        </group>
+
+                        <group string="Media / Speed">
+                            <field name="dpi"/>
+                            <field name="label_width_mm"/>
+                            <field name="label_height_mm"/>
+                            <field name="darkness"/>
+                            <field name="speed"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. Menus LAST -->
+    <menuitem id="menu_zebra_root"
+              name="Zebra Printing"
+              sequence="40"/>
+
+    <menuitem id="menu_zebra_config"
+              name="Configuration"
+              parent="menu_zebra_root"
+              sequence="10"/>
+
+    <menuitem id="menu_zebra_printers"
+              name="Printers"
+              parent="menu_zebra_config"
+              action="action_zebra_printer"
+              sequence="20"/>
+
+</odoo>

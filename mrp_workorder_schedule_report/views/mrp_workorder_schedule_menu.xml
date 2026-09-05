@@ -1,0 +1,8 @@
+<odoo>
+    <menuitem id="menu_mrp_workorder_schedule_report_root"
+              name="WC24"
+              parent="mrp.menu_mrp_root"
+              action="action_mrp_workorder_schedule_wizard"
+              groups="mrp.group_mrp_user,mrp.group_mrp_manager,base.group_system"
+              sequence="80"/>
+</odoo>

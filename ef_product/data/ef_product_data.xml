@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--
+             Precisions
+        -->
+        <record forcecreate="True" id="decimal_price" model="decimal.precision">
+            <field name="name">EF Product</field>
+            <field name="digits">6</field>
+        </record>
+        <record forcecreate="True" id="decimal_price_new" model="decimal.precision">
+            <field name="name">EF Price</field>
+            <field name="digits">5</field>
+        </record>
+
+        <record id="ir_cron_price_increase" model="ir.cron">
+            <field name="name">Price Increase Update</field>
+            <field name="model_id" ref="ef_product.model_price_group"/>
+            <field name="state">code</field>
+            <field name="code">model.price_increase()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+        </record>
+
+
+    </data>
+</odoo>

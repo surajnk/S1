@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_sales_operations_plan_tree" model="ir.ui.view" >
+        <field name="name">mrp.sales.operations.plan.tree</field>
+        <field name="model">mrp.sales.operations.plan</field>
+        <field name="arch" type="xml">
+            <tree decoration-bf="state in ('begin', 'end')" string="Sales and Operations Plan" editable="top">
+                <header>
+                    <button name="button_load" type="object" string="Confirm"/>
+                    <button name="button_done" type="object" string="Approve"/>
+                    <button name="button_cancel" type="object" string="Cancel"/>
+                    <button name="button_reset" type="object" string="Reset"/>
+                    <button name="%(action_mrp_sop_massive_planning)d" type="action" string="SOP Planning"/>
+                </header>
+                <field name="warehouse_id" optional="show" groups="stock.group_stock_multi_warehouses" options="{'no_open': True, 'no_create': True}"/>
+                <field name="product_id" decoration-bf="1" optional="show" options="{'no_open': True, 'no_create': True}"/>
+                <field name="product_tmpl_id" invisible="1"/>
+                <field name="date_planned" widget="date" decoration-warning="state in ('draft', 'load') and date_planned &lt; now" decoration-danger="state in ('draft', 'load') and date_planned &lt; current_date" decoration-bf="state in ('draft', 'load') and (date_planned &lt; current_date or date_planned &lt; now)"/>
+                <field name="product_uom_id" readonly="1" options="{'no_open': True, 'no_create': True}"/>
+                <field name="qty_on_hand" invisible="1"/>
+                 <field name="qty_pir" optional="show"/>
+                <field name="qty_cum_demand" optional="show"/>
+                <field name="qty_cum_requested" optional="hide"/>
+                <field name="qty_cum_mo_draft" optional="hide"/>
+                <field name="qty_cum_posub_draft" optional="hide"/>
+                <field name="qty_cum_supply" optional="hide"/>
+                <field name="product_qty" decoration-bf="1"/>
+                <field name="qty_cum_planned" optional="show"/>
+                <field name="qty_inv_projected"/>
+                <field name="bom_id" attrs="{'invisible': [('state', 'in', ('end','begin','demand'))]}" options="{'no_open': True, 'no_create': True}"/>
+                <field name="subcontractor_id" attrs="{'invisible':['|',('bom_type','!=','subcontract'),('state', 'in', ('end','begin','demand'))]}" options="{'no_open': True, 'no_create': True}" domain="[('product_tmpl_id','=', product_id),('is_subcontractor','=', True)]"/>
+                <button name="button_load" type="object" string="Confirm" states="draft"/>
+                <button name="button_done" type="object" string="Approve" states="load"/>
+                <field name="origin" options="{'no_open': True, 'no_create': True}"/>
+                <field name="state" readonly="1" widget="badge"
+                    decoration-danger="state == 'cancel'"
+                    decoration-success="state == 'demand'"
+                    decoration-info="state == 'done' or state == 'closed'"
+                    decoration-warning="state == 'draft' or state == 'load'"/>
+                <field name="company_id" invisible="1"/>
+                <field name="bom_type" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="mrp_sales_operations_plan_pivot" model="ir.ui.view">
+        <field name="name">mrp.sales.operations.plan.pivot</field>
+        <field name="model">mrp.sales.operations.plan</field>
+        <field name="arch" type="xml">
+            <pivot string="Sales and Operations Planning">
+                <field name="product_id" type="row"/>
+                <field name="date_planned" type="col" interval="month"/>
+                <field name="sops_revenues" type="measure"/>
+                <field name="sops_costs" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="mrp_sales_operations_plan_graph" model="ir.ui.view">
+        <field name="name">mrp.sales.operations.plan.graph</field>
+        <field name="model">mrp.sales.operations.plan</field>
+        <field name="arch" type="xml">
+            <graph string="Sales and Operations Planning">
+                <field name="date_planned" interval="month"/>
+                <field name="product_id"/>
+                <field name="sops_revenues" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_mrp_sop_activity" model="ir.ui.view">
+        <field name="name">mrp.sales.operations.plan.activity</field>
+        <field name="model">mrp.sales.operations.plan</field>
+        <field name="arch" type="xml">
+            <activity string="Sales and Operations Planning">
+                <templates>
+                    <div t-name="activity-box">
+                        <div>
+                            <field name="state" display="full"/>
+                            <field name="product_id" muted="1" display="full"/>
+                            <field name="date_planned" muted="1" display="full" widget="date"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+    <record id="mrp_sales_operations_plan_filter" model="ir.ui.view">
+        <field name="name">mrp.sales.operations.plan.filter</field>
+        <field name="model">mrp.sales.operations.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="origin" string="Version" filter_domain="[('origin', 'ilike', self)]"/>
+                <filter string="Active" name="active" domain="[('state','in',('begin','end','demand','draft','load','done'))]"/>
+                <filter string="Finance" name="finance" domain="[('state','in',('demand','draft','load','done'))]"/>
+                <filter string="Cancel" name="cancel" domain="[('state','=','cancel')]"/>
+                <filter string="Closed" name="closed" domain="[('state','=','closed')]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="groupby_product_id" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Warehouse" name="groupby_warehouse_id" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+                <searchpanel>
+                    <field name="state"/>
+                    <field name="warehouse_id" select="multi" domain="[('manufacture_to_resupply', '!=', False)]"/>
+                    <field name="product_id" select="multi" domain="[('sop_active','!=', False)]"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_sop_plan_action" model="ir.actions.act_window">
+        <field name="name">Sales and Operations Plan</field>
+        <field name="res_model">mrp.sales.operations.plan</field>
+        <field name="view_mode">tree,activity</field>
+        <field name="context">{'search_default_active': 1, 'search_default_groupby_product_id': 1, 'search_default_groupby_warehouse_id': 1}</field>
+        <field name="search_view_id" ref="mrp_sales_operations_plan_filter"/>
+    </record>
+
+    <record id="mrp_sop_financial_action" model="ir.actions.act_window">
+        <field name="name">Financial Evaluation</field>
+        <field name="res_model">mrp.sales.operations.plan</field>
+        <field name="view_mode">pivot,graph,activity</field>
+        <field name="context">{'search_default_finance': 1}</field>
+        <field name="search_view_id" ref="mrp_sales_operations_plan_filter"/>
+    </record>
+
+    <record id="mrp_sop_financial_action_pivot" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="mrp_master_production_plan.mrp_sales_operations_plan_pivot"/>
+        <field name="act_window_id" ref="mrp_sop_financial_action"/>
+    </record>
+
+    <record id="mrp_sop_financial_action_grapf" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="mrp_master_production_plan.mrp_sales_operations_plan_graph"/>
+        <field name="act_window_id" ref="mrp_sop_financial_action"/>
+    </record>
+</odoo>
+
+

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="workorder_custom_report_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <!--                <t t-set="wc_name" t-value="[]"/>-->
+                <t t-foreach="workorder_data" t-as="wc">
+                    <t t-foreach="wc" t-as="wc_name">
+                        <t t-set="date_data" t-value="wc[wc_name][0]"/>
+                        <t t-set="date_total" t-value="wc[wc_name][1]"/>
+                        <t t-if="date_data">
+                            <div class="page">
+                                <br/><br/><br/><br/>
+                                <div>
+                                    <h1>
+                                        <strong t-esc="wc_name"/>
+                                    </h1>
+                                </div>
+                                <t t-set="hours" t-value="0"/>
+                                <table class="table table-sm table-reports">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:100px;">Date</th>
+                                            <th>W/C</th>
+                                            <th>M/O</th>
+                                            <th>Shaded</th>
+                                            <th>Due</th>
+                                            <th>Finished Part/ Stock</th>
+                                            <!-- <th>Notes</th> -->
+                                            <th>Cust</th>
+                                            <th>Width/Trim</th>
+                                            <th>W/O Qty</th>
+                                            <th>Cust Qty</th>
+                                            <th>Hrs</th>
+                                            <th>Base Avail</th>
+                                            <th>T/C</th>
+                                            <th>Rod</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="date_data" t-as="dd">
+                                            <t t-foreach="date_data[dd]" t-as="dd_value">
+                                                <tr>
+                                                        <td>
+                                                            <span t-esc="dd_value['date']" t-options='{"widget": "date","format": "MM-dd-yyyy"}'/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['W/O']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['M/O']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Shaded']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Due']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Finished Part/ Stock']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Cust']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Width/Trim']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['W/O Qty']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Cust Qty']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Hrs']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Base Avail']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['T/C']"/>
+                                                        </td>
+                                                        <td>
+                                                            <span t-esc="dd_value['Rod']"/>
+                                                        </td>
+                                                        <t t-set="hours" t-value="hours+dd_value['Hrs']"/>
+                                                </tr>
+                                            </t>
+                                            <tr>
+                                                <td style="font-size: 1.0em;" colspan="2">
+                                                    <i>
+                                                        <b>
+                                                          <strong>
+                                                              <t t-esc="dd" t-options='{"widget": "date","format": "dd-MM-yyyy"}'/> <span t-esc="dd_value['weekday']"/> <span t-esc="dd_value['weeknumb']"/> 
+                                                          </strong>
+                                                        </b>
+                                                    </i>
+                                                </td>
+                                                <td colspan="100" style="font-size: 1.0em;">
+                                                    <i>
+                                                        <b>
+                                                            [ <t t-esc="date_total[dd]"/> ]
+                                                        </b>
+                                                    </i>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                                <h1>Hours: =
+                                    <t t-esc="'{0:.2f}'.format(hours)"/>
+                                </h1>
+                                <p style="page-break-before:always;"></p>
+                            </div>
+                        </t>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+ <template id="workcenter_prod_custom_report_template">
+        <t t-call="web.html_container">
+        <div class="header">
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+                        <div class="printed-info">
+                            Printed Date: <t t-esc="time.strftime('%Y-%m-%d')"/>
+                            <br/>
+                            Printed Time: <t t-esc="time.strftime('%H:%M:%S')"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="printed-info">
+                            WORKCENTER PRODUCTION
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        <div class="page-info">
+                            Page: <span class="page-number">1</span>
+                            <br/>
+                            WORK_CENTER
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br/><br/><br/><br/>
+        <div class="page">
+            <br/><br/><br/><br/>
+            <table class="table table-sm table-reports" style="border-collapse: collapse; width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid black;">Workcenter</th>
+                        <th style="border: 1px solid black;">Shift</th>
+                        <th style="border: 1px solid black;">Set Up</th>
+                        <th style="border: 1px solid black;">Setup Duration</th>
+                        <th style="border: 1px solid black;">Total Yards</th>
+                        <th style="border: 1px solid black;">Total Hours</th>
+                        <th style="border: 1px solid black;">Realized Yds</th>
+                        <th style="border: 1px solid black;">Avg Setup</th>
+                        <th style="border: 1px solid black;">Avg YPM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="line" t-as="workcenter">
+                        <t t-set="first_row" t-value="True"/>
+                        <t t-foreach="line[workcenter]" t-as="shift">
+                            <tr>
+                                <t t-if="first_row">
+                                    <td style="border: 1px solid black;" t-att-rowspan="len(line[workcenter])"><t t-esc="workcenter"/></td>
+                                    <t t-set="first_row" t-value="False"/>
+                                </t>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['Shift']"/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['SetCount']"/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['SetT']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['Yds']"/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['Hours']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['RelYds']"/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['AvgSt']" t-options='{"widget": "float", "precision": 2}'/></td>
+                                <td style="border: 1px solid black;text-align: center;"><t t-esc="shift['AvgYm']" t-options='{"widget": "float", "precision": 2}'/></td>
+                            </tr>
+                        </t>
+                        <tr>
+                            <td style="border: 1px solid black;"><b>Total Hours for <t t-esc="workcenter"/></b></td>
+                            <td style="border: 1px solid black;"/>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['SetCount'] for shift in line[workcenter])"/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['SetT'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 2}'/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['Yds'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 2}'/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['Hours'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 2}'/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['RelYds'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 0}'/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['AvgSt'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 2}'/></b></td>
+                            <td style="border: 1px solid black;text-align: center;"><b><t t-esc="sum(shift['AvgYm'] for shift in line[workcenter])" t-options='{"widget": "float", "precision": 2}'/></b></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                var numPages = $('div.page').length;
+                $('.page-number').text(numPages);
+            });
+        </script>
+    </t>
+    </template>
+</odoo>
+

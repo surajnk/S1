@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_on_order_detail_line_tree" model="ir.ui.view">
+        <field name="name">on.order.detail.line.tree</field>
+        <field name="model">on.order.detail.line</field>
+        <field name="arch" type="xml">
+            <tree create="false" edit="false" delete="false">
+                <field name="order_type"/>
+                <field name="reference"/>
+                <field name="so_number"/>
+                <field name="customer_id"/>
+                <field name="lot_name" optional="show"/>
+                <field name="date_order"/>
+                <field name="qty" sum="Total"/>
+                <!-- <field name="order_uom_id" string="UoM"/> -->
+                <field name="pending_qty" string="Pending Qty" sum="Total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

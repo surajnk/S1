@@ -1,0 +1,23 @@
+<odoo>
+    <record id="mrequest_confirm_fom" model="ir.ui.view">
+        <field name="name">mrequest.comfirm.form</field>
+        <field name="model">mrequest.comfirm</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    Are you sure to mark Material request as Done?
+                </sheet>
+                <footer>
+                    <button name="confirm_mrquest" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_mrequest_confirm">
+        <field name="name">Confirm</field>
+        <field name="res_model">mrequest.comfirm</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

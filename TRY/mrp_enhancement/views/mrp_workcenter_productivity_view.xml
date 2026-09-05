@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mwp_down_street_operations_tree_ext" model="ir.ui.view">
+        <field name="name">mwp.down.street.operations.view.ext</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mwp_down_street_operations_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='produce_quantity']" position="before">
+                <field name="roll_id"/>
+                <field name="quantity"/>
+            </xpath>
+            <xpath expr="//field[@name='process_by_id']" position="before">
+                <field name="create_date"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

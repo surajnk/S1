@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cheque_manage,cheque.manage,model_cheque_manage,base.group_user,1,1,1,1
+access_cheque_outgoing_attach,access.cheque.outgoing.attach,model_cheque_outgoing_attach,,1,1,1,1
+access_cheque_wizard,access.cheque.wizard,model_cheque_wizard,,1,1,1,1
+access_cheque_transfer_wizard,access.cheque.transfer.wizard,model_cheque_transfer_wizard,,1,1,1,1
+access_cheque_outgoing_wizard,access.cheque.outgoing.wizard,model_cheque_outgoing_wizard,,1,1,1,1
+access_cheque_report_wizard,access.cheque.report.wizard,model_cheque_report_wizard,,1,1,1,1

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <!--  <record id="mrp_production_workorder_tree_view_custom" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.custom</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='t_c']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='trim']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='rod']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='base_avail']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='width']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>                  
+        </field>
+    </record> -->
+
+<!--     <record id="mrp_production_workorder_tree_view_custom_2" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.custom.2</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp_mto_analytic.inherit_mrp_production_workorder_quantity_tree_editable_view_custom"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='x_order_customer_mrp_wo_length']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>
+            <xpath expr="//field[@name='x_order_customer_mrp_wo_width']" position="attributes">
+                 <attribute name="groups">mrp_enhancement_report.group_wo_mgr_user</attribute>
+            </xpath>                     
+        </field>
+    </record> -->
+
+    <record model="ir.ui.view" id="inherit_mrp_production_workorder_tree_editable_view_custom">
+        <field name="name">inherit.mrp.production.work.order.tree.editable.custom</field>
+        <field name="model">mrp.workorder</field>
+        <!-- Change inherit_id to point to mrp_enhancement's view, not base mrp -->
+        <field name="inherit_id" ref="mrp_enhancement.mrp_production_workorder_tree_editable_view_ext"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree//button[@name='%(mrp_shop_floor_control.action_set_date_wizard)d']" position="before">
+                <field name="width"/>
+                <field name="trim"/>
+                <field name="base_avail"/>
+                <field name="t_c"/>
+                <field name="rod"/>
+                <field name="shaded"/>
+                <field name="timer_id" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

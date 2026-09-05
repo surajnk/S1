@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    	<template id="assets_backend" name="advanda_search_in_tree assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+            	<link rel="stylesheet" href="/odoo_advance_search/static/src/scss/search.scss" />
+            	<script type="text/javascript" src="/odoo_advance_search/static/src/js/search_view_common.js"></script>
+            	<script type="text/javascript" src="/odoo_advance_search/static/src/js/web_client.js"></script>
+            	<script type="text/javascript" src="/odoo_advance_search/static/src/js/list_controller.js"></script>
+            	<script type="text/javascript" src="/odoo_advance_search/static/src/js/list_renderer.js"></script>
+            	
+            </xpath> 
+        </template>
+        
+    </data>
+</odoo>

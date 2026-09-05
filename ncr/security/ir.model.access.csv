@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_res_nrc,res.nrc,model_res_nrc,base.group_user,1,1,1,1
+access_defect_master,defect.master,model_defect_master,base.group_user,1,1,1,1
+access_deposition_code,deposition.code,model_deposition_code,base.group_user,1,1,1,1
+access_nrc_data,nrc.data,model_nrc_data,base.group_user,1,1,1,1
+access_ncr_lot,ncr_lot,model_ncr_lot,base.group_user,1,1,1,1
+access_nrc_stock_lot,nrc_stock_lot,model_nrc_stock_lot,base.group_user,1,1,1,1

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="mrp_assets_backend" name="mrp assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript"
+                    src="/mrp_shop_floor_control/static/src/js/client_action.js"/>
+            <link rel="stylesheet"
+                  href="/mrp_shop_floor_control/static/src/scss/client_action.scss"/>
+        </xpath>
+    </template>
+
+    <record id="action_mrp_workcenter_capacity_report" model="ir.actions.client">
+        <field name="name">Workcenter Capacity Report</field>
+        <field name="res_model">mrp.workcenter.capacity.report</field>
+        <field name="tag">mrp_workcenter_capacity_report</field>
+    </record>
+
+    <menuitem
+        id="menu_mrp_workcenter_capacity_report"
+        sequence="60"
+        parent="mrp.menu_mrp_reporting"
+        action="action_mrp_workcenter_capacity_report"
+        groups="mrp.group_mrp_user"/>
+
+</odoo>

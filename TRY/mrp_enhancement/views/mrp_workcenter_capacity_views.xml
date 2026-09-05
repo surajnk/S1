@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <!-- Change the string name -->
+    <record id="mrp_workcenter_capacity_pivot_change_field_string" model="ir.ui.view">
+        <field name="name">mrp.workcenter.capacity.pivot.change.string</field>
+        <field name="model">mrp.workcenter.capacity</field>
+        <field name="inherit_id" ref="mrp_shop_floor_control.mrp_workcenter_capacity_pivot"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='wc_available_capacity_cal']" position="attributes">
+                <attribute name="string">Capacity</attribute>
+            </xpath>
+            <xpath expr="//field[@name='wc_available_capacity_cal_yards']" position="attributes">
+                <attribute name="string">Load Yards</attribute>
+            </xpath>
+            <xpath expr="//field[@name='wo_capacity_requirements']" position="attributes">
+                <attribute name="string">Load Hrs</attribute>
+            </xpath>
+            <xpath expr="//field[@name='wc_capacity_load']" position="attributes">
+                <attribute name="string">Load %</attribute>
+            </xpath>
+            <xpath expr="//field[@name='wc_remaining_capacity']" position="attributes">
+                <attribute name="string">Available Hrs</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+

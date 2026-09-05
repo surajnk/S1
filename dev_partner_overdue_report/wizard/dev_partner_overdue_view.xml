@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<openerp>
+    <data>
+        <record id="view_dev_partner_overdue_detail_form" model="ir.ui.view">
+            <field name="name">view.dev.partner.overdue.detail.form</field>
+            <field name="model">dev.partner.overdue.detail</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+            <form string="Partner Overdue" version="7.0">
+                <group col="4">
+                    <field name="start_date"/>
+                    <field name="company_id"/>
+                    <newline/>
+                    <field name="report_type"/>
+                    <field name="ageing_by"/>
+                    <field name="partner" required="1"/>
+                    <newline/>
+                    <field name="partner_type" widget="radio"/>
+                    <field name="target_move" widget="radio"/>
+                </group>
+                <separator string="Partners" colspan="4" attrs="{'invisible':[('partner','=','all')]}"/>
+                <field name="partner_ids" attrs="{'invisible':[('partner','=','all')],'required':[('partner','=','selected')]}"/>
+                <footer>
+                    <button  name="print_report" string="Print Report" type="object" class="oe_highlight"/>
+                    or
+                    <button name="print_excel" string="Print Excel" type="object" class="oe_highlight"/>
+	        	   or
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+            </field>
+        </record>
+
+        <record id="action_dev_partner_overdue_detail_report" model="ir.actions.act_window">
+            <field name="name">Partner Overdue Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">dev.partner.overdue.detail</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+    
+
+        <menuitem
+            name="Print Partner Overdue"
+            parent="account.menu_finance_reports"
+            action="action_dev_partner_overdue_detail_report"
+            id="menu_dev_partner_overdue"
+           />
+           
+       
+   </data>
+</openerp>

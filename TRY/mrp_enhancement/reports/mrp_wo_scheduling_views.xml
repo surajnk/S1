@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <!-- Change the footer margin to show the details -->
+    <record id="mrp_routing_workcenter_capacity.paperformat_productivity_small_label" model="report.paperformat">
+        <field name="margin_bottom">15</field>
+    </record>
+
+    <!-- Create generic code of report's header and footer -->
+    <template id="report_wc_prod_label_header_footer" name="mrp work center productivity label view">
+        <div class="col-12 text-center">
+            <h3 class="font-weight-bold"><t t-esc="last_roll_line.workorder_id.production_id.name"/></h3>
+        </div>
+        <div class="col-12 text-center">
+            <h3><t t-esc="last_productivity_label_data.get('item')"/></h3>
+        </div>
+    </template>
+
+    <!-- Override the Roll Label report to apply the new layout -->
+    <template id="mrp_routing_workcenter_capacity.report_wc_prod_label" name="Productivity Label (PDF) Extend">
+        <t t-call="web.basic_layout">
+            <t t-set="last_productivity_label_data" t-value=""/>
+            <t t-set="last_roll_line" t-value=""/>
+            <div class="page">
+                <t t-foreach="docs" t-as="roll_line">
+                    <t t-set="productivity_label_data" t-value="roll_line.workorder_id.get_productivity_label_data(roll_line, roll_line.workorder_id)"/>
+                    <div class="row border-bottom border-dark">
+                        <t t-set="last_productivity_label_data" t-value="productivity_label_data"/>
+                        <t t-set="last_roll_line" t-value="roll_line"/>
+                        <t t-call="mrp_enhancement.report_wc_prod_label_header_footer"/>
+                    </div>
+                    <div class="row border-bottom border-dark text-center">
+                        <div class="col-12 mb4 text-center">
+                            <img class="p-2" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('Code128', productivity_label_data.get('sale_name') or '00000', 580, 150)"/>
+                        </div>
+                    </div>
+                    <div class="row pt-2">
+                        <div class="col-11" style="font-size: 2.2em;">
+                            <t t-esc="productivity_label_data.get('name_01')"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12" style="font-size: 2.2em;">
+                            <t t-esc="int(productivity_label_data.get('customer_width'))"/>"
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 t-esc="roll_line.roll_id.name" class="font-weight-bold" style="font-size: 3.0em;"/>
+                        </div>
+                    </div>
+                    <div class="row font-weight-bold">
+                        <div class="col-5" style="font-size: 2.2em;">
+                            <t t-esc="productivity_label_data.get('so_expected_date')"/>
+                        </div>
+                        <div class="col-3" style="font-size: 2.2em;">
+                            <t t-if="roll_line.workorder_id and roll_line.workorder_id.production_id and roll_line.workorder_id.production_id.analytic_account_id and roll_line.workorder_id.production_id.analytic_account_id.partner_id"
+                               t-esc="roll_line.workorder_id.production_id.analytic_account_id.partner_id.name.split(' ')[0]"/>
+                        </div>
+                        <div class="col-4 text-right" style="font-size: 2.2em; color: #fff; background: black;">
+                            <t t-esc="productivity_label_data.get('total_yards')" class="text-center p-2"/>
+                        </div>
+                    </div>
+                    <table class="table">
+                        <tr>
+                            <td class="border-bottom">
+                                <strong>Machine</strong>
+                            </td>
+                            <td class="text-center border-bottom">
+                                <strong>Oper</strong>
+                            </td>
+                            <td class="text-center border-bottom">
+                                <strong>Date/Time</strong>
+                            </td>
+                            <td class="text-center border-bottom">
+                                <strong>Yards</strong>
+                            </td>
+                            <td class="text-center border-bottom">
+                                <strong>Loc</strong>
+                            </td>
+                            <!--<t t-set="count" t-value="1"/>-->
+                        </tr>
+                        <tr t-foreach="productivity_label_data.get('data_lines')" t-as="line">
+                            <td class="border-bottom border-right border-left p-1">
+                                <t t-esc="line.get('machine')"/>
+                            </td>
+                            <td class="border-bottom border-right p-1">
+                                <t t-esc="line.get('operator')"/>
+                            </td>
+                            <td class="border-bottom border-right p-1">
+                                <t t-if="line.get('date')" t-esc="line.get('date').strftime('%Y-%m-%d %H:%M')"/>
+                            </td>
+                            <td class="border-bottom border-right p-1">
+                                <t t-esc="line.get('yards')"/>
+                            </td>
+                            <td class="border-bottom border-right p-1">
+                                <t t-esc="line.get('location')"/>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </div>
+            <div class="footer o_standard_footer">
+                <div class="row border-top border-dark">
+                    <t t-call="mrp_enhancement.report_wc_prod_label_header_footer">
+                        <t t-set="productivity_label_data" t-value="last_productivity_label_data"/>
+                        <t t-set="roll_line" t-value="last_roll_line"/>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

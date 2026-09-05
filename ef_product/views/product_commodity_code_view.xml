@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product Commodity Tree View -->
+    <record id="product_commodity_tree_view" model="ir.ui.view">
+        <field name="name">product.commodity.code.tree.view</field>
+        <field name="model">product.commodity.code</field>
+        <field name="arch" type="xml">
+            <tree string="Product Commodity">
+                <field name="name" required="1"/>
+                <field name="x_Description"/>
+            </tree>
+        </field>
+    
+    <!-- Product Commodity Form View -->
+    </record>
+
+        <record id="product_commodity_form_view" model="ir.ui.view">
+        <field name="name">product.commodity.code.form.view</field>
+        <field name="model">product.commodity.code</field>
+        <field name="arch" type="xml">
+            <form string="Product Commodity Code">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="x_trim_width"/>
+                            <field name="x_trim_length"/>
+                            <field name="x_waste"/>
+                            <field name="x_allow_ambossing"/>
+                            <field name="x_HS_Code"/>
+                        </group>
+                        <group>
+                            <field name="x_Description"/>
+                            <field name="x_min_antique_order"/>
+                            <field name="x_min_amboss_order"/>
+                            <field name="x_sheet_orientation"/>
+                            <field name="x_roll_orientation"/>
+                        </group>
+                        <field name="x_labor_items_grid">
+                            <tree editable="bottom">
+                                <field name="x_labor_item"/>
+                            </tree>
+                            <form editable="Labor Items">
+                                <field name="x_labor_item"/>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Commodity Search View -->
+    <record id="product_commodity_search_view" model="ir.ui.view">
+        <field name="name">product.commodity.search.view</field>
+        <field name="model">product.commodity.code</field>
+        <field name="arch" type="xml">
+            <search string="Product Commodity">
+                <field name="name" string="Product Commodity"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Commodity Action View -->
+    <record id="product_commodity_action_view" model="ir.actions.act_window">
+        <field name="name">Product Commodity</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.commodity.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_commodity_tree_view"/>
+        <field name="search_view_id" ref="product_commodity_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="product_commodity_menu_view"
+        name="Product Commodity"
+        action="product_commodity_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

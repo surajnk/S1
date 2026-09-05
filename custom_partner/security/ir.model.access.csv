@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sales_offices,access_sales_offices,model_sales_offices,base.group_user,1,1,1,1
+access_freight_terms,access_freight_terms,model_freight_terms,base.group_user,1,1,1,1
+access_ship_via,access_ship_via,model_ship_via,base.group_user,1,1,1,1
+access_publisher,access_publisher,model_publisher,base.group_user,1,1,1,1
+
+access_skid_values,skid.values,model_skid_values,,1,1,1,1

@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_mrp_production">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page border-dark border">
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <t t-set="bom_value_data" t-value=""/>
+                            <t t-set="sale_id" t-value="o.procurement_group_id.mrp_production_ids.move_dest_ids.group_id.sale_id"/>
+                            <div class="col-6">
+                                <table class="table table-bordered border-0">
+                                    <thead/>
+                                    <tbody>
+                                        <tr class="p-0">
+                                            <td class="border-0 font-weight-bold h5">
+                                                Work Order: <t t-esc="o.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship Date:</span>
+                                                <t t-if="sale_id.expected_date">
+                                                    <t t-esc="sale_id.expected_date.date().strftime('%b %d, %Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Request Date:</span>
+                                                <t t-if="sale_id.commitment_date">
+                                                    <t t-esc="sale_id.commitment_date.date().strftime('%b %d, %Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Sold:</span>
+                                                <t t-if="o.x_customer_name">
+                                                    <t t-esc="o.x_customer_name.display_name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-5">
+                                <table class="table table-bordered border-0">
+                                    <thead/>
+                                    <tbody>
+                                        <tr t-if="o.is_printed_mrp_production_report">
+                                            <td class="border-0 font-weight-bold">
+                                                <span class="pl-4">* REPRINT *</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Print date:</span> <t t-esc="datetime.datetime.now().date().strftime('%%b %%d, %%Y')"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship VIA:</span> <t t-esc="sale_id.x_sale_ship_via.x_name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship:</span> <address t-field="sale_id.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-1 border-left border-dark">
+                                <h5 style="-webkit-transform: rotate(90deg);
+                                    -moz-transform: rotate(90deg);
+                                    -ms-transform: rotate(90deg);
+                                    -o-transform: rotate(90deg);
+                                    padding-top: 1.5rem;
+                                    margin-top: 2rem;
+                                    white-space: nowrap;"
+                                    class="font-weight-bold">
+                                    <t t-esc="o.name"/>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-5 font-weight-bold">
+                                <!--<h5>Over/Under: + 4% / - 0%</h5>-->
+                                <h6>Over/Under:</h6>
+                                <span class="font-weight-bold"><t t-esc="o.x_order_mrp_over"/></span>
+                                <span class="font-weight-bold">/<t t-esc="o.x_order_mrp_under"/></span>
+                            </div>
+                            <div class="col-7">
+                                <!--<h5>Finished:    1,050 Sheets @ 21-1/8" X 13-3/4"</h5>-->
+                                <h6>Finished:
+                                    <t t-if="sale_id.order_line and sale_id.order_line[0].product_uom_qty">
+                                        <span class="ml-3" t-esc="'{:,.0f}'.format(sale_id.order_line[0].product_uom_qty)"/>
+                                    </t>
+                                    <t t-if="sale_id.order_line and sale_id.order_line[0].x_order_customer_uom">
+                                        <span t-esc="sale_id.order_line[0].x_order_customer_uom.name"/>
+                                    </t>
+                                    <t t-if="sale_id.order_line and sale_id.order_line[0].x_customer_order_width">
+                                        <span t-esc="sale_id.order_line[0].x_customer_order_width"/>"
+                                    </t>
+                                    <t t-if="sale_id.order_line and sale_id.order_line[0].x_customer_order_length">
+                                        <span t-esc="sale_id.order_line[0].x_customer_order_length"/>"
+                                    </t>
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 font-weight-bold">
+                                <h5 t-esc="o.product_id.name_get()[0][1]"/>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-12">
+                                <h5>
+                                    Customer Quantity:
+                                    <t t-if="sale_id and sale_id.order_line">
+                                        <t t-esc="'{:,.0f}'.format(sale_id.order_line[0].product_uom_qty)"/>
+                                    </t>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-12">
+                                <h5>W/O Quantity: <t t-esc="o.x_order_master_yards"/></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-6">
+                                <h5>Embossing: <t t-esc="o.product_id.x_product_product_embossing.name"/></h5>
+                            </div>
+                            <div class="col-6 text-right">
+                                <span style="font-size: 8px;">FSC MIX CREDIT: <t t-esc="dict(o.product_id.fields_get(allfields=['x_FSC'])['x_FSC']['selection'])[o.product_id.x_FSC]"/></span>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1">
+                                <!--<h5>LXXBLK0227XXXXXX-540J (54" RAINBOW LX 227 BLACK)</h5>-->
+                                <h5><t t-esc="o.product_id.default_code"/></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 my-3 row border-dark border-top"/>
+                        <div class="m-0 my-3 row border-dark border-bottom"/>
+
+                        <!-- Work Orders -->
+                        <t t-foreach="o.workorder_ids.sorted(key=lambda w: w.sequence)" t-as="wo">
+                            <div class="m-0 row border-dark py-3" style="page-break-inside:avoid;">
+                                <div class="col-12">
+                                    <b t-esc="wo.workcenter_id.name"/>
+                                    <span> Op : </span>
+                                    <b t-esc="wo.operation_id.name"/>
+
+                                    <!-- =========================================================
+                                         UPDATED COMPONENT PRINTING LOGIC
+                                         - Use MO component lines (o.move_raw_ids)
+                                         - Only those with curr_comp = True
+                                         - Only those where this workorder is selected in component_workorder_ids
+                                         - If multiple, print comma-separated
+                                         - If none, print nothing (blank)
+                                         ========================================================= -->
+                                    <t t-set="moves_for_wo"
+                                       t-value="o.move_raw_ids.filtered(lambda m: m.curr_comp and (wo in m.component_workorder_ids))"/>
+
+                                    <div class="col-12 py-2">
+                                        <t t-if="moves_for_wo">
+                                            <b t-esc="', '.join(moves_for_wo.mapped('product_id.display_name'))"/><br/>
+                                        </t>
+
+                                        <!-- 2) Fallback: if no curr_comp components found, use old BOM logic -->
+                                        <t t-else="">
+                                                <t t-set="bom_product_data" t-value="o.get_production_bom_data(wo)"/>
+
+                                                <t t-foreach="bom_product_data" t-as="line">
+                                                    <t t-if="line.get('work_order') == wo.operation_id.name">
+                                                        <t t-set="product_found" t-value="False"/>
+                                                        <t t-set="stock_move_product" t-value="False"/>
+
+                                                        <!-- Check stock moves linked to WO by x_comp_operation -->
+                                                        <t t-if="wo.move_raw_ids">
+                                                            <t t-foreach="wo.move_raw_ids" t-as="move">
+                                                                <t t-if="move.x_comp_operation and move.x_comp_operation.name == wo.operation_id.name">
+                                                                    <t t-set="stock_move_product" t-value="move.product_id"/>
+                                                                    <t t-set="product_found" t-value="True"/>
+                                                                </t>
+                                                            </t>
+                                                        </t>
+
+                                                        <!-- Print fallback: stock move product if found, else BOM component_name -->
+                                                        <b t-if="stock_move_product" t-esc="stock_move_product.display_name"/><br/>
+                                                        <b t-if="not product_found" t-esc="line.get('component_name')"/><br/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        <span>Machine  # <span class="ml-2" t-esc="'_' * 100"/></span>
+                                    </div>
+                                    <!-- ========================================================= -->
+
+                                    <table class="table table-bordered py-2">
+                                        <thead>
+                                            <tr>
+                                                <th class="border-dark">Oper Initial</th>
+                                                <th class="border-dark">Today's Date</th>
+                                                <th class="border-dark">Roll ID</th>
+                                                <th class="border-dark">Setup Start</th>
+                                                <th class="border-dark">Run Time Start</th>
+                                                <th class="border-dark">Run Time Finish</th>
+                                                <th class="border-dark">Total Yards</th>
+                                                <th class="border-dark">Good Yards</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="range(0, 4)" t-as="tr_line">
+                                                <td t-foreach="range(1, 9)" t-as="td_line" class="border-dark"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="col-12">
+                                        <span>Notes: <span class="ml-2" t-esc="'_' * 100"/></span> <br/>
+                                        <span t-esc="'_' * 109"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+
+                        <div class="m-0 row">
+                            <div class="col-12 mt-1">
+                                <!--<h5>JOB: 085037-1</h5>-->
+                                <h5>REFERENCE: </h5>
+                                <!--<h5 class="font-weight-bold">4 STRAPS PER SKID</h5>-->
+                                <h5 class="font-weight-bold"></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Order Putups</h5>
+                                <t t-if="o.x_mrp_order_slit">
+                                    <span t-foreach="o.x_mrp_order_multi_slit_size" t-as="size">
+                                        <div>
+                                            <span t-esc="int(size.x_order_mrp_outs) if size.x_order_mrp_outs % 1 == 0 else size.x_order_mrp_outs" />
+                                            <span>Rolls @</span>
+                                            <span t-esc="int(size.x_order_mrp_size) if size.x_order_mrp_size % 1 == 0 else size.x_order_mrp_size" />
+                                            <span>-</span>
+                                            <span t-esc="o.put_up_uom_name" />
+                                            <span>
+                                                <t t-if="size.x_order_mrp_size">
+                                                    <t t-esc="o.fraction_display(size.x_order_mrp_size)" />"
+                                                </t>
+                                            </span>
+                                        </div>
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <span t-esc="o.x_put_up_rolls" />
+                                    <span>Rolls @</span>
+                                    <span t-esc="o.x_uom_put_up" />
+                                    <span>-</span>
+                                    <span t-esc="o.x_put_up_uom_name" />
+                                </t>
+                            </div>
+                        </div>
+                        <!-- <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Order Putups</h5>
+                                <span t-foreach="o.x_mrp_order_multi_slit_size" t-as="size">
+                                    <div>
+                                        <span t-esc="int(o.put_up_rolls) if o.put_up_rolls % 1 == 0 else o.put_up_rolls" />
+                                        <span>Rolls @</span>
+                                        <span t-esc="int(o.uom_put_up) if o.uom_put_up % 1 == 0 else o.uom_put_up" />
+                                        <span>-</span>
+                                        <span t-esc="o.put_up_uom_name" />
+                                        <span>
+                                            <t t-if="size.x_order_mrp_size">
+                                                <t t-esc="o.fraction_display(size.x_order_mrp_size)" />"
+                                            </t>
+                                        </span>
+                                    </div>
+                                </span> -->
+                                <!-- <span t-esc="o.put_up_rolls" />
+                                <span>Rolls @</span>
+                                <span t-esc="o.uom_put_up" />
+                                <span>-</span>
+                                <span t-esc="o.put_up_uom_name" /> -->
+                            <!-- </div>
+                        </div> -->
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Order Comments</h5>
+                                <b t-esc="o.x_mrp_order_comments"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Special Comments</h5>
+                                <t t-foreach="o.x_mrp_messages" t-as="msg"><span t-field="msg.x_mrp_special_message"/></t><br/>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Multi Slit Sizes</h5>
+                                <table class="table table-sm table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Outs</th>
+                                            <th>Size</th>
+                                            <th>Total Size</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="o.x_mrp_order_multi_slit_size" t-as="line">
+                                            <tr>
+                                                <td t-esc="line.x_order_mrp_outs"/>
+                                                <td t-esc="'{:.5f}'.format(line.x_order_mrp_size)" />
+                                                <td t-esc="'{:.5f}'.format(line.x_total_mrp_size)" />
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <t t-set="update_is_printed_mrp_production_report_value"
+                       t-value="o._update_is_printed_mrp_production_report()"/>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+    <data>
+        <record id="paperformat_mrp_production_report" model="report.paperformat">
+            <field name="name">MRP Production report A4</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">2</field>
+            <field name="margin_left">2</field>
+            <field name="margin_right">2</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">80</field>
+        </record>
+
+        <record id="action_report_mrp_production" model="ir.actions.report">
+            <field name="name">MRP Production Order Report</field>
+            <field name="model">mrp.production</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">mrp_production_report.report_mrp_production</field>
+            <field name="report_file">mrp_production_report.report_mrp_production</field>
+            <field name="print_report_name">'mrp_production_report'</field>
+            <field name="paperformat_id" ref="mrp_production_report.paperformat_mrp_production_report"/>
+            <field name="binding_type">report</field>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        </record>
+
+    </data>
+
+</odoo>

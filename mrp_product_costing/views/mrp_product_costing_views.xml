@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="view_product_costing_tree" model="ir.ui.view" >
+        <field name="name">mrp.production.product.costing.tree</field>
+        <field name="model">mrp.production</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree string="Production Orders" create="false">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="product_qty" string="Quantity"/>
+                <field name="product_uom_id" string="UoM" groups="uom.group_uom"/>
+                <field name="date_actual_finished_wo" widget="date"/>
+                <field name="mat_cost" widget="monetary"/>
+                <field name="var_cost" widget="monetary"/>
+                <field name="fixed_cost" widget="monetary"/>
+                <field name="direct_cost" widget="monetary"/>
+                <field name="industrial_cost" widget="monetary"/>
+                <field name="currency_id" invisible="True"/>
+                <field name="state" invisible="True"/>
+                <field name="closure_state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_product_costing_pivot" model="ir.ui.view" >
+        <field name="name">mrp.production.product.costing.pivot</field>
+        <field name="model">mrp.production</field>
+        <field name="priority">20</field>
+       <field name="arch" type="xml">
+            <pivot string="Production Orders">
+                <field name="product_id" type="row"/>
+                <field name="date_actual_finished_wo" interval="month" type="col"/>
+                <field name="mat_cost_unit" type="measure"/>
+                <field name="var_cost_unit" type="measure"/>
+                <field name="fixed_cost_unit" type="measure"/>
+                <field name="direct_cost_unit" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <record id="view_product_costing_graph" model="ir.ui.view" >
+        <field name="name">mrp.production.product.costing.graph</field>
+        <field name="model">mrp.production</field>
+        <field name="priority">20</field>
+       <field name="arch" type="xml">
+            <graph string="Production Orders">
+                <field name="date_actual_finished_wo" interval="month"/>
+                <field name="product_id"/>
+                <field name="direct_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+    
+    <record id="view_product_costing_activity" model="ir.ui.view">
+        <field name="name">mrp.production.product.costing.activity</field>
+        <field name="model">mrp.production</field>
+        <field name="arch" type="xml">
+            <activity string="Production Orders">
+                <templates>
+                    <div t-name="activity-box">
+                        <div>
+                            <field name="name" display="full"/>
+                            <field name="product_id" muted="1" display="full"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+    
+    <record id="product_costing_action" model="ir.actions.act_window">
+        <field name="name">Product Costing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_mode">tree,form,pivot,graph,activity</field>
+        <field name="domain">[('state','=','done')]</field>
+    </record>
+    
+    <record model="ir.actions.act_window.view" id="product_costing_tree_link">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_product_costing_tree"/>
+        <field name="act_window_id" ref="product_costing_action"/>
+    </record>
+    
+    <record model="ir.actions.act_window.view" id="product_costing_pivot_link">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="view_product_costing_pivot"/>
+        <field name="act_window_id" ref="product_costing_action"/>
+    </record>
+    
+    <record model="ir.actions.act_window.view" id="product_costing_graph_link">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_product_costing_graph"/>
+        <field name="act_window_id" ref="product_costing_action"/>
+    </record>
+    
+    <record model="ir.actions.act_window.view" id="product_costing_activity_link">
+        <field name="sequence" eval="4"/>
+        <field name="view_mode">activity</field>
+        <field name="view_id" ref="view_product_costing_activity"/>
+        <field name="act_window_id" ref="product_costing_action"/>
+    </record>
+    
+    <menuitem id="menu_product_costing"
+        parent="mrp.menu_mrp_reporting"
+        name="Product Costing"
+        action="product_costing_action" 
+        sequence="40" 
+        groups="mrp.group_mrp_manager"/>
+</odoo>

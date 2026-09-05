@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Purchase Order Search for Sale Order -->
+    <record id="purchase_order_search_form_view_sale" model="ir.ui.view">
+        <field name="name">purchase.order.search.form.view.sale</field>
+        <field name="model">purchase.order</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="sale_order_id" string="Sales Order"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="act_purchase_order_all_sale" model="ir.actions.act_window">
+        <field name="name">Purchase Order</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+                'search_default_sale_order_id': [active_id],
+                'default_sale_order_id': active_id,
+                'create': 0,
+                'edit': 0,
+            }</field>
+        <field name="search_view_id" ref="purchase_order_search_form_view_sale"/>
+    </record>
+
+    <record id="sale_order_form_view_inherit_efatc_purchase" model="ir.ui.view">
+        <field name="name">sale.order.form.view.inherit.efatc.purchase</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="/form/sheet/div[@name='button_box']" position="inside">
+        		<button class="oe_stat_button" type="action" name="%(act_purchase_order_all_sale)d" icon="fa-tasks">
+                    <field string="Purchase Orders" name="count_purchase_orders" widget="statinfo"/>
+                </button>
+        	</xpath>
+        </field>
+    </record>
+
+</odoo>

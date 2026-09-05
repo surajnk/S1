@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_location_form_inherit_branch" model="ir.ui.view">
+            <field name="name">view.location.form.inherit.branch</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='company_id']" position="before">
+                    <field name="branch_id"/>
+                    <field name="check_location_warehouse" invisible="1"/>
+                    <field name="warehouse_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_stock_quant_tree_editable">
+            <field name="name">stock.quant.tree.editable.inherit.stock</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"></field>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='location_id']" position="after">
+                    <field name="location_warehouse_id"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="quant_search_view" model="ir.ui.view">
+        <field name="name">stock.quant.search.view.inherit</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='locationgroup']" position="after">
+                <filter string="Warehouse" name="warehousegroup" context="{'group_by': 'location_warehouse_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    </data>
+</odoo>

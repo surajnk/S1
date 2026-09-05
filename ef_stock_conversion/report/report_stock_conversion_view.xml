@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_stock_conversion_document">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.created_by.lang)"/>
+            <div class="page">
+                <div class="oe_structure"/>
+                <h2 class="mt16">
+                    Stock Conversion - <span t-field="doc.name" />
+                </h2>
+                <br/>
+                <table class="table table-bordered" width="100%">
+                    <tr>
+                        <td rowspan="2"><strong>Description</strong></td>
+                        <td rowspan="2"><span t-field="doc.description"/></td>
+                        <td><strong>Created By</strong></td>
+                        <td><span t-field="doc.created_by.name"/></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Created On</strong></td>
+                        <td><span t-field="doc.created_on"/></td>
+                    </tr>
+                </table>
+                <br/>
+                <table class="table table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th name="th_product">Product</th>
+                            <th name="th_location">Location</th>
+                            <th name="th_onhand" class="text-right">Onhand</th>
+                            <th name="th_counted" class="text-right">Counted</th>
+                            <th name="th_difference" class="text-right">Difference</th>
+                            <th name="th_uom">UOM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="doc.stock_inventory_line_ids" t-as="line">
+                            <tr>
+                                <td name="td_product"><span t-field="line.product_id.name"/></td>
+                                <td name="td_location"><span t-field="line.location_id.complete_name"/></td>
+                                <td name="td_onhand" class="text-right"><span t-field="line.theoretical_qty"/></td>
+                                <td name="td_counted" class="text-right"><span t-field="line.product_qty"/></td>
+                                <td name="td_difference" class="text-right"><span t-field="line.difference_qty"/></td>
+                                <td name="td_uom"><span t-field="line.product_uom_id.name"/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_stock_conversion">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ef_stock_conversion.report_stock_conversion_document" t-lang="doc.created_by.lang"/>
+            </t>
+        </t>
+    </template>
+
+</odoo>

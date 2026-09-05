@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="wc_capacity_report">
+        <div class="o_wc_capacity_report">
+            <t t-set="titles" t-value="widget.Titles.titles"/>
+            <t t-set="weeks_title" t-value="widget.Titles.weeks_title"/>
+            <div class="text-nowrap mr0 ml0">
+                <table class="table o_fps_product_table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="text-center pr-4 border" rowspan="4" scope="col" t-foreach="titles" t-as="tit">
+                                <div><t t-esc="tit"/></div>
+                            </th>
+                            <t t-foreach="weeks_title" t-as="wt">
+                                <th t-attf-class="{{wt.is_current_week ? 'text-center pr-4 border bg-success-light' : 'text-center pr-4 border'}}"
+                                    colspan="4" scope="col">
+                                    <div><t t-esc="wt.week_name"/></div>
+                                    <div><t t-esc="wt.s_date"/> To <t t-esc="wt.e_date"/> </div>
+                                </th>
+                            </t>
+                        </tr>
+                        <tr>
+                            <t t-foreach="weeks_title" t-as="wt">
+                                <th class="text-center pr-4 border" scope="col">
+                                    WC Weekly Available Capacity
+                                </th>
+<!--                                <th class="text-center pr-4 border" scope="col">-->
+<!--                                    WC Weekly Available Capacity(Yards)-->
+<!--                                </th>-->
+                                <th class="text-center pr-4 border" scope="col">
+                                    WO Capacity Requirements
+                                </th>
+                                <th class="text-center pr-4 border" scope="col">
+                                    WC Capacity Load %
+                                </th>
+                                <th class="text-center pr-4 border" scope="col">
+                                    WC Remaining Capacity
+                                </th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <tbody class="o_mps_content">
+                        <t t-set="MainData" t-value="widget.Datas"/>
+                        <t t-foreach="MainData" t-as="wc_datas">
+                            <t t-foreach="wc_datas" t-as="wc_data">
+                                <t t-if="wc_data.show_record == true">
+                                    <tr class="o_po_parent" t-att-data-id="wc_data.work_center_id">
+                                        <td class="pr-4 font-weight-bold bg-300" colspan="5">
+                                            <span class="fa fa-caret-right"
+                                                  style="padding-left: 3px; padding-right: 5px;"/>
+                                            <t t-esc="wc_data.work_center_name"/>
+                                        </td>
+                                        <td class="pr-4 font-weight-bold bg-300" colspan="4">
+                                            <t t-esc="(wc_data.wc_capacity || 0).toFixed(2)"/>
+                                        </td>
+                                    </tr>
+                                    <t t-if="wc_data.work_order_line">
+                                    <t t-foreach="wc_data.work_order_line" t-as="wo_line">
+                                        <tr t-att-data-line_id="wo_line.work_order_id">
+                                            <td class="text-center pr-4 font-weight-bold bg-200">
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold bg-200">
+                                                <t t-esc="wo_line.manufacturing"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold bg-200">
+                                                <t t-esc="wo_line.work_order_name"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold bg-200">
+                                                <t t-esc="wo_line.work_order_sequence"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold bg-200">
+                                                <t t-esc="wo_line.work_order_planned_date"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold">
+                                                <t t-esc="wo_line.wc_available_capacity_cal"/>
+                                            </td>
+<!--                                            <td class="text-center pr-4 font-weight-bold">-->
+<!--                                                <t t-esc="wo_line.wc_weekly_available_capacity_yard"/>-->
+<!--                                            </td>-->
+                                            <td class="text-center pr-4 font-weight-bold">
+                                                <t t-esc="wo_line.wo_capacity_requirements"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold">
+                                                <t t-esc="wo_line.wc_capacity_load"/>
+                                            </td>
+                                            <td class="text-center pr-4 font-weight-bold">
+                                                <t t-esc="wo_line.wc_remaining_capacity"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                </t>
+                            </t>
+                        </t>
+                        <tr class="o_po_footer">
+                            <td class="bg-500" colspan="14"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="wcc_control_panel_buttons">
+        <div role="toolbar" aria-label="Control panel buttons" class="o_cp_buttons">
+            <div class="o_calendar_buttons">
+                <span class="o_calendar_navigation_buttons">
+                    <button class="o_wcc_button_prev btn btn-primary" aria-label="Previous" title="Previous">
+                        <span class="fa fa-arrow-left"/>
+                    </button>
+                    <button class="o_wcc_button_today btn btn-primary">Current Week</button>
+                    <button class="o_wcc_button_next btn btn-primary" aria-label="Next" title="Next">
+                        <span class="fa fa-arrow-right"/>
+                    </button>
+                    <button class="o_wcc_button_change_date btn btn-primary" aria-label="Move to Specific Date" title="Move to Specific Date">
+                        <span class="fa fa-calendar"/>
+                    </button>
+                </span>
+<!--                <span class="o_calendar_scale_buttons">-->
+<!--                    <div class="btn-group">-->
+<!--                        <button type="button" class="o_calendar_button_day btn btn-secondary">Day</button>-->
+<!--                        <button type="button" class="o_calendar_button_week btn btn-secondary active">Week</button>-->
+<!--                        <button type="button" class="o_calendar_button_month btn btn-secondary">Month</button>-->
+<!--                        <button type="button" class="o_calendar_button_year btn btn-secondary">Year</button>-->
+<!--                    </div>-->
+<!--                </span>-->
+            </div>
+        </div>
+    </t>
+
+</templates>

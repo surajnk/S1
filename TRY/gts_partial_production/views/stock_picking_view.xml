@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit Form View to Modify it -->
+<!--    <record id="view_picking_form_add_customer_qty" model="ir.ui.view">-->
+<!--        <field name="name">view.picking.form.add.customer.qty</field>-->
+<!--        <field name="model">stock.picking</field>-->
+<!--        <field name="inherit_id" ref="stock.view_picking_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            -->
+
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="view_stock_move_line_detailed_operation_tree_add_customer_qty" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree.add.cust.qty</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_detailed_operation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_uom_qty']" position="after">
+                    <button name="open_on_hand_qtystock" type="object" class="fa fa-fw o_button_icon fa-cubes"/>
+                    <field name="customer_qty"/>
+                    <!-- <field name="sale_order_customer_uom_id" readonly="1" optional="show"/> -->
+                </xpath>
+            </field>
+        </record>
+
+</odoo>

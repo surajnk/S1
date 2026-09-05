@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_product_att" model="ir.ui.view">
+        <field name="name">product.product.view.form.inherit.many2many.attachment.preview</field>
+        <field name="inherit_id" ref="custom_partner.product_product_att"/>
+        <field name="model">product.product</field>
+        <field name="arch" type="xml">
+            <field name="product_attachment" position="replace">
+                <field name="product_attachment" widget="many2many_preview"/>
+            </field>
+        </field>
+    </record>
+</odoo>

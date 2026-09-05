@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="mail_activity_view_form_popup" model="ir.ui.view">
+        <field name="name">mail.activity.view.form.inherit.crm.opportunity.product</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_form_popup"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_close_dialog']" position="after">
+                <button
+                        name="schedule_and_send_activity_email"
+                        attrs="{'invisible': [('id', '!=', False)]}"
+                        type="object"
+                        string="Schedule &amp; Send Activity Email"
+                        class="btn-primary"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<odoo>
+    <record id="view_uom_form_inherit" model="ir.ui.view">
+        <field name="name">view.uom.form.inherit</field>
+        <field name="model">uom.uom</field>
+        <field name="inherit_id" ref="uom.product_uom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='rounding']"
+                   position="after">
+                <field name="x_frequent"/>
+                <field name="x_frequent_purchase"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

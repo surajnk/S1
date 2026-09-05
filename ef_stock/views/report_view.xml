@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="action_report_bill_of_leading" model="ir.actions.report">
+            <field name="name">Bill of Lading</field>
+            <field name="model">bill.of.leading.wiz</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ef_stock.report_bill_of_leading</field>
+            <field name="report_file">ef_stock.report_bill_of_leading</field>
+            <field name="print_report_name">'Bill Of Leading - %s - %s' % (object.partner_id.name or '', object.name)</field>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_page_label_transfer_template_pdf" model="ir.actions.report">
+            <field name="name">Page Barcodes (PDF)</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ef_stock.page_label_transfer_template_view_pdf</field>
+            <field name="report_file">ef_stock.page_label_transfer_template_view_pdf</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="paperformat_transfer_label" model="report.paperformat">
+            <field name="name">Transfer Label Paper Format</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">59</field>
+            <field name="page_width">64</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">4</field>
+            <field name="margin_bottom">1</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+            <field name="report_ids" eval="[(6,0,[ref('ef_stock.action_page_label_transfer_template_pdf')])]"/>
+        </record>
+
+    </data>
+</odoo>

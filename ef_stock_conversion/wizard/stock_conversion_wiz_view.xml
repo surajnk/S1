@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!-- Stock Conversion Wiz Form View -->
+    <record id="stock_conversion_wiz_form_view" model="ir.ui.view">
+        <field name="name">stock.conversion.wiz.form.view</field>
+        <field name="model">stock.conversion.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Stock Conversion">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="created_by" readonly="1" force_save="1"/>
+                            <field name="created_on" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Stock Conversion Line" name="stock_conversion_lines">
+                            <field name="stock_conversion_line" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="source_product_id" required="1"/>
+                                    <field name="source_location_id" required="1"/>
+                                    <field name="destination_product_id" required="1"/>
+                                    <field name="destination_location_id" required="1"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button type="object" name="action_create_stock_conversion" string="Create Stock Conversion" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Stock Conversion Wiz Action View -->
+    <record id="action_stock_conversion_wiz" model="ir.actions.act_window">
+        <field name="name">Stock Conversion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.conversion.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="stock_conversion_wiz_form_view"/>
+    </record>
+
+</odoo>

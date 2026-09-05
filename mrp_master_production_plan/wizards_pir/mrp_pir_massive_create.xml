@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+
+<odoo>
+    <record id="mrp_pir_massive_creation_wizard" model="ir.ui.view">
+        <field name="name">mrp.pir.massive.creation.wizard</field>
+        <field name="model">mrp.pir.create.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="pir_item_ids" nolabel="1">
+                            <tree>
+                                <field name="origin"/>
+                                <field name="product_id"/>
+                                <field name="product_qty"/>
+                                <field name="uom_id"/>
+                                <field name="date_requested" widget="date"/>
+                                <field name="date_planned" widget="date"/>
+                                <field name="warehouse_id"/>
+                                <field name="state"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="origin"/>
+                                        <field name="warehouse_id"/>
+                                        <field name="product_id"/>
+                                        <field name="state"/>
+                                    </group>
+                                    <group>
+                                        <field name="date_requested" widget="date"/>
+                                        <field name="date_planned" widget="date"/>
+                                        <label for="product_qty"/>
+                                        <div class="o_row">
+                                            <field name="product_qty"/>
+                                            <field name="uom_id"/>
+                                        </div>
+                                    </group>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="old_origin" options="{'no_create': True}"/>
+                            <field name="old_warehouse_id" groups="stock.group_stock_multi_warehouses" options="{'no_create': True}"/>
+                            <field name="old_product_id" domain="[('type', 'in', ['product', 'consu'])]" options="{'no_create': True}"/>
+                        </group>
+                        <group>
+                            <field name="new_origin" options="{'no_create': True}"/>
+                            <field name="new_warehouse_id" groups="stock.group_stock_multi_warehouses" options="{'no_create': True}"/>
+                            <field name="company_id" invisible="True"/>
+                            <field name="new_product_id" domain="[('type', 'in', ['product', 'consu'])]" options="{'no_create': True}"/>
+                            <field name="qty_factor"/>
+                            <field name="new_user_id" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="pir_count"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button type="object" name="do_populate_pir_item" string="PIRs Selection" class="oe_highlight"/>
+                    <button type="object" name="do_massive_create" string="New PIRs Create" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mrp_pir_massive_create" model="ir.actions.act_window">
+        <field name="name">PIRs Massive Creation</field>
+        <field name="res_model">mrp.pir.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="mrp_pir_massive_creation_wizard"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mrp_master_production_plan.model_mrp_independent_requirements"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

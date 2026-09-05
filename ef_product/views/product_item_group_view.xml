@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Product Item Tree View -->
+    <record id="product_item_tree_view" model="ir.ui.view">
+        <field name="name">product.item.group.tree.view</field>
+        <field name="model">product.item.group</field>
+        <field name="arch" type="xml">
+            <tree string="Product Item">
+                <field name="name" required="1"/>
+                <field name="x_Description"/>
+            </tree>
+        </field>
+    
+    <!-- Product Item Form View -->
+    </record>
+
+    <record id="product_item_form_view" model="ir.ui.view">
+        <field name="name">product.item.group.form.view</field>
+        <field name="model">product.item.group</field>
+        <field name="arch" type="xml">
+            <form string="Product Item Group">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="x_commodity_class"/>
+                            <field name="x_caliper"/>
+                        </group>
+                        <group>
+                            <field name="x_Description"/>
+                            <field name="x_basis_size"/>
+                            <field name="x_basis_weight"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Item Search View -->
+    <record id="product_item_search_view" model="ir.ui.view">
+        <field name="name">product.item.group.search.view</field>
+        <field name="model">product.item.group</field>
+        <field name="arch" type="xml">
+            <search string="Product Item Group">
+                <field name="name" string="Product Item Group"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Item Action View -->
+    <record id="product_item_action_view" model="ir.actions.act_window">
+        <field name="name">Product Item Group</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.item.group</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_item_tree_view"/>
+        <field name="search_view_id" ref="product_item_search_view"/>
+    </record>
+
+    <!-- Product Item Menu View -->
+    <menuitem id="product_item_menu_view"
+        name="Product Item Group"
+        action="product_item_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

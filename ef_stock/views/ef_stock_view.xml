@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- <record id="view_stock_picking_ef" model="ir.ui.view">
+        <field name="name">stock.picking.ef</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="before">
+                <field name="x_conversion_product"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="x_to_product"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="view_location_form_exc" model="ir.ui.view">
+        <field name="name">Location form - exclude</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='additional_info']/field[@name='usage']" position="before">
+                <field name="x_exclude_from_available"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

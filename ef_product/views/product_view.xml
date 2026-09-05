@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="inheriit_product_template_tree_view" model="ir.ui.view">
+        <field name="name">inherit.product.template</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="string">Product</attribute>
+            </xpath>
+            <xpath expr="//field[@name='uom_id']" position="before">
+                <!-- just remove it from the insert block -->
+                <field name="allocated_qty" string="Allocated"/>
+                <button name="action_view_allocated_details" type="object"
+                    icon="fa-search-plus" title="View Allocated MOs"/>
+                <field name="nrc_quantity" optional="show" string="NCR"/>
+                <button name="action_view_ncr_details" type="object"
+                    icon="fa-search-plus" title="View NCR Details"/>
+                <field name="free_qty" string="Available"/>
+                <field name="on_order_quantity"/>
+                <button name="action_view_on_order_details" type="object"
+                    icon="fa-search-plus" title="View On Order Details"/>
+                <field name="pending_receive_qty" string="Pending to Receive"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="hide_virtual_available_tree" model="ir.ui.view">
+        <field name="name">product.template.tree.hide.virtual</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='virtual_available']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='responsible_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+        </field>
+    </record>
+    <!-- Product Template Inherit Form View (Inherited) -->
+    <record id="product_template_form_view_inherit_atc" model="ir.ui.view">
+        <field name="name">product.template.form.view.inherit.atx</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='categ_id']" position="after">
+                <field name="x_product_type"/>
+                <field name="x_class_commodity_group" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                <field name="x_class_code_group" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                <field name="x_product_item" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                <field name="x_product_price_group" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                <field name="x_retail_sale_item" invisible="1"/>
+            </xpath>
+            <field name="default_code" position="attributes">
+                <attribute name="string">Description</attribute>
+            </field>
+            <xpath expr="//field[@name='barcode']" position="after">
+                <field name="x_ExtReference"/>
+                <field name="x_minimum_qty"/>
+                <field name="x_maximum_qty"/>
+                <field name="x_product_conversion"/>
+            </xpath>
+            <xpath expr="//field[@name='uom_po_id']" position="after">
+                <field name="x_item_width"/>
+                <field name="x_item_length"/>
+                <field name="x_FSC"/>
+                <field name="x_tolerances"/>
+                <field name="x_tolerances_m2"/>              
+                <field name="x_reorder_qty"/>
+                <field name="x_product_embossing"/>
+                <field name="x_product_novaflow" readonly="1"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@name='inventory']" position="after">
+                <page string="Quantity Breaks" name="breaks">
+                    <group>
+                        <field name="x_product_bc_visibility" invisible="1"/>
+                        <field name="x_qty_grid_break_code" readonly="1" force_save="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                        <field name="x_qty_grid_break_code_chg" attrs="{'invisible': [('x_product_bc_visibility', '=', True)]}" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}"/>
+                        <field name="x_break_qty_price">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="x_product_qty" readonly="1" force_save="1"/>
+                                <!-- <field name="x_product_price_per_uom"/>
+                                <field name="x_product_uom" readonly="1"/> -->
+                                <field name="x_product_price_per_value"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+                <!-- <page string="WorkCenters" name="breaks">
+                    <group>
+                        <field name="x_product_workcenter"/>
+                    </group>
+                </page> -->
+                <page string="Embossers" name="emb">
+                    <field name = "x_product_emboss">
+                        <tree editable="bottom">
+                            <field name="x_mrp_embosser"/>
+                        </tree>
+                        <form>
+                            <group>
+                               <field name="x_mrp_embosser"/>
+                            </group>
+                        </form> 
+                    </field>
+                </page>
+                <page string="Retail" name="retail" attrs="{'invisible': [('x_retail_sale_item','=',False)]}">
+                    <group>
+                        <group>
+                            <field name="x_retail_barcode"/>
+                            <field name="x_retail_pack_size"/>
+                            <field name="x_retail_packbox"/>
+                            <field name="x_retail_part"/>
+                            <field name="x_retail_pack_label"/>
+                        </group>
+                        <group>
+                            <field name="x_retail_description"/>
+                            <field name="x_retail_short_description"/>
+                            <field name="x_retail_size_desc"/>
+                            <field name="x_retail_box_label"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Product Template Inherit Form View (Main) -->
+    <record id="product_template_form_view_main_inherit_atc" model="ir.ui.view">
+        <field name="name">product.template.form.view.main.inherit.atx</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/div[@class='oe_title']/label[@for='name']" position="attributes">
+                <attribute name="string">Item</attribute>
+            </xpath>
+            <field name="name" position="attributes">
+                <attribute name="placeholder">Item</attribute>
+            </field>
+            <xpath expr="/form/sheet/div[@class='oe_title']/label[@for='name']" position="attributes">
+                <attribute name="string">Item</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/div[@class='oe_title']" position="inside">
+                <field name="x_stocked"/>
+                <label for="x_stocked"/>
+                <div>
+                    <field name="x_embossing_allowed"/>
+                    <label for="x_embossing_allowed"/>
+                </div>
+                <div>
+                    <field name="x_retail_sale_item"/>
+                    <label for="x_retail_sale_item"/>
+                </div>
+                <div>
+                    <field name="x_consignment_item"/>
+                    <label for="x_consignment_item"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_category_form_view_inherit_atc" model="ir.ui.view">
+        <field name="name">product.category.form.view.inherit.atc</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="product.product_category_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="x_class_commodity_category_group"/>
+                <field name="x_class_code_category_group"/>
+                <field name="x_product_category_item"/>
+                <field name="x_product_price_category_group"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_category_property_form_atc" model="ir.ui.view">
+        <field name="name">view.category.property.form.atc</field>
+        <field name="model">product.category</field>
+        <field name="inherit_id" ref="account.view_category_property_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='property_account_income_categ_id']" position="before">
+                <field name="x_branch_code"/>
+            </xpath>
+            <field name="property_account_income_categ_id" position="attributes">
+                <attribute name="string">Income Account/GL-Sales</attribute>
+            </field>
+            <field name="property_account_expense_categ_id" position="attributes">
+                <attribute name="string">Expense Account/GL- Cost of Sales</attribute>
+            </field>
+            <xpath expr="//field[@name='property_account_expense_categ_id']" position="after">
+                <field name="x_property_account_inventory_categ_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Product view from Sale Order line -->
+    <record id="product_normal_form_view_inherit_atc" model="ir.ui.view">
+        <field name="name">product.normal.form.view.inherit.atc</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='barcode']" position="before">
+                <field name="x_product_type"/>
+                <field name="x_class_commodity_group"/>
+                <field name="x_class_code_group"/>
+                <field name="x_product_item"/>
+                <field name="x_product_price_group"/>
+            </xpath>
+            <field name="default_code" position="attributes">
+                <attribute name="string">Description</attribute>
+            </field>
+            <xpath expr="//field[@name='barcode']" position="after">
+                <field name="x_ExtReference"/>
+                <field name="x_minimum_qty"/>
+                <field name="x_maximum_qty"/>
+                <field name="x_product_conversion"/>
+            </xpath>
+            <xpath expr="//field[@name='uom_po_id']" position="after">
+                <field name="x_item_width"/>
+                <field name="x_item_length"/>
+                <field name="x_FSC"/>
+                <field name="x_tolerances"/>
+		<field name="x_tolerances_m2"/>
+                <field name="x_reorder_qty"/>
+                <field name="x_product_product_embossing"/>
+                <field name="x_product_product_novaflow" readonly="1"/>
+            </xpath>
+            <xpath expr="//page[@name='inventory']" position="after">
+                <page string="Quantity Breaks" name="breaks">
+                    <group>
+                        <field name="x_qty_grid_break_code"/>
+                        <field name="x_break_qty_price">
+                            <tree editable="bottom">
+                                <field name="x_product_qty"/>
+                                <field name="x_product_price_per_uom"/>
+                                <field name="x_product_uom" readonly="1"/>
+                                <field name="x_product_price_per_value"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+                <page string="Embossers" name="emb">
+                    <field name = "x_product_product_emboss">
+                        <tree editable="bottom">
+                            <field name="x_mrp_embosser"/>
+                        </tree>
+                    </field>
+                </page>
+                <!-- <page string="WorkCenters" name="breaks">
+                    <group>
+                        <field name="x_product_wc"/>
+                    </group>
+                </page> -->
+            </xpath>
+        </field>
+    </record>
+
+    <!--Product Pricelist form-->
+    <record id="product_pricelist_item_form_view_inherit_atc" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form.view.inherit.atc</field>
+        <field name="model">product.pricelist.item</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_end']" position="after">
+                <field name="x_pricelist_implement"/>
+                <field name="x_pricelist_pricing_code"/>
+                <field name="x_pricelist_discount_code"/>
+                <field name="x_pricelist_pricegroup_breakcode" attrs="{'invisible': [('applied_on', '!=', '6_price_group')], 'readonly':[('applied_on', '=', '6_price_group')]}" options="{'no_create': 1}"/>
+            </xpath>
+            <xpath expr="/form/sheet/group" position="after">
+            <group>
+                <field name="use_cust_units" widget="radio"/>
+                <field name="x_pricelist_break_cust_qty_price" attrs="{'invisible': [('use_cust_units', '!=', 'customer_units')]}">
+                    <tree editable="bottom">
+                        <field name="x_product_cust_qty_pr"/>
+                        <field name="x_product_cust_unit_price"/>
+                    </tree>
+                    <form string="Cust Unit Quantities">
+                        <group>
+                            <field name="x_product_cust_qty_pr"/>
+                            <field name="x_product_cust_unit_price"/>
+                        </group>
+                    </form>
+                </field>
+                <field name="x_pricelist_break_code"/>
+                <!-- <field name="x_pricelist_break_code" attrs="{'readonly': ['|','|',('applied_on', '=', '1_product'),('applied_on','=','0_product_variant'),('applied_on','=','6_price_group')]}"/> -->
+                <field name="x_pricelist_break_qty_price">
+                    <tree editable="bottom">
+                        <field name="x_product_qty_pr" readonly="1" force_save="1"/>
+                         <!-- <field name="x_product_price_per_uom_pr"/>
+                        <field name="x_product_uom_pr" readonly="1"/> -->
+                        <field name="x_product_lvl_pr"/>
+                        <field name="x_product_level_price_pr"/>
+                        <field name="x_product_discount_on_level_pr"/>
+                        <field name="x_product_price_per_value_pr"/>
+                    </tree>
+                    <form string="Break Quantities">
+                        <group>
+                            <field name="x_product_qty_pr"/>
+                            <field name="x_product_lvl_pr"/>
+                        </group>
+                        <group>
+                            <field name="x_product_level_price_pr"/>
+                            <field name="x_product_discount_on_level_pr"/>
+                            <field name="x_product_price_per_value_pr"/>
+                        </group>
+                    </form>
+                </field>
+            </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!--Product Purchase Tab Vendor Modifications-->
+    <record id="product_supplierinfo_tree_view2_inherit_atc" model="ir.ui.view">
+        <field name="name">product.supplierinfo.tree.view2.inherit.atc</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="purchase.product_supplierinfo_tree_view2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="x_Vendor_FSC"/>
+                <field name="x_product_convert_from_pur_uom"/>
+                <field name="x_product_convert_to_sku"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="product_template_purchase_desc_relabel" model="ir.ui.view">
+        <field name="name">product.template.purchase.desc.relabel</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="purchase.view_product_supplier_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description_purchase']/.." position="attributes">
+                <attribute name="string">PO Comments</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

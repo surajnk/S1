@@ -1,0 +1,141 @@
+<?xml version="1.0" ?>
+
+<odoo>
+   <record id="mrp_production_costing_figures_form_view" model="ir.ui.view">
+         <field name="name">costfigures.mrp.production.form</field>
+         <field name="model">mrp.production</field>
+         <field name="type">form</field>
+         <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+         <field name="arch" type="xml">
+			<button name="button_scrap" position="before">
+                <button name="button_closure" string="Closure" attrs="{'invisible': ['|', ('state', '!=', 'done'), ('closure_state', '=', True)]}" type="object" class="oe_highlight"/>
+			</button>
+            <button name="button_mark_done" position="after">
+                <button name="button_acc_ent" string="Post Entries" type="object" class="oe_highlight"/>
+            </button>
+            <field name="state" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,progress,done,closed"/>
+            </field>
+            <field name="company_id" position="after">
+                <field name="analytic_account_id" groups="analytic.group_analytic_accounting"/>
+                <field name="closure_state" invisible="1"/>
+            </field>
+            <notebook>
+               <page string="Production Unit Costs">
+                    <group col="3">
+                        <group string='Standard Costs'>
+                            <field name="std_mat_cost" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="std_var_cost" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="std_fixed_cost" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="std_direct_cost" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="std_byproduct_amount" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string='Planned Unit Costs'>
+                            <field name="planned_mat_cost_unit" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_var_cost_unit" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_fixed_cost_unit" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_direct_cost_unit" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_byproduct_amount_unit" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group string='Actual Unit Costs'>
+                            <field name="mat_cost_unit" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="var_cost_unit" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="fixed_cost_unit" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="direct_cost_unit" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="by_product_amount_unit" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                    <group col="3">
+                        <group string='Current Standard Cost'>
+                            <field name="std_prod_cost" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group>
+                        </group>
+                        <group string='Industrial Cost'>
+                            <field name="industrial_cost_unit" string='Industrial Cost' widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+               </page>
+               <page string="Production Costs">
+                    <group col="3">
+                        <group string='Planned Costs'>
+                            <field name="planned_mat_cost" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_var_cost" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_fixed_cost" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_direct_cost" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="planned_byproduct_amount" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group string='Actual Costs'>
+                            <field name="mat_cost" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="var_cost" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="fixed_cost" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="direct_cost" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="by_product_amount" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group string='Delta'>
+                            <field name="delta_mat_cost" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="delta_var_cost" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="delta_fixed_cost" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="delta_direct_cost" string="Full Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="delta_byproduct" string="Byproduct Amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                    <group col="3">
+                        <group string='Overhead Costs'>
+                            <field name="ovh_var_direct_cost" string="Variable Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="ovh_fixed_direct_cost" string="Fixed Direct" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="ovh_product_cost" string="Finished Product" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                            <field name="ovh_components_cost" string="Components" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group string='Industrial Cost'>
+                            <field name="industrial_cost" string='Industrial Cost' widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                        <group string='WIP Amount'>
+                            <field name="wip_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+               </page>
+            </notebook>
+         </field>
+   </record>
+
+    <record id="mrp_production_form_view" model="ir.ui.view">
+        <field name="name">mrp.production.form</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button
+                    name="%(action_mrp_account_moves)d"
+                    type="action"
+                    string="Account Moves"
+                    class="oe_stat_button"
+                    icon="fa-list"
+                    attrs="{'invisible': [('state', 'not in', ('to_close','progress', 'done'))]}"
+                />
+                <button
+                    name="%(action_mrp_analytic_lines)d"
+                    type="action"
+                    string="Analytic Lines"
+                    class="oe_stat_button"
+                    icon="fa-list"
+                    groups="analytic.group_analytic_accounting"
+                    attrs="{'invisible': [('state', 'not in', ('to_close','progress', 'done'))]}"
+                />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_tree_view" model="ir.ui.view">
+        <field name="name">mrp.production.tree</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="analytic_account_id" groups="analytic.group_analytic_accounting" optional="hide"/>
+            </field>
+        </field>
+    </record>
+</odoo>
+

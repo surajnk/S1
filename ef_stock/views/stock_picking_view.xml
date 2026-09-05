@@ -1,0 +1,64 @@
+<odoo>
+    <record id="bill_of_leading_button" model="ir.ui.view">
+        <field name="name">stock.picking.tree.bill</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button type="object" string="Bill of Lading" name="create_bill_of_leading" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//field[@name='scheduled_date']" position="attributes">
+                <attribute name="optional">hide</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='scheduled_date']" position="after">
+                <field name="scheduled_date_only" optional="show" string="Scheduled Date"
+                       attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"/>
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="attributes">
+                <attribute name="optional">hide</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_deadline']" position="after">
+                <field name="date_deadline_only" optional="hide" string="Deadline"
+                       attrs="{'invisible':[('state', 'in', ('done', 'cancel'))]}"/>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <button name="action_view_packages" type="object"
+                        icon="fa-cubes" title="View Packages"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="search_inherit_stock_picking_contact" model="ir.ui.view">
+        <field name="name">stock.picking.search.contact</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='picking_type']" position="after">
+                <filter string="Contact" name="contact_picking" domain="[]" context="{'group_by': 'partner_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_form_carrier_editable" model="ir.ui.view">
+        <field name="name">stock.picking.form.carrier.editable</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='carrier_id']" position="attributes">
+                <attribute name="attrs"/>
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='carrier_tracking_ref']" position="attributes">
+                <attribute name="attrs"/>
+                <attribute name="readonly">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='carrier_tracking_ref']" position="replace"/>
+            <xpath expr="//field[@name='location_id']" position="after">
+                <field name="carrier_tracking_ref"/>
+                <field name="ship_via_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

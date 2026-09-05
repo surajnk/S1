@@ -1,0 +1,16 @@
+<odoo>
+	<record id="inv_approval_rejection_view_form" model="ir.ui.view">
+		<field name="name">inv.approval.rejection.view.form</field>
+		<field name="model">invoice.rejection</field>
+		<field name="arch" type="xml">
+			<form>
+				<label for="reject_reason" string="Mantion why the Invoice is rejected."/>
+				<field name="reject_reason" nolable="1"/>
+				<footer>
+					<button name="button_inv_reject" type="object" string="done" class="btn-primary"/>
+					<button string="Cancel" class="btn-secondary" special="cancel"/>
+				</footer>
+			</form>
+		</field>
+	</record>
+</odoo>

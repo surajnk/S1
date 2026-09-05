@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="cheque_wizard_view" model="ir.ui.view">
+        <field name="name">cheque.wizard</field>
+        <field name="model">cheque.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cheque">
+                <group>
+                    <field name="cheque_date"/>
+                </group>
+                <footer>
+                    <button name="cash_submit" type="object" string="Submit" class="oe_highlight"/>
+                    or
+                    <button name="cancel" string="Cancel" special="cancel"/>
+                </footer> 
+            </form>
+        </field>
+    </record>
+	            	
+       
+    <record id="action_cheque_wizard" model="ir.actions.act_window">
+        <field name="name">Cheque</field>
+        <field name="res_model">cheque.wizard</field>
+<!--         <field name="view_type">form</field> -->
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cheque_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+    
+    <record id="cheque_transfer_wizard_view" model="ir.ui.view">
+        <field name="name">cheque.transfer.wizard</field>
+        <field name="model">cheque.transfer.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cheque">
+                <group>
+                    <field name="transfer_date"/>
+                    <field name="contact"/>
+                </group>
+                <footer>
+                    <button name="transfer_submit" type="object" string="Submit" class="oe_highlight"/>
+                    or
+                    <button name="cancel" string="Cancel" special="cancel"/>
+                </footer> 
+            </form>
+        </field>
+    </record>
+	            	
+       
+    <record id="action_cheque_transfer_wizard" model="ir.actions.act_window">
+        <field name="name">Cheque Transfer Wizard</field>
+        <field name="res_model">cheque.transfer.wizard</field>
+<!--         <field name="view_type">form</field> -->
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cheque_transfer_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+    
+    <record id="cheque_outgoing_wizard_view" model="ir.ui.view">
+        <field name="name">cheque.outgoing.wizard</field>
+        <field name="model">cheque.outgoing.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Cashed">
+                <group>
+                    <field name="cheque_date"/>
+                    <field name="bank_acc"/>
+                </group>
+                <footer>
+                    <button name="cash_out_submit" type="object" string="Submit" class="oe_highlight"/>
+                    or
+                    <button name="cancel" string="Cancel" special="cancel"/>
+                </footer> 
+            </form>
+        </field>
+    </record>
+	            	
+       
+    <record id="action_cheque_outgoing_wizard_view" model="ir.actions.act_window">
+        <field name="name">Cashed</field>
+        <field name="res_model">cheque.outgoing.wizard</field>
+<!--         <field name="view_type">form</field> -->
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="cheque_outgoing_wizard_view"/>
+        <field name="target">new</field>
+    </record>
+  
+</odoo>   
+

@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--
+    <record id="sale_order_view_search_custom_my_quotation" model="ir.ui.view">
+        <field name="name">sale.order.search.my.quotation.override</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+             Replace the specific filter using XPath
+            <xpath expr="//filter[@name='my_quotation']" position="replace">
+            <filter string="My Quotations" name="my_quotation_csr"
+                    domain="['|', ('user_id', '=', uid), ('partner_id.x_assigned_csr', '=', uid)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{'search_default_my_quotation_csr': 1}</field>
+    </record> -->
+
+
+
+    <!--Tree view one2many css-->
+
+    <template id="sale_ef_backend" name="ef assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/ef_sales/static/src/css/ef_sales.css"/>
+        </xpath>
+    </template>
+
+    <template id="view_sale_order_line_popup" name="Sale Order Line Popup">
+            <div class="popup">
+                <h1>Confirmation</h1>
+                <p>Changes saved successfully.</p>
+                <footer>
+                    <button class="btn btn-primary" name="action_close_popup" type="object" string="OK"/>
+                </footer>
+            </div>
+    </template>
+    <record id="sale_order_tree_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">sale.order.tree.view.inherit.efatc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='partner_id']" position="after">
+                <field name="client_order_ref"/>
+            </xpath>
+            <xpath expr="/tree/field[@name='commitment_date']" position="after">
+                <field name="credit_hold_date" optional="hide"/>
+                <field name="delinquent_hold_date" optional="hide"/>
+                <field name="manual_hold_date" optional="hide"/>
+                <field name="ship_hold_date" optional="hide"/>
+                <field name="x_order_custom_del_date" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_quotation_tree_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">sale.order.quotation.tree.view.inherit.efatc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='partner_id']" position="after">
+                <field name="client_order_ref"/>
+            </xpath>
+            <xpath expr="/tree/field[@name='commitment_date']" position="after">
+                <field name="credit_hold_date" optional="hide"/>
+                <field name="delinquent_hold_date" optional="hide"/>
+                <field name="manual_hold_date" optional="hide"/>
+                <field name="ship_hold_date" optional="hide"/>
+                <field name="x_order_custom_del_date" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Sale Order Inherit Form View -->
+    <record id="sale_order_form_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">sale.order.form.view.inherit.efatc</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/header/button[@name='action_confirm']" position="before">
+                <button name="action_hold" id="action_hold" string="Check for Holds" class="btn-primary" type="object" attrs="{'invisible': [('state', 'not in', ['hc','draft','approve'])]}"/>
+            </xpath>
+            <xpath expr="/form/header/button[@name='action_draft']" position="replace">
+                <button name="action_draft" states="cancel,ch,dh,sh,mh" type="object" string="Set to Quotation"/>
+            </xpath>
+            <xpath expr="/form/header/button[@name='action_cancel']" position="replace">
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','ch','dh','hc','sh','mh']), ('id', '=', False)]}"/>
+            </xpath>
+            <field name="date_order" position="after">
+                <field name="client_order_ref" position="move"/>
+                <field name="remove_address_domain"/>
+                <field name="x_sale_ship_via" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,'m2o_dialog':False}"/>
+                <field name="x_sale_incoterms" invisible="1" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True,'m2o_dialog':False}"/>
+                <field name="skip_approval"/>
+            </field>
+            <xpath expr="//field[@name='commitment_date']" position="attributes">
+                <attribute name="string">Ship Date</attribute>
+                <attribute name="attrs">{'invisible': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='x_sale_ship_via']" position="after">
+                <field name="x_order_custom_del_date"/>
+            </xpath>
+            <field name="sale_order_template_id" position="after">
+                <!-- <field name="picking_policy" position="move"/> -->
+                <field name="commitment_date" position="move"/>
+                <span name="expected_date_span" class="text-muted">Expected: <field name="expected_date" position="move"/></span>
+                <field name="x_is_sample" attrs="{'readonly': [('id', '>', 0)]}"/>
+                <field name="x_is_multi_slit" invisible="1"/>
+            </field>
+            <field name="payment_term_id" position="after">
+                <!-- <field name="picking_policy" position="move"/> -->
+                <field name="x_sale_order_block_amount" readonly="1" states="ch"/>
+                <field name="x_sale_order_amount" readonly="1" states="ch"/>
+                <field name="x_delinquent_invoice" readonly="1" states="dh"/>
+            </field>
+            <xpath expr="/form/sheet/notebook/page[@name='other_information']/group/group[@name='sale_shipping']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <field name="validity_date" position="attributes">
+                <attribute name="string">Quotation Expiration</attribute>
+            </field>
+            <field name="client_order_ref" position="attributes">
+                <attribute name="string">Customer P.O.</attribute>
+            </field>
+            <!-- <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/div[@name='ordered_qty']/field[@name='product_uom']" position="attributes">
+                <attribute name="string">Product UOM</attribute>
+            </xpath>
+            <field name="product_uom" position="attributes">
+                <attribute name="string">Product UOM</attribute>
+            </field> -->
+            <xpath expr="/form/sheet/notebook/page[@name='other_information']" position="after">
+                <page string="Customer Notes" name="customer_notes">
+                    <group>
+                        <field name="x_sale_customer_notes"/>
+                    </group>
+                </page>
+                <page string="Customer Special Messages" name="customer_messages">
+                    <group>
+                        <field name = "x_order_customer_msg"/>
+                        <field name="x_sale_customer_message">
+                            <tree editable="bottom" limit="20">
+                                <field name="x_sale_special_message"/>
+                            </tree>
+                            <form>
+                                <group>
+                                    <field name="x_sale_special_message"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+                <page string="Multiple Slit Sizes" name="multi_sizes" attrs="{'invisible': [('x_is_multi_slit', '=', False)]}">
+                    <group>
+                        <field name="x_order_multi_slit_size">
+                            <tree editable="bottom" limit="20">
+                                <field name="x_order_outs"/>
+                                <field name="x_order_size"/>
+                                <field name="x_total_size"/>
+                            </tree>
+                            <form>
+                                <group>
+                                <field name="x_order_outs"/>
+                                <field name="x_order_size"/>
+                                <field name="x_total_size"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//tree" position="attributes">
+                <attribute name="editable"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_tax']" position="after">
+                <field name="x_amount_labor"/>
+            </xpath>
+            <!-- <field name="sale_order_template_id" position="after">
+                
+            </field> -->
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="options">{'no_create': True, 'no_create_edit': True}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='product_id']" position="before">
+                <field name="x_sale_line_item_group" options="{'no_create': True, 'no_create_edit': True}"/>
+                <field name="x_order_line_embossing" options="{'no_create': True, 'no_create_edit': True}"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/div[@name='ordered_qty']/field[@name='product_uom']" position="replace">
+                <field name="x_order_customer_uom" attrs="{'required': [('display_type', '=', False)]}" force_save="1"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='tax_id']" position="after">
+                <field name="product_uom" invisible="1" force_save="1" groups="uom.group_uom" class="oe_no_button" attrs="{'readonly': [('product_uom_readonly', '=', True)], 'required': [('display_type', '=', False)]}"/>
+                <field name="x_product_order_waste"/>
+                <field name="x_product_order_trim_width"/>
+                <field name="x_product_order_trim_length"/>
+                <field name="pricing_info"/>
+                <field name="x_show_popup" invisible="1"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='tax_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+<!--            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='customer_lead']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+            <xpath expr="//label[@for='customer_lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/field[@name='name']" position="before">
+                <group>
+                    <field name="pricing_info"/>
+                </group>
+            </xpath> -->
+<!--            <xpath expr="//field[@name='customer_lead']" position="attributes">-->
+<!--                <attribute name="invisible">1</attribute>-->
+<!--            </xpath>-->
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='product_id']" position="after">
+                <field name="x_customer_order_width" attrs="{'required': [('display_type', '=', False)]}"/>
+                <field name="x_customer_order_length"/>
+                <field name="x_customer_order_width_mm"/>
+                <field name="x_customer_order_length_mm"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/group/group/field[@name='analytic_tag_ids']" position="before">
+                <field name="workcenter_domain" invisible="1"/>
+                <field name="x_sale_line_workcenters" invisible="1" domain="workcenter_domain"/>
+                <field name="x_order_machine_length"/>
+                <field name="x_order_publisher" options="{'no_quick_create':True,'no_create_edit':True,'no_open': True}" class="oe_inline"/>
+                <field name="x_ref1"/>
+                <field name="x_ref2"/>
+                <field name="x_sale_material_orientation" widget="selection"/>
+                <field name="x_order_master_yards"/>
+                <field name="x_approx_material_weight"/>
+                <field name="x_manual_put_ups"/>
+                <field name="put_up_rolls"/>
+
+                <label for="uom_put_up"/>
+                <div>
+                    <field name="uom_put_up" class="oe_inline"/> - <field name="put_up_uom_name"/>
+                </div>
+                <field name="additional_put_ups"/>
+                <field name="total_put_ups"/>
+                <field name="outs"/>
+                <field name="put_up_size"/>
+                <field name="x_customer_units"/>
+                <field name="customer_unit_price"/>
+                <field name="x_order_line_tol_over"/>
+                <field name="x_order_line_tol_under"/>
+                <field name="x_is_multi_slit_order_line"/>
+                <!-- <field name="x_order_line_labor_items_grid">
+                    <tree editable="bottom">
+                        <field name="x_labor_item"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <field name="x_labor_item"/>
+                        </group>
+                    </form>
+                </field> -->
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/field[@name='name']" position="after">
+                <label for="x_order_line_comments"/>
+                <field name="x_order_line_comments"/>
+                <label for="x_order_line_bom"/>
+                <field name="x_order_line_bom">
+                    <tree editable="bottom" limit="20" class="ef_salebomtree" string="BOM" create="false">
+                        <field name="x_product_bom_select" widget="boolean_button"/>
+                        <field name="x_product_product_widthInt"/>
+                        <field name="x_product_product_bom"/>
+                        <field name="x_unit_req"/>
+                        <field name="x_mps"/>
+                        <field name="x_waste_arrv_prc"/>
+                        <field name="x_mps_out"/>
+                        <field name="x_product_width_outs"/>
+                        <!--<field name="x_waste_frac"/>-->
+                    </tree>
+                    <form>
+                        <group>
+                            <!--<field name="x_product_bom"/>-->
+                            <field name="x_product_product_bom"/>
+                        </group>
+                    </form>
+                </field>
+                <label for="x_order_line_labor_items_grid_new"/>
+                <field name="x_order_line_labor_items_grid_new">
+                    <tree editable="bottom" class="ef_salelabortree" create="false">
+                        <field name="x_product_labor_select" widget="boolean_button"/>
+                        <field name="x_product_labor_nullify" widget="boolean_button" optional="hide"/>
+                        <field name="x_product_product_labor" optional="hide"/>
+                        <field name="x_product_description"/>
+                        <field name="x_product_labor_pr" optional="hide"/>
+                        <field name="x_product_labor_cu"/>
+                        <field name="x_labor_unit_req"/>
+                        <field name="x_labor_unit_value"/>
+                        <field name="x_labor_minimum"/>
+                        <field name="x_labor_extension"/>
+                        <field name="x_labor_amount" force_save="1" invisible="1"/>
+                        <field name="x_labor_monetary_amount" force_save="1" widget="monetary" sum="Total Amount"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <field name="x_product_product_labor"/>
+                        </group>
+                    </form>
+                </field>
+                <label for="x_sale_line_customer_message"/>
+                <field name="x_sale_line_customer_message">
+                    <tree editable="bottom" class="ef_salelabortree" create="true">
+                        <field name="x_sale_special_message"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <field name="x_sale_special_message"/>
+                        </group>
+                    </form>
+                </field>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/form/field[@name='x_order_line_bom']" position="after">
+                <label for="x_order_multi_slit_size_order_line" attrs="{'invisible': [('x_is_multi_slit_order_line', '=', False)]}"/>
+                <field name="x_selected_item_width" attrs="{'invisible': [('x_is_multi_slit_order_line', '=', False)]}" force_save="1" readonly="1"/>
+                <field name="x_order_multi_slit_size_order_line" attrs="{'invisible': [('x_is_multi_slit_order_line', '=', False)]}">
+                    <tree editable="bottom" limit="20" class="ef_salebomtree" string="Multiple Slit size">
+                        <field name="x_order_outs"/>
+                        <field name="x_order_size"/>
+                        <field name="x_total_size"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <field name="x_order_outs"/>
+                            <field name="x_order_size"/>
+                            <field name="x_total_size"/>
+                        </group>
+                    </form>
+                </field>
+                <group col="2">
+                    <group/>
+                    <group>
+                        <field name="x_sum_total_size" class="oe_right" attrs="{'invisible': [('x_is_multi_slit_order_line', '=', False)]}" force_save="1" readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="before">
+                <field name="x_sale_line_item_group"/>
+            </xpath>
+           <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_packaging']" position="replace">
+                <field name="x_order_master_yards"/>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="after">
+                <field name="x_customer_order_width"/>
+                <field name="x_customer_order_length"/>
+                <field name="x_order_customer_uom" force_save="1"/>
+            </xpath>
+          <!--   <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="after">
+                <field name="x_sale_line_workcenters"/>
+                <field name="x_order_machine_length"/>
+                <field name="x_product_order_trim_width"/>
+                <field name="x_product_order_trim_length"/>
+            </xpath> -->
+        </field>
+    </record>
+
+
+        <record id="model_sale_order_action_ship_hold" model="ir.actions.server">
+            <field name="name">Ship Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.action_ship_hold()</field>
+        </record>
+        <record id="model_sale_order_action_manual_hold" model="ir.actions.server">
+            <field name="name">Manual Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.action_manual_hold()</field>
+        </record>
+<!--     <record id="sale_order_line_form_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">sale.order.line.form.view.inherit.efatc</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+        <field name="arch" type="xml">
+            <field name="product_uom" position="attributes">
+                <attribute name="string">Product UOM</attribute>
+            </field>
+        </field>
+    </record> -->
+
+    <!--Sale Orientation-->
+    <record id="sale_orientation_tree" model="ir.ui.view">
+        <field name="name">sale.orientation.tree</field>
+        <field name="model">sale.orientation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" required="1"/>
+                <field name="x_orientation_uom"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_orientation_form" model="ir.ui.view">
+        <field name="name">sale.orientation.form</field>
+        <field name="model">sale.orientation</field>
+        <field name="arch" type="xml">
+            <form string="Orientation">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+                            <field name="x_orientation_uom"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_orientation_search_view" model="ir.ui.view">
+        <field name="name">sale.orientation.search.view</field>
+        <field name="model">sale.orientation</field>
+        <field name="arch" type="xml">
+            <search string="Orientation">
+                <field name="name" string="Orientation"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Quantity Action View -->
+    <record id="sale_orientation_action_view" model="ir.actions.act_window">
+        <field name="name">Sale Orientation</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.orientation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="sale_orientation_tree"/>
+        <field name="search_view_id" ref="sale_orientation_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="sale_orientation_menu_view"
+        name="Orientation"
+        action="sale_orientation_action_view"
+        parent="sale.menu_sale_config"
+        sequence="4"/>
+
+    <!--Sale Order Warehouse-->
+    <record id="sale_orientation_tree_inv_route" model="ir.ui.view">
+        <field name="name">sale.order.invis.route</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='route_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_policy']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_line_tree_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.view.inherit.efatc</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_id']" position="after">
+                <field name="x_mrp_line_ship_date"/>
+                <field name="x_mrp_line_revised_ship_date"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

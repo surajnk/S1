@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="advance_filter_form_view" model="ir.ui.view">
+		<field name="name">advance.filter.form</field>
+		<field name="model">set.filter</field>
+		<field name="arch" type="xml">
+			<form string="Advance Date Filter">
+				<header>
+					<button name="action_done" string="Confirm" type="object" states="draft" class="btn-primary"/>
+					<button name="action_draft" string="Set to Draft" type="object" states="done"/>
+					<field name="state" widget="statusbar"/>
+				</header>
+				<sheet>
+					<group>
+						<group>
+							<field name="name" attrs="{'readonly':[('state','=','done')]}"/>
+							<field name="filter_field" domain="[('model_id','=',model_id),('ttype','in',['datetime','date'])]" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="model_id"  attrs="{'readonly':[('state','=','done')]}" />
+							<field name="filter_prefix"/>
+							<field name="view_id" invisible="1"/>
+						</group>
+					</group>
+					<separator string='Select Filters'/>
+					<group>
+						<group>
+							<field name="today" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="yesterday" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+					</group>
+						
+					<group>
+						<group>
+							 <field name="last_7_days" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							 <field name="last_30_days" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							 <field name="last_365_days" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+					</group>
+						
+					<group>
+						<group>
+							 <field name="this_week" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="this_month" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="this_year" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+					</group>
+						
+					<group>
+						<group>
+							 <field name="last_week" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							 <field name="last_month" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="last_year" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+					</group>
+
+					<group>
+						<group>
+							<field name="tomorrow" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="next_7_days" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+
+						<group>
+							<field name="next_week" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+						<group>
+							<field name="next_4_weeks" attrs="{'readonly':[('state','=','done')]}"/>
+						</group>
+					</group>
+
+				</sheet>
+			</form>
+		</field>
+	</record>
+
+	<record id="advance_filter_tree_view" model="ir.ui.view">
+		<field name="name">advance.filter.tree</field>
+		<field name="model">set.filter</field>
+		<field name="arch" type="xml">
+			<tree string="Advance Date Filter">
+				<field name="name"/>
+				<field name="model_id"/>
+				<field name="filter_field"/>
+			</tree>
+		</field>
+	</record>
+
+
+	<record id="action_advance_date_filter" model="ir.actions.act_window">
+		<field name="name">Advance Date Filter</field>
+		<field name="res_model">set.filter</field>
+		<!-- <field name="view_type">form</field> -->
+		<field name="view_mode">tree,form</field>
+	</record>
+	
+	<menuitem name="Advance Date Filter" id="menu_dev_dynemic_filter" parent="base.menu_administration" sequence="5" groups="ae_advance_date_filter.group_access_advance_date_filter"/>
+	
+	<menuitem name="Advance Date Filter" id="dev_menu_dynemic_filter_sub" parent="menu_dev_dynemic_filter" action="action_advance_date_filter" sequence="1" groups="ae_advance_date_filter.group_access_advance_date_filter"/>
+</odoo>

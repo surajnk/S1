@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_purchase_product_break_codes,access.purchase.product.break.codes,model_purchase_product_break_codes,,1,1,1,1
+access_purchase_product_break_codes_line,access.purchase.product.break.codes.line,model_purchase_product_break_codes_line,,1,1,1,1

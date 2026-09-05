@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Stock Inventory Line Search for Stock Conversion -->
+    <record id="stock_inventory_line_search_form_view_kreol" model="ir.ui.view">
+        <field name="name">stock.inventory.line.search.form.view.kreol</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="stock_conversion_id" string="Stock Conversion"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="act_stock_inventory_line_all" model="ir.actions.act_window">
+        <field name="name">Inventory Lines</field>
+        <field name="res_model">stock.inventory.line</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{
+                'search_default_stock_conversion_id': [active_id],
+                'default_stock_conversion_id': active_id,
+                'create': 0,
+                'edit': 0,
+            }</field>
+        <field name="search_view_id" ref="stock_inventory_line_search_form_view_kreol"/>
+    </record>
+
+    <!-- Stock Conversion Form View -->
+    <record id="stock_conversion_form_view" model="ir.ui.view">
+        <field name="name">stock.conversion.form.view</field>
+        <field name="model">stock.conversion</field>
+        <field name="arch" type="xml">
+            <form string="Stock Conversion">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_cancel" string="Cancel" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box" groups="base.group_user">
+                        <button class="oe_stat_button" type="action" name="%(act_stock_inventory_line_all)d" icon="fa-bars">
+                            <field string="Inventory Lines" name="count_stock_inventory_line" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" force_save="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="description"/>
+                        </group>
+                        <group>
+                            <field name="created_by" readonly="1" force_save="1"/>
+                            <field name="created_on" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Stock Conversion Line" name="stock_conversion_lines">
+                            <field name="stock_conversion_line" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="source_product_id"/>
+                                    <field name="source_location_id"/>
+                                    <field name="destination_product_id"/>
+                                    <field name="destination_location_id"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Stock Conversion Tree View -->
+    <record id="stock_conversion_tree_view" model="ir.ui.view">
+        <field name="name">stock.conversion.tree.view</field>
+        <field name="model">stock.conversion</field>
+        <field name="arch" type="xml">
+            <tree string="Stock Conversion">
+                <field name="name"/>
+                <field name="created_by"/>
+                <field name="created_on"/>
+                <field name="description"/>
+                <field name="state" optional="show" widget="badge" decoration-success="state == 'done'" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Stock Conversion Search View -->
+    <record id="stock_conversion_search_view" model="ir.ui.view">
+        <field name="name">stock.conversion.search.view</field>
+        <field name="model">stock.conversion</field>
+        <field name="arch" type="xml">
+            <search string="Stock Conversion">
+                <field name="name" string="Stock Conversion No"/>
+                <field name="created_by" string="Created By"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Stock Conversion Action View -->
+    <record id="action_stock_conversion" model="ir.actions.act_window">
+        <field name="name">Stock Conversion</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.conversion</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="stock_conversion_tree_view"/>
+        <field name="search_view_id" ref="stock_conversion_search_view"/>
+    </record>
+
+    <!-- Stock Conversion Menu View -->
+    <menuitem id="menu_stock_conversion"
+        name="Stock Conversion"
+        action="action_stock_conversion"
+        parent="stock.menu_stock_config_settings"
+        sequence="20"
+        groups="ef_stock_conversion.group_stock_conversion"/>
+
+    <!-- Stock Conversion Line Form View -->
+    <record id="stock_conversion_line_form_view" model="ir.ui.view">
+        <field name="name">stock.conversion.line.form.view</field>
+        <field name="model">stock.conversion.line</field>
+        <field name="arch" type="xml">
+            <form string="Stock Conversion Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="source_product_id"/>
+                            <field name="source_location_id"/>
+                            <field name="uom_id"/>
+                        </group>
+                        <group>
+                            <field name="destination_product_id"/>
+                            <field name="destination_location_id"/>
+                            <field name="qty"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+</odoo>

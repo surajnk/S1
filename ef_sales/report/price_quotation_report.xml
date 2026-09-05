@@ -1,0 +1,964 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+    <template id="report_price_quotation_document">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.user_id.partner_id.lang)"/>
+            <div class="page">
+                <div class="oe_structure"/>
+                <style>
+                    .border_main{border:1px solid #ced4da !important;}
+
+                </style>
+                <div class="text-center">
+                    <h2>
+                        <b>
+                            <span>PRICE QUOTATION</span>
+                        </b>
+                    </h2>
+                </div>
+                <br/>
+
+                <div class="row">
+                    <div class="col-6 text-left">
+                        <span>
+                            <b>Quote Number:</b>
+                            <span t-field="doc.name"/>
+                        </span>
+                    </div>
+                    <div class="col-6 text-right">
+                        <span>
+                            <b>Quote Date:</b>
+                            <span t-field="doc.date_order"/>
+                        </span>
+                    </div>
+                </div>
+
+                <table width="100%">
+                    <tbody>
+                        <tr>
+                            <td width="12%">
+                                <b>
+                                    <span>Quote To:</span>
+                                </b>
+                            </td>
+                            <td width="37%">
+                                <span t-field="doc.partner_id"/>
+                            </td>
+                            <td width="14%">
+                                <b>
+                                    <span>Contact Info:</span>
+                                </b>
+                            </td>
+                            <td width="37%">
+                                <span t-field="doc.partner_id"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>
+                                    <span>GPA515</span>
+                                </b>
+                            </td>
+                            <td>
+                                <t t-if="doc.partner_id.street">
+                                    <span t-field="doc.partner_id.street"/>
+                                </t>
+                            </td>
+                            <td>
+                                <b>
+                                    <span>Tel:</span>
+                                </b>
+                            </td>
+                            <td>
+                                <span t-field="doc.partner_id.mobile"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <t t-if="doc.partner_id.street2">
+                                    <span t-field="doc.partner_id.street2"/>
+                                </t>
+                                <t t-if="doc.partner_id.city">
+                                    <span t-field="doc.partner_id.city"/>
+                                </t>
+                            </td>
+                            <td>
+                                <b>
+                                    <span>Fax:</span>
+                                </b>
+                            </td>
+                            <td>
+                                <span t-field="doc.partner_id.x_fax"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <t t-if="doc.partner_id.state_id">
+                                    <span t-field="doc.partner_id.state_id.name"/>
+                                </t>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>
+                                </t>
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                </t>
+                            </td>
+                            <td>
+                                <b>
+                                    <span>Email:</span>
+                                </b>
+                            </td>
+                            <td>
+                                <span t-field="doc.partner_id.email"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <b>
+                                    <span>Ref:</span>
+                                </b>
+                            </td>
+                            <td>
+                                <span t-field="doc.client_order_ref"></span>
+                            </td>
+                            <td>
+                                <b>
+                                    <span>C.S.R.:</span>
+                                </b>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <br/>
+
+                <div class="row">
+                    <div class="col-6 text-left">
+                        <span>F.O.B. Lunenburg, MA 01462</span>
+                    </div>
+                    <div class="col-6 text-right">
+                        <t t-if="doc.payment_term_id">
+                            <span>Payment Terms:
+                                <span t-field="doc.payment_term_id"/>
+                            </span>
+                        </t>
+                    </div>
+                </div>
+
+                <table width="100%" class="table table-sm o_main_table">
+                    <thead>
+                        <th>
+                            <span>
+                                <b>No</b>
+                            </span>
+                        </th>
+                        <th>
+                            <span>
+                                <b>Material Information</b>
+                            </span>
+                        </th>
+                        <th class="text-right">
+                            <span>
+                                <b>Unit Price</b>
+                            </span>
+                        </th>
+                    </thead>
+                    <tbody>
+                        <t t-set="no" t-value="1"/>
+                        <t t-foreach="doc.order_line" t-as="line">
+                            <tr>
+                                <td width="6%" class="text-center">
+                                    <span t-esc="no"/>
+                                </td>
+                                <td width="60%">
+                                    <span t-field="line.product_uom_qty"/>
+                                    <span t-field="line.x_order_customer_uom"/>
+                                    of
+                                    <span t-esc="'%.2f' % line.x_customer_order_width"/>
+                                    x
+                                    <span t-esc="'%.2f' % line.x_customer_order_length"/>
+                                    <span style="margin-left:25px;">
+                                        <span t-field="line.product_id.default_code"/>
+                                    </span>
+                                    <br/>
+                                    <!-- <span style="margin-left:25px;" t-esc="'%.2f' % line.x_customer_order_width"/> x  <span t-esc="'%.2f' % line.x_customer_order_length"/>  -->
+
+                                    <span style="margin-left:200px;" t-field="line.product_id.x_FSC"/>
+                                    <br/>
+                                    <span>
+                                        <b>Embossing:</b>
+                                    </span>
+                                    <t t-foreach="line.x_order_line_labor_items_grid_new" t-as="labor">
+                                        <t t-if="labor.x_product_labor_select"><span
+                                                t-field="labor.x_product_product_labor"/>,
+                                        </t>
+                                    </t>
+
+                                </td>
+                                <td width="34%" class="text-right">
+                                    <t t-if="line.order_id.company_id.currency_id.position == 'before'">
+                                        <span t-field="line.order_id.company_id.currency_id.symbol"/>
+                                        <span t-esc="'%.4f' % line.price_unit"/>
+                                    </t>
+                                    <t t-if="line.order_id.company_id.currency_id.position == 'after'">
+                                        <span t-esc="'%.4f' % line.price_unit"/>
+                                        <span t-field="line.order_id.company_id.currency_id.symbol"/>
+                                    </t>
+                                    <br/>
+                                    <span>
+                                        <b>Total:</b>
+                                    </span>
+                                    <t t-if="line.order_id.company_id.currency_id.position == 'before'">
+                                        <span t-field="line.order_id.company_id.currency_id.symbol"/>
+                                        <span t-esc="'%.4f' % line.price_subtotal"/>
+                                    </t>
+                                    <t t-if="line.order_id.company_id.currency_id.position == 'after'">
+                                        <span t-esc="'%.4f' % line.price_subtotal"/>
+                                        <span t-field="line.order_id.company_id.currency_id.symbol"/>
+                                    </t>
+                                    <br/>
+                                    <span>
+                                        <b>Approximate Material Weight:</b>
+                                    </span>
+                                    <span t-field="line.x_approx_material_weight"/>
+                                </td>
+                            </tr>
+                            <t t-set="no" t-value="no+1"/>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_sales_custom_document">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.user_id.partner_id.lang)"/>
+            <div class="page">
+
+                <!-- Header Section -->
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="width: 25%;">
+                            <img t-att-src="'/your_module/static/src/img/rainbow_logo.png'" style="max-height:80px;"/>
+                        </td>
+                        <td style="text-align: center; width: 50%;">
+                            <h2 style="margin-bottom: 0px;">ecological fibers, inc.</h2>
+                            <small>ENVIRONMENTALLY SOUND COVER SOLUTIONS</small>
+                            <br/>
+                            <small>40 PIONEER DRIVE &#160; LUNENBURG, MASSACHUSETTS 01462 USA</small>
+                            <br/>
+                            <small>TEL: (978) 537-0003 &#160;&#160; FAX: (978) 537-2238 &#160;&#160;
+                                INFO@ECOFIBERS.COM
+                            </small>
+                            <br/>
+                            <small>WWW.ECOFIBERS.COM</small>
+                        </td>
+                        <td style="width: 25%; text-align: right;">
+                            <h3>
+                                <t t-if="doc.state in ['send_for_approval', 'approve']">
+                                    Quotation:
+                                </t>
+                                <t t-else="">
+                                    Sales Order:
+                                </t>
+                                <span t-field="doc.name"/>
+                            </h3>
+                            <p>
+                                <strong>Ship Date:</strong>
+                                <span t-field="doc.x_order_custom_del_date"/>
+                            </p>
+                            <p>
+                                <strong>Order Date:</strong>
+                                <span t-field="doc.date_order" t-options='{"format": "MM-dd-yyyy"}'/>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Title Line -->
+                <div style="border-top: 2px solid black; border-bottom: 2px solid black; padding: 4px 0; text-align:center; margin-top: 8px;">
+                    <strong>SALES ORDER -
+                        <span t-field="doc.warehouse_id.name"/>
+                        * CHANGE ORDER *
+                    </strong>
+                </div>
+
+
+                <!-- Sold To / Ship To -->
+                <table style="width:100%; border: 1px solid black; border-collapse: collapse; margin-top: 8px;">
+                    <tr>
+                        <td style="border: 1px solid black; padding: 6px; width: 50%;">
+                            <strong>Sold To:</strong>
+                            <br/>
+                            <t t-if="doc.partner_id.company_type != 'company' and doc.partner_id.parent_id">
+                                <span t-field="doc.partner_id.parent_id.name"/>
+
+                                <br/>
+                                <t t-if="doc.partner_id.street">
+                                    <span t-field="doc.partner_id.street"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.street2">
+                                    <span t-field="doc.partner_id.street2"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.city">
+                                    <span t-field="doc.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.partner_id.state_id">
+                                    <span t-field="doc.partner_id.state_id.name"/>,
+                                </t>
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.type == 'contact'">
+                                    <strong>Contact:</strong>
+                                    <span t-field="doc.partner_id.name"/>
+                                    @
+                                    <span t-field="doc.partner_id.phone"/>
+                                    <br/>
+                                </t>
+                                <strong>Rep:</strong>
+                                <span t-field="doc.partner_id.parent_id.user_id.name"/>
+
+                            </t>
+                            <t t-else="">
+                                <span t-field="doc.partner_id.name"/>
+
+                                <br/>
+                                <t t-if="doc.partner_id.street">
+                                    <span t-field="doc.partner_id.street"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.street2">
+                                    <span t-field="doc.partner_id.street2"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.city">
+                                    <span t-field="doc.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.partner_id.state_id">
+                                    <span t-field="doc.partner_id.state_id.name"/>,
+                                </t>
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.partner_id.type == 'contact'">
+                                    <strong>Contact:</strong>
+                                    <span t-field="doc.partner_id.name"/>
+                                    @
+                                    <span t-field="doc.partner_id.phone"/>
+                                    <br/>
+                                </t>
+                                <strong>Rep:</strong>
+                                <span t-field="doc.partner_id.user_id.name"/>
+                            </t>
+                        </td>
+                        <td style="border: 1px solid black; padding: 6px; width: 50%;">
+                            <strong>Ship To:</strong>
+                            <br/>
+                            <span t-field="doc.partner_shipping_id.name"/>
+                            <br/>
+                            <t t-if="doc.partner_shipping_id.street">
+                                <span t-field="doc.partner_shipping_id.street"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.street2">
+                                <span t-field="doc.partner_shipping_id.street2"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.city">
+                                <span t-field="doc.partner_shipping_id.city"/>,
+                            </t>
+
+                            <br/>
+                            <!--                            <span style="font-size:10px;">-->
+                            <!--                                <span t-field="line.product_id.x_FSC"/> &#160;&#160; -->
+                            <!--                                <span t-field="line.product_id.x_class_commodity_group.x_HS_Code.name"/>-->
+                            <!--                            </span><br/>-->
+                            <!--                            <strong>Embossing:</strong> <span t-field="line.product_id.x_product_product_embossing"/><br/>-->
+                            <!--                            <strong>Customer Products:</strong><br/>-->
+                            <!--                            <strong>Operations:</strong><br/>-->
+                            <!--                            <t t-foreach="line.x_order_line_labor_items_grid_new" t-as="labor">-->
+                            <!--                                <t t-if="labor.x_product_labor_select">-->
+                            <!--                                    <span t-field="labor.x_product_product_labor"/> - -->
+                            <!--                                    <span t-field="labor.x_labor_monetary_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}' t-if="labor.x_labor_monetary_amount"/>-->
+                            <!--                                </t>-->
+                            <!--                            </t>-->
+                            <t t-if="doc.partner_shipping_id.zip">
+                                <span t-field="doc.partner_shipping_id.zip"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.country_id">
+                                <span t-field="doc.partner_shipping_id.country_id.name"/>
+                                <br/>
+                            </t>
+                            <strong>C.S.R.:</strong>
+                            <span t-field="doc.partner_id.parent_id.x_assigned_csr"/>
+                            -
+                            <span t-field="doc.partner_id.x_assigned_csr.login"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Order Details -->
+                <table style="width: 100%; border: 1px solid black; border-collapse: collapse; margin-top: 8px;">
+                    <tr>
+                        <td style="border: 1px solid black; padding: 6px; width: 33%;">
+                            <strong>Customer P.O.:</strong>
+                            <span t-field="doc.client_order_ref"/>
+                            <br/>
+                            <strong>Terms:</strong>
+                            <span t-field="doc.payment_term_id.name"/>
+                            <br/>
+                        </td>
+                        <td style="border: 1px solid black; padding: 6px; width: 33%;">
+                            <strong>Ship Via:</strong>
+                            <span t-field="doc.x_sale_ship_via.x_name"/> &amp;nbsp; &amp;nbsp;
+                            <strong>Incoterm:</strong>
+                            <span t-field="doc.incoterm.name"/>
+                            <br/>
+                            <strong>F.O.B.:</strong>
+                            <t t-if="doc.warehouse_id.partner_id">
+                                <span t-field="doc.warehouse_id.partner_id.name"/>
+
+                                <br/>
+                                <t t-if="doc.warehouse_id.partner_id.street">
+                                    <span t-field="doc.warehouse_id.partner_id.street"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.warehouse_id.partner_id.street2">
+                                    <span t-field="doc.warehouse_id.partner_id.street2"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.warehouse_id.partner_id.city">
+                                    <span t-field="doc.warehouse_id.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.warehouse_id.partner_id.state_id">
+                                    <span t-field="doc.warehouse_id.partner_id.state_id.name"/>,
+                                </t>
+                                <t t-if="doc.warehouse_id.partner_id.zip">
+                                    <span t-field="doc.warehouse_id.partner_id.zip"/>
+                                    <br/>
+                                </t>
+                                <t t-if="doc.warehouse_id.partner_id.country_id">
+                                    <span t-field="doc.warehouse_id.partner_id.country_id.name"/>
+                                    <br/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Material Info -->
+                <t t-foreach="doc.order_line" t-as="line">
+                    <!--                    <table style="width: 100%; border: 1px solid black; border-collapse: collapse; margin-top: 8px;">-->
+                    <!--                        <tr>-->
+                    <!--                            <td style="border: 1px solid black; padding: 6px; width: 33%;">-->
+                    <!--                                <strong>Ref 1:</strong>-->
+                    <!--                                <span t-field="line.x_ref1"/>-->
+                    <!--                                <br/>-->
+                    <!--                                <strong>Ref 2:</strong>-->
+                    <!--                                <span t-field="line.x_ref2"/> &#160;-->
+                    <!--                            </td>-->
+                    <!--                            <td style="border: 1px solid black; padding: 6px; width: 33%;">-->
+                    <!--                                <strong>Publisher:</strong>-->
+                    <!--                                <span t-field="line.x_order_publisher"/>-->
+                    <!--                            </td>-->
+                    <!--                        </tr>-->
+                    <!--                    </table>-->
+                    <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                        <tr>
+                            <td>
+                                <strong>Material Information:</strong>
+
+                                <br/>
+                                <strong>Product:</strong>
+                                <span t-field="line.product_uom_qty"/>
+                                <span t-field="line.x_order_customer_uom.name"/>
+                                <t t-if="line.x_customer_order_length and line.x_customer_order_width">
+
+                                    (
+                                    <t t-esc="'%.1f' % (line.x_customer_order_length)"/>
+                                    ''
+                                    ×
+                                    <t t-esc="'%.1f' % (line.x_customer_order_width)"/>
+                                    '')
+                                </t>
+                                <t t-elif="line.x_customer_order_length">
+
+                                    (
+                                    <t t-esc="'%.1f' % (line.x_customer_order_length)"/>
+                                    '')
+                                </t>
+                                <t t-elif="line.x_customer_order_width">
+
+                                    (
+                                    <t t-esc="'%.1f' % (line.x_customer_order_width)"/>
+                                    '')
+                                </t>
+                                <br/>
+                                <span t-field="line.product_id.default_code"/>
+                                :
+                                <t t-if="line.product_id.x_item_length and line.product_id.x_item_width">
+
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_length)"/>
+                                    ''
+                                    ×
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_width)"/>
+                                    ''
+                                </t>
+                                <t t-elif="line.product_id.x_item_length">
+
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_length)"/>
+                                    ''
+                                </t>
+                                <t t-elif="line.product_id.x_item_width">
+
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_width)"/>
+                                    ''
+                                </t>
+                                <t t-if="line.product_id.x_item_length and line.product_id.x_item_width">
+                                    (
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_length * 25.4)"/>
+                                    mm
+                                    ×
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_width * 25.4)"/>
+                                    mm)
+                                </t>
+                                <t t-elif="line.product_id.x_item_length">
+                                    (
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_length * 25.4)"/>
+                                    mm)
+                                </t>
+                                <t t-elif="line.product_id.x_item_width">
+                                    (
+                                    <t t-esc="'%.1f' % (line.product_id.x_item_width * 25.4)"/>
+                                    mm)
+                                </t>
+                                <br/>
+                                <span style="font-size:10px;">
+                                    FSC MIX CREDIT :
+                                    <span t-field="line.product_id.x_FSC"/> &#160;&#160;
+                                    <span t-field="line.product_id.x_class_commodity_group.x_HS_Code.name"/>
+                                </span>
+                                <br/>
+                                <strong>Embossing:</strong>
+                                <span t-if="line.product_id" t-field="line.product_id.x_product_product_embossing"/>
+                                <br/>
+                                <strong>Customer Products:</strong>
+                                <br/>
+                                <strong>Operations:</strong>
+                                <br/>
+                                <t t-foreach="line.x_order_line_labor_items_grid_new" t-as="labor">
+                                    <t t-if="labor.x_product_labor_select">
+                                        <span t-field="labor.x_product_product_labor"/>
+                                        -
+                                        <span t-field="labor.x_labor_monetary_amount"
+                                              t-options='{"widget": "monetary", "display_currency": doc.currency_id}'
+                                              t-if="labor.x_labor_monetary_amount"/>
+                                    </t>
+                                </t>
+                                <br/>
+                                <strong>Approximate Material Weight:</strong>
+                                <span t-field="line.x_approx_material_weight"/>
+                                <br/>
+                                <strong>Quantity Allowance:</strong>
+                                +<span t-field="line.x_order_line_tol_over"/>% / -<span
+                                    t-field="line.x_order_line_tol_under"/>%
+                                <br/>
+                                <t t-if="line.x_ref1">
+                                    <strong>Ref 1:</strong>
+                                    <span t-field="line.x_ref1"/>
+                                    <br/>
+                                </t>
+                                <t t-if="line.x_ref2">
+                                    <strong>Ref 2:</strong>
+                                    <span t-field="line.x_ref2"/>
+                                    <br/>
+                                </t>
+                                <t t-if="line.x_order_publisher">
+                                    <strong>Publisher:</strong>
+                                    <span t-field="line.x_order_publisher"/>
+                                </t>
+                            </td>
+                            <td style="width: 50%; text-align:right;">
+                                <p><span t-field="line.customer_unit_price"/>/
+                                    <span t-field="line.x_order_customer_uom.name"/>
+                                </p>
+                                <p>Override Per/
+                                    <span t-field="line.x_order_customer_uom.name"/>
+                                </p>
+                                <p>Master Yards:
+                                    <span t-field="line.x_order_master_yards"/>
+                                </p>
+                                <p>Unit Price:
+                                    <span t-field="line.price_unit"/>
+                                </p>
+                                <p>Material:
+                                    <span t-field="line.price_subtotal"/>
+                                </p>
+                                <p>Labor:</p>
+                                <p>Misc:</p>
+                                <strong>Total:
+                                    <span t-field="line.price_total"/>
+                                </strong>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <strong>Usage Information:</strong>
+                                <br/>
+                                <t t-foreach="line.x_order_line_bom" t-as="bom">
+                                    <t t-if="bom.x_product_bom_select">
+                                        <div>
+                                            <span t-field="bom.x_unit_req"/>
+                                            -<span t-field="line.x_order_customer_uom"/>&#160;&#160;<span
+                                                t-field="bom.x_product_product_bom.x_item_width"/>
+                                            &#160;&#160;×&#160;&#160;
+                                            <t t-esc="bom.x_product_product_bom.x_item_length"/> &#160;&#160;<span
+                                                t-field="bom.x_mps_out"/>
+                                            OUT
+                                            <br/>
+                                            <strong>Waste %:
+                                                <span t-field="line.x_product_order_waste"/>
+                                            </strong>&#160;&#160;<strong>Trim width:
+                                            <span t-field="line.x_product_order_trim_width"/>
+                                        </strong>&#160;&#160;<strong>Trim length:
+                                            <span t-field="line.x_product_order_trim_length"/>
+                                        </strong>
+                                            <br/>
+                                        </div>
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <strong>Order Put-ups:</strong>
+                                <br/>
+                                <t t-if="line.put_up_rolls and line.uom_put_up">
+                                    <span t-esc="line.put_up_rolls"/>
+                                    @
+                                    <span t-esc="line.uom_put_up"/>
+                                    <span t-esc="'{:,}'.format(line.product_uom_qty)"/>
+                                    <span t-esc="line.x_order_customer_uom.name"/>
+                                    <br/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <strong>Order Comments:</strong>
+                                <br/>
+                                <span t-field="line.x_order_line_comments"/>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                        <tr>
+                            <td style="width: 100%;">
+                                <strong>Special Comments:</strong>
+                                <br/>
+                                <t t-foreach="line.x_sale_line_customer_message" t-as="message">
+                                    <span t-field="message.x_sale_special_message"/>
+                                    <br/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+                <table style="width: 100%; margin-top: 16px; border-top: 1px solid black;">
+                    <tr>
+                        <td style="width: 100%;">
+                            <strong>CUSTOMER COMMENTS</strong>
+                            <t t-foreach="doc.x_sale_customer_message" t-as="message">
+                                <div>
+                                    <span t-field="message.x_sale_special_message"/>
+                                    <br/>
+                                </div>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </t>
+    </template>
+
+
+    <template id="report_price_confirmed_quotation_document">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context(lang=doc.user_id.partner_id.lang)"/>
+            <div class="page">
+                <div style="text-align:center; font-size:18px; font-weight:bold; margin:15px 0; padding:8px 0; border-top:2px solid #000; border-bottom:2px solid #000;">
+                    ORDER CONFIRMATION
+                </div>
+                <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:10px;">
+                    <tr>
+                        <!-- Sold To -->
+                        <td style="width:50%; vertical-align:top; padding:5px;">
+                            <strong>Sold To:</strong>
+                            <br/>
+                            <t t-if="doc.partner_id.parent_id">
+                                <span t-esc="doc.partner_id.parent_id.name"/>
+                            </t>
+                            <t t-else="">
+                                <span t-esc="doc.partner_id.name"/>
+                            </t>
+                            <br/>
+                            <t t-if="doc.partner_id.street">
+                                <span t-field="doc.partner_id.street"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_id.street2">
+                                <span t-field="doc.partner_id.street2"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_id.city">
+                                <span t-field="doc.partner_id.city"/>,
+                            </t>
+                            <t t-if="doc.partner_id.state_id">
+                                <span t-field="doc.partner_id.state_id.name"/>,
+                            </t>
+                            <t t-if="doc.partner_id.zip">
+                                <span t-field="doc.partner_id.zip"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_id.country_id">
+                                <span t-field="doc.partner_id.country_id.name"/>
+                                <br/>
+                            </t>
+                        </td>
+
+                        <!-- Ship To -->
+                        <td style="width:50%; vertical-align:top; padding:5px;">
+                            <strong>Ship To:</strong>
+                            <br/>
+                            <span t-esc="doc.partner_shipping_id.parent_id.name"/>
+                            <br/>
+                            <t t-if="doc.partner_shipping_id.street">
+                                <span t-field="doc.partner_shipping_id.street"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.street2">
+                                <span t-field="doc.partner_shipping_id.street2"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.city">
+                                <span t-field="doc.partner_shipping_id.city"/>,
+                            </t>
+                            <t t-if="doc.partner_shipping_id.state_id">
+                                <span t-field="doc.partner_shipping_id.state_id.name"/>,
+                            </t>
+                            <t t-if="doc.partner_shipping_id.zip">
+                                <span t-field="doc.partner_shipping_id.zip"/>
+                                <br/>
+                            </t>
+                            <t t-if="doc.partner_shipping_id.country_id">
+                                <span t-field="doc.partner_shipping_id.country_id.name"/>
+                                <br/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- Contact Info under Sold To -->
+                        <td style="vertical-align:top; padding:5px;">
+                            <strong>Contact:</strong> 
+                            <t t-if="doc.partner_id.parent_id">
+                                <span t-esc="doc.partner_id.parent_id.name"/>
+                            </t>
+                            <t t-else="">
+                                <span t-esc="doc.partner_id.name"/>
+                            </t>
+                        </td>
+
+                        <!-- CSR/Rep Info under Ship To -->
+                        <td style="vertical-align:top; padding:5px;">
+                            <strong>Rep:</strong>
+                            <span t-field="doc.partner_id.user_id.name"/>
+                            <br/>
+                            <strong>C.S.R.:</strong>
+                            <span t-field="doc.create_uid.name"/>
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+                <table style="width:100%; font-size:12px; border-collapse:collapse; margin-top:10px;">
+                    <tr>
+                        <td style="width:33%; padding:5px;">
+                            <strong>Sales Order:</strong>
+                            <span t-field="doc.name"/>
+                        </td>
+                        <td style="width:33%; padding:5px;">
+                            <strong>Customer P.O.:</strong>
+                            <span t-field="doc.client_order_ref"/>
+                        </td>
+                        <td style="width:34%; padding:5px;">
+                            <strong>Payment Terms:</strong>
+                            <span t-field="doc.payment_term_id.name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px;">
+                            <strong>Order Date:</strong>
+                            <span t-field="doc.date_order" t-options='{"format": "M.d.yy"}'/>
+                        </td>
+                        <td style="padding:5px;">
+                            <strong>F.O.B.:</strong>
+                            Pawtucket, RI 02861
+                        </td>
+                        <td style="padding:5px;">
+                            <strong>Ship Via:</strong>
+                            <span t-field="doc.x_sale_ship_via.x_name"/> , <span t-field="doc.incoterm.name"/>
+                        </td>
+                    </tr>
+                </table>
+
+
+                <!-- Material Information -->
+                <t t-foreach="doc.order_line" t-as="line">
+                    <table style="width:100%; border-collapse:collapse; border:1px solid #000; margin-bottom:10px;">
+                        <tr>
+                            <td colspan="3" style="padding:5px;">
+                                <strong>Material Information:</strong>
+                                <span style="font-style:italic;">
+                                    <span t-field="line.product_id.x_FSC"/>
+                                </span>
+                                <span style="float:right; font-style:italic;">HS:
+                                    <span t-field="line.product_id.x_class_commodity_group.x_HS_Code.name"/>
+                                    <span t-field="line.product_id.default_code"/>
+                                </span>
+                                <br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding:5px;">
+                                <strong>Product:</strong>
+                                <span t-field="line.product_uom_qty"/>
+                                <t t-if="line.x_order_customer_uom.name == 'shts'">SHEETS</t>
+                                <t t-if="line.x_order_customer_uom.name == 'yds'">YARDS</t>
+                                of
+                                <span t-esc="'%.2f' % line.x_customer_order_width"/>
+                                <t t-if="line.x_customer_order_length">
+                                    x <span t-esc="'%.2f' % line.x_customer_order_length"/>
+                                </t>
+                                <t t-if="line.x_customer_order_width_mm and line.x_customer_order_length_mm">
+                                    (<span t-esc="'%.2f' % line.x_customer_order_width_mm"/>mm x<span
+                                        t-esc="'%.2f' % line.x_customer_order_length_mm"/>mm) Grain is always 2nd
+                                    dimension
+                                    <br/>
+                                </t>
+                                <span t-field="line.product_id.default_code"/>
+                            </td>
+                            <td style="padding:5px; text-align:right;">
+                                <strong>USD</strong>
+                                <span t-esc="'%.2f' % line.customer_unit_price"/>/
+                                <span t-field="line.product_uom.name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding:5px;">
+                                <strong>Work Order:</strong>
+                                <span t-field="line.x_production_id.name"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding:5px;">
+                                <strong>Exfactory Ship Date:</strong>
+                                <span t-field="line.x_production_id.x_mrp_confirmed_date"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding:5px;">
+                                <strong>Quantity Allowance:</strong>
+                                +
+                                <span t-field="line.x_order_line_tol_over"/>
+                                % / -
+                                <span t-field="line.x_order_line_tol_under"/>
+                                %
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:5px;">
+                                <strong>Ref 1:</strong>
+                                <span t-field="line.x_ref1"/>
+                            </td>
+                            <td style="padding:5px;">
+                                <strong>Ref 2:</strong>
+                                <span t-field="line.x_ref2"/>
+                            </td>
+                            <td style="padding:5px;">
+                                <strong>Publisher:</strong>
+                                <span t-field="line.x_order_publisher"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <!-- Special Comments -->
+                    <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:10px;">
+                        <tr>
+                            <td style="border:1px solid #000; padding:5px;">
+                                <strong>Special Comments:</strong>
+                                <br/>
+                                <t t-foreach="line.x_sale_line_customer_message" t-as="message">
+                                    <span t-field="message.x_sale_special_message"/>
+                                    <br/>
+                                </t>
+                                <span t-field="line.x_order_line_comments"/>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </div>
+        </t>
+    </template>
+
+
+    <template id="report_price_quotation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ef_sales.report_price_quotation_document" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_price_confirmed_quotation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ef_sales.report_price_confirmed_quotation_document" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_sales_custom">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ef_sales.report_sales_custom_document" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sh_merge_mrp_order_wizard_form" model="ir.ui.view">
+        <field name="name">sh.merge.mrp.order.wizard</field>
+        <field name="model">sh.merge.mrp.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Merge Mrp Orders">
+            	<group>
+            		<field name="merge_type" widget="radio" />
+            	</group>
+                <group>
+                    <group>
+                        <field name="product_id" invisible="1" />
+                        <field name="mrp_order_ids" widget="many2many_tags" invisible="1" />
+                        <field name="mrp_order_id" domain="[('state','in',['draft']),('id','not in',mrp_order_ids),('product_id','=',product_id)]" attrs="{'invisible':[('merge_type','in',['nothing_new','cancel_new','remove_new'])],'required':[('merge_type','in',['nothing_existing','cancel_existing','remove_existing'])]}" />
+                        <field name="location_src_id" attrs="{'invisible':[('merge_type','in',['nothing_existing','cancel_existing','remove_existing'])],'required':[('merge_type','in',['nothing_new','cancel_new','remove_new'])]}" />
+                        <field name="location_dest_id" attrs="{'invisible':[('merge_type','in',['nothing_existing','cancel_existing','remove_existing'])],'required':[('merge_type','in',['nothing_new','cancel_new','remove_new'])]}" />
+                    </group>
+                </group>
+				<notebook>
+                    <page string="Merge Lines" name="merge_line_ids">
+                        <field name="merge_line_ids" widget="section_and_note_one2many" mode="tree">
+                            <tree string="Merge Lines" editable="bottom" create="false" delete="false">
+                            	<field name="mrp_order_id" required="1" readonly="1" force_save="1" />
+                                <field name="product_id" readonly="1" force_save="1" required="1" />
+                                <field name="qty" required="1" />
+                                <field name="qty_available" readonly="1" />
+                                <field name="mrp_order_line_id" invisible="1" />
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+                <footer>
+                    <button class="btn-primary" name="action_merge_mrp_order" type="object" string="Merge" />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="sh_merge_mrp_order_multi_action" model="ir.actions.act_window">
+        <field name="name">Merge Mrp Orders</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sh.merge.mrp.order.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="sh_merge_mrp_order_wizard_form" />
+        <field name="binding_model_id" ref="mrp.model_mrp_production" />
+        <field name="binding_view_types">list</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

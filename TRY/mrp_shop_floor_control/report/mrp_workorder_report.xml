@@ -1,0 +1,297 @@
+<odoo>
+    <template id="print_work_order">
+        <t t-call="web.html_container">
+
+            <div class="header">
+                <table width="100%">
+                    <tr>
+                        <td width="25%">
+                            Date Printed:
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%B %d, %Y')"/>
+                        </td>
+                        <td style="text-align: center;">
+                            Production Timesheet
+                        </td>
+                        <td style="text-align: right;">
+                            Page:
+                            <span class="page"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Time:
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%H:%M:%S')"/>
+                        </td>
+                        <td style="text-align: center;">
+                            <span t-esc="worl"/>
+                            -
+                            <span t-esc="start_date"/>
+                            to
+                            <span t-esc="end_date"/>
+                        </td>
+                        <td>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+
+            <page style="padding-top:5%;">
+                <style>
+                    .data_table td {
+                    text-align:center;
+                    }
+                </style>
+                <table class="data_table" width="100%">
+                    <thead>
+                        <tr>
+                            <td>
+                                Work<br/>Order
+                            </td>
+                            <td colspan="2">
+                                Run Time
+                            </td>
+                            <td>
+                                Job<br/>Time
+                            </td>
+                            <td>
+                                Yards
+                                <br/>
+                                IN
+                            </td>
+                            <td>
+                                Yards
+                                <br/>
+                                OUT
+                            </td>
+                            <td colspan="4">
+                                Yields
+                            </td>
+                            <td>
+                                Material
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+                            </td>
+
+                            <td>
+                                Start
+                            </td>
+                            <td>
+                                Stop
+                            </td>
+
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td colspan="4">
+
+                            </td>
+                            <td>
+
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="total_time" t-value="0"/>
+                        <t t-set="we" t-value="0"/>
+                        <t t-set="yint" t-value="0"/>
+                        <t t-set="yot" t-value="0"/>
+                        <t t-foreach="mwork" t-as="l">
+                            <t t-set="roll_no" t-value="0"/>
+                            <t t-set="wname" t-value="false"/>
+                            <t t-foreach="work" t-as="w">
+                                <t t-if="w['id'] == l['id']">
+                                    <tr>
+                                        <t t-if="w['name'] == wname">
+                                            <td>
+
+                                            </td>
+                                        </t>
+                                        <t t-else="">
+                                            <td>
+                                                <span t-esc="w['mname']"/>
+                                                <t t-set="wname" t-value="l['name']"/>
+                                                <t t-set="we" t-value="we+1"/>
+                                            </td>
+                                        </t>
+                                        <td>
+
+                                            <span t-esc="w['ds']"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="w['de']"/>
+                                        </td>
+                                        <td style="white-space:nowrap">
+                                            <span t-esc="w['d']" style="white-space:nowrap"/>
+                                            <t t-set="hours"
+                                               t-value="int(w['d'].split('h')[0]) if 'h' in w['d'] else 0"/>
+                                            <t t-set="minutes"
+                                               t-value="int(w['d'].split('m')[0].split(',')[1]) if 'm' in w['d'] else 0"/>
+                                            <t t-set="total_time" t-value="total_time + hours * 60 + minutes"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="w['yin']"/>
+                                            <t t-if="w['yin']">
+                                                <t t-set="yint" t-value="w['yin'] + yint"/>
+                                            </t>
+
+                                        </td>
+                                        <td>
+                                            <span t-esc="w['yoout']"/>
+                                            <t t-if="w['yoout']">
+                                                <t t-set="yot" t-value="w['yoout'] +yot "/>
+                                            </t>
+                                        </td>
+                                        <td colspan="4">
+                                        </td>
+                                        <td>
+                                            <span t-esc="w['pname']"/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </t>
+
+
+                            <t t-foreach="roll" t-as="r">
+                                <t t-if="r['id'] == l['id']">
+                                    <t t-if="roll_no == 0">
+                                        <tr>
+                                            <td>
+
+                                            </td>
+                                            <td>
+
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                Yardage
+                                            </td>
+                                            <td>
+                                                Roll
+                                            </td>
+                                            <td>
+                                                Time
+                                            </td>
+                                            <td>
+                                                Name
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                        <t t-set="roll_no" t-value="roll_no+1"/>
+                                    </t>
+                                    <tr>
+                                        <td>
+
+                                        </td>
+                                        <td>
+
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <span t-esc="r['q']"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="r['rname']"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="r['date']"/>
+                                        </td>
+                                        <td>
+                                            <span t-esc="r['uname']"/>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </t>
+                            </t>
+
+
+                        </t>
+                        <tr>
+                            <td colspan="11" style="text-align:left !important;">
+                                Total Time:
+                                <t t-set="total_time_hours" t-value="int(total_time / 60)"/>
+                                <t t-set="total_time_minutes" t-value="total_time % 60"/>
+                                <t t-set="total_time_formatted"
+                                   t-value="str(total_time_hours) + 'h, ' + str(total_time_minutes) + 'm'"/>
+                                <span t-esc="total_time_formatted"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="11" style="text-align:left !important;">
+                                Total W/O Entries:
+                                <span t-esc="we"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align:left !important;">
+                                Total W/O Time:
+                                <t t-set="total_time_hours" t-value="int(total_time / 60)"/>
+                                <t t-set="total_time_minutes" t-value="total_time % 60"/>
+                                <t t-set="total_time_formatted"
+                                   t-value="str(total_time_hours) + 'h, ' + str(total_time_minutes) + 'm'"/>
+                                <span t-esc="total_time_formatted"/>
+                            </td>
+                            <td>
+                                <span t-esc="yint"/>
+                            </td>
+                            <td>
+                                <span t-esc="yot"/>
+                            </td>
+                            <td colspan="5">
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left !important;">
+                                Output -
+                            </td>
+                            <td colspan="11" style="text-align:left !important;">
+                                Yards per hour:
+                                <span t-esc="'{:.2f}'.format(yint/total_time) if total_time != 0 else '0.00'"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="page-break-before:always;"/>
+            </page>
+
+        </t>
+    </template>
+    <record id="report_qweb_print_work_order" model="report.paperformat">
+        <field name="name">Workorder paperformat</field>
+        <field name="default" eval="True"/>
+        <field name="format">custom</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">25</field>
+        <field name="margin_bottom">7</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">15</field>
+        <field name="dpi">90</field>
+    </record>
+    <record id="action_mrp_workcenter_report" model="ir.actions.report">
+        <field name="name">Work Order Report</field>
+        <field name="model">mrp.workorder</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mrp_shop_floor_control.print_work_order</field>
+        <field name="report_file">mrp_shop_floor_control.print_work_order</field>
+        <field name="paperformat_id" ref="report_qweb_print_work_order"/>
+    </record>
+</odoo>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Labor Items Tree View -->
+    <record id="price_group_tree_view" model="ir.ui.view">
+        <field name="name">price.group.tree.view</field>
+        <field name="model">price.group</field>
+        <field name="arch" type="xml">
+            <tree string="Price Group">
+                <field name="x_pricegroup" required="1"/>
+                <field name="x_description"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Product Quantity Form View -->
+        <record id="price_group_form_view" model="ir.ui.view">
+        <field name="name">price.group.form.view</field>
+        <field name="model">price.group</field>
+        <field name="arch" type="xml">
+            <form string="Price Group">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="x_pricegroup" required="1"/>
+                            <field name="x_qty_break_code"/>
+                            <field name="x_price_group_qty" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="x_description"/>
+                            <field name="x_effectivedate"/>
+                            <field name="x_futuredate"/>
+                        </group>
+                        <field name="x_sale_price">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="x_price_qty" force_save="1"/>
+                                <field name="x_selling_price"/>
+                                <field name="x_future_selling_price"/>
+                            </tree>
+                            <form string="Price Details">
+                                <group>
+                                    <field name="x_price_qty" force_save="1"/>
+                                    <field name="x_selling_price"/>
+                                    <field name="x_future_selling_price"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Quantity Search View -->
+    <record id="price_group_search_view" model="ir.ui.view">
+        <field name="name">price.group.search.view</field>
+        <field name="model">price.group</field>
+        <field name="arch" type="xml">
+            <search string="Price Group">
+                <field name="x_pricegroup" string="Price Group"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Quantity Action View -->
+    <record id="price_group_action_view" model="ir.actions.act_window">
+        <field name="name">Price Group</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">price.group</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="price_group_tree_view"/>
+        <field name="search_view_id" ref="price_group_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="price_group_menu_view"
+        name="Price Group"
+        action="price_group_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+
+
+    <!--Product Tolerance-->
+        <record id="product_tolerance_tree_view" model="ir.ui.view">
+        <field name="name">product.tolerance.tree.view</field>
+        <field name="model">product.tolerance</field>
+        <field name="arch" type="xml">
+            <tree string="Product Tolerance">
+                <field name="x_tolerance_level" required="1"/>
+                <field name="x_tolerance_description"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Product Quantity Form View -->
+        <record id="product_tolerance_form_view" model="ir.ui.view">
+        <field name="name">product.tolerance.form.view</field>
+        <field name="model">product.tolerance</field>
+        <field name="arch" type="xml">
+            <form string="Product Tolerance">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="x_tolerance_level" required="1"/>
+                            <field name="x_tolerance_description"/>                        
+                        </group>
+                        <field name="x_tolerance_lines">
+                            <tree editable="bottom">
+                                <field name="x_range_tolerance_yds" force_save="1"/>
+                                <field name="x_tolerance_over"/>
+                                <field name="x_tolerance_under"/>
+                            </tree>
+                            <form string="Product Tolerance">
+                                <group>
+                                    <field name="x_range_tolerance_yds" force_save="1"/>
+                                    <field name="x_tolerance_over"/>
+                                    <field name="x_tolerance_under"/>
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Product Quantity Search View -->
+    <record id="product_tolerance_search_view" model="ir.ui.view">
+        <field name="name">product.tolerance.search.view</field>
+        <field name="model">product.tolerance</field>
+        <field name="arch" type="xml">
+            <search string="Product Tolerance">
+                <field name="x_tolerance_level" string="Level"/>
+                <field name="x_tolerance_description" string="Description"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Product Quantity Action View -->
+    <record id="product_tolerance_action_view" model="ir.actions.act_window">
+        <field name="name">Product Tolerance</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.tolerance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_tolerance_tree_view"/>
+        <field name="search_view_id" ref="product_tolerance_search_view"/>
+    </record>
+
+    <!-- Product Color Menu View -->
+    <menuitem id="product_tolerance_menu_view"
+        name="Product Tolerance"
+        action="product_tolerance_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+
+</odoo>

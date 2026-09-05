@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_production_form_add_button" model="ir.ui.view">
+        <field name="name">mrp.production.branch.form.add.button</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="is_printed_mrp_production_report" invisible="1"/>
+            </field>
+            <xpath expr="///button[@name='action_cancel']" position="after">
+                <button name="print_mrp_production_report" type="object"
+                        string="Print MRP Production Report" class="btn btn-primary"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

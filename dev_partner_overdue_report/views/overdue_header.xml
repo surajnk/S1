@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle 
+ -->
+<odoo>
+    <template id="dev_partner_overdue_layout">
+            <t t-if="not o and doc">
+                <t t-set="o" t-value="doc"/>
+            </t>
+
+            <t t-if="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-if="not o or not 'company_id' in o">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+             <t t-call="dev_partner_overdue_report.dev_partner_overdue_header"><t t-raw="0"/></t>
+    </template>    
+    
+    
+    <template id="dev_partner_overdue_header">
+           <div class="header">
+                <div class="row" style="border-bottom:1px solid black;font-size:12px">
+                    <div class="col-3">
+                        To : <span t-esc="get_formate_date(docs.start_date)"/>
+                    </div>
+                    <div class="col-6 text-center" style="font-size:14px">
+                        <span t-esc="docs.company_id.name"/><br/>
+                        <t t-if="docs.partner_type == 'customer'">
+                            <span><b>Accounts Receivable
+                                <t t-if="docs.report_type == 'break_down'">
+                                    Breakdown
+                                </t>
+                            </b></span><br/>
+                        </t>
+                        <t t-if="docs.partner_type == 'supplier'">
+                            <span><b>Accounts Payable
+                             <t t-if="docs.report_type == 'break_down'">
+                                    Breakdown
+                                </t>
+                            </b></span><br/>
+                        </t>
+                    </div>
+                    <div class="col-3 text-right">
+                        <span t-esc="get_formate_datetime(datetime.datetime.now())"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="article o_report_layout_standard">
+                <t t-raw="0" />
+            </div>
+
+            <div class="footer">
+                <t t-if="docs.company_id.report_header">
+                    <div class="col-2"/>
+                    <div class="col-8 text-center" style="border-top:1px solid black">
+                        <span t-esc="docs.company_id.report_header"/>
+                    </div>
+                    <div class="col-2"/>
+                </t>
+                <div class="col-12 text-right">
+                    <span>Page </span><span class="page" /> of <span class="topage" />
+                </div>
+            </div>
+    </template>
+    
+    
+        
+</odoo>

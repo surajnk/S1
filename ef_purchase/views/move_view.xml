@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_stock_picking_ef_purchase" model="ir.ui.view">
+        <field name="name">stock.picking.ef.purchase</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="is_convert_ibs_yrd" invisible="0"/>
+            </xpath>
+            <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_uom']" position="replace"/>
+            <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="before">
+                <field name="current_receipt_qty_ibs" string="Qty Received" readonly="1" optional="show"/>
+                <field name="product_uom" attrs="{'readonly': [('state', '!=', 'draft'), ('additional', '=', False)]}" options="{'no_open': True, 'no_create': True}" string="Unit of Measure" groups="uom.group_uom"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_operations_ef_purchase" model="ir.ui.view">
+        <field name="name">stock.move.operations.form.ef.purchase</field>
+        <field name="model">stock.move</field>
+        <field name="inherit_id" ref="stock.view_stock_move_operations"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='quantity_done']" position="before">
+                <label for="po_line_product_qty" string="PO UoM Demand"/>
+                <div class="o_row">
+                    <span><field name="po_line_product_qty" readonly="1" nolabel="1"/></span>
+                    <span><field name="po_line_product_uom" readonly="1" nolabel="1"/></span>
+                </div>
+                <label for="po_line_qty_received" string="Received So Far"/>
+                <div class="o_row">
+                    <span><field name="po_line_qty_received" readonly="1" nolabel="1"/></span>
+                    <span><field name="po_line_product_uom" readonly="1" nolabel="1"/></span>
+                </div>
+                <label for="current_receipt_qty_ibs" string="Current Receipt Qty"/>
+                <div class="o_row">
+                    <span><field name="current_receipt_qty_ibs" readonly="1" nolabel="1"/></span>
+                    <span><field name="po_line_product_uom" readonly="1" nolabel="1"/></span>
+                </div>
+            </xpath>
+            <xpath expr="//label[@for='quantity_done']" position="attributes">
+                <attribute name="string">Quantity Received</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_operation_tree_location_ef_purchase" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.location.ef.purchase</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='qty_done']" position="before">
+                <field name="is_convert_ibs_yrd" invisible="0"/>
+                <field name="qty_in_ibs"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+
+<!-- <?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_stock_picking_ef_purchase" model="ir.ui.view">
+        <field name="name">stock.picking.ef.purchase</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+             <xpath expr="//notebook/page[@name='operations']/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                <field name="is_convert_ibs_yrd" invisible="0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_operation_tree_location_ef_purchase" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree.location.ef.purchase</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='qty_done']" position="before">
+                <field name="is_convert_ibs_yrd" invisible="0"/>
+                <field name="qty_in_ibs"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+ -->

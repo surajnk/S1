@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="mrp_production_view_form_inherit_crm_claim" model="ir.ui.view">
+        <field name="name">mrp.production.form.crm.claim</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='oe_button_box' and @name='button_box']" position="inside">
+                <button name="action_view_crm_claims" type="object" class="oe_stat_button" icon="fa-comments" attrs="{'invisible': [('crm_claim_count', '=', 0)]}">
+                    <field name="crm_claim_count" widget="statinfo" string="Complaints"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

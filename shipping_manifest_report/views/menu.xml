@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Adjust parent="" to wherever you want this to live, e.g.
+         stock.menu_stock_root or a submenu under Reporting -->
+    <menuitem id="menu_shipping_manifest_report"
+              name="Shipping Manifest"
+              parent="stock.menu_warehouse_report"
+              action="shipping_manifest_report.action_shipping_manifest_wizard"
+              sequence="50"/>
+</odoo>

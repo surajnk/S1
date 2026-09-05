@@ -1,0 +1,15 @@
+Date,Number,Partner,Reference,Journal
+2021-09-24,/,,,Vendor Bills
+2021-09-09,INV/2021/09/0004,Deco Addict,,Customer Invoices
+2021-09-08,INV/2021/09/0003,Deco Addict,,Customer Invoices
+2021-09-08,INV/2021/09/0002,Deco Addict,,Customer Invoices
+2021-09-01,INV/2021/09/0001,Azure Interior,,Customer Invoices
+2021-09-01,BILL/2021/09/0001,Azure Interior,,Vendor Bills
+2021-01-01,BNK1/2021/01/0007,Deco Addict,,Bank
+2021-01-01,BNK1/2021/01/0006,Deco Addict,,Bank
+2021-01-01,BNK1/2021/01/0005,,,Bank
+2021-01-01,BNK1/2021/01/0004,Azure Interior,,Bank
+2021-01-01,BNK1/2021/01/0003,Azure Interior,,Bank
+2021-01-01,BNK1/2021/01/0002,,,Bank
+2021-01-01,BNK1/2021/01/0001,Deco Addict,,Bank
+2018-09-17,BILL/2018/09/0001,Azure Interior,INV/2018/0057,Vendor Bills

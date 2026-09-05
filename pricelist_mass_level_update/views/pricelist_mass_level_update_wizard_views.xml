@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <odoo>
+    <record id="view_pricelist_mass_level_update_wizard" model="ir.ui.view">
+        <field name="name">pricelist.mass.level.update.wizard.form</field>
+        <field name="model">pricelist.mass.level.update.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Mass Update Level Price">
+                <group>
+                    <field name="pricelist_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                    <field name="scope"/>
+                </group>
+                <group string="Target">
+                    <field name="product_tmpl_id" attrs="{'invisible':[('scope','!=','1_product')],'required':[('scope','=','1_product')]}"/>
+                    <field name="product_id" attrs="{'invisible':[('scope','!=','0_product_variant')],'required':[('scope','=','0_product_variant')]}"/>
+                    <field name="categ_id" attrs="{'invisible':[('scope','!=','2_product_category')],'required':[('scope','=','2_product_category')]}"/>
+                    <field name="product_item_group_id" attrs="{'invisible':[('scope','!=','4_item_group')],'required':[('scope','=','4_item_group')]}"/>
+                    <field name="labor_item_id" attrs="{'invisible':[('scope','!=','5_labor_item')],'required':[('scope','=','5_labor_item')]}"/>
+                    <field name="price_group_id" attrs="{'invisible':[('scope','!=','6_price_group')],'required':[('scope','=','6_price_group')]}"/>
+                    <field name="product_commodity_id" attrs="{'invisible':[('scope','!=','7_commodity_group')],'required':[('scope','=','7_commodity_group')]}"/>
+                </group>
+                <group string="Change">
+                    <field name="percentage"/>
+                    <field name="round_to_precision"/>
+                </group>
+                <footer>
+                    <button string="Apply" type="object" name="action_apply" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Optional action to launch wizard from the Pricelists menu -->
+    <record id="action_open_pricelist_mass_level_update_wizard" model="ir.actions.act_window">
+        <field name="name">Mass Update Level Price</field>
+        <field name="res_model">pricelist.mass.level.update.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <!-- (Optional) add to Sales > Products menu; adjust parent as needed -->
+    <menuitem id="menu_pricelist_mass_level_update_wizard" name="Pricelist Update" parent="sale.sale_menu_root" action="action_open_pricelist_mass_level_update_wizard" sequence="95"/>
+    </odoo>

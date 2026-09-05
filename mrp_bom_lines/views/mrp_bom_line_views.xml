@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_mrp_bom_line_tree" model="ir.ui.view">
+            <field name="name">mrp.bom.line.tree</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="arch" type="xml">
+                <tree string="BoM Components">
+                    <field name="bom_id" string="BoM"/>
+                    <field name="product_id" string="Component"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom_id"/>
+                    <field name="workcenter_capacities" optional="show"/>
+                    <field name="sequence" optional="hide"/>
+                    <field name="company_id" optional="hide"/>
+                    <field name="child_bom_id" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_mrp_bom_line_search" model="ir.ui.view">
+            <field name="name">mrp.bom.line.search</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="arch" type="xml">
+                <search string="BoM Components">
+                    <field name="bom_id"/>
+                    <field name="product_id"/>
+                    <field name="operation_id"/>
+                    <field name="company_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_copy_operation_to_workcenter_capacities" model="ir.actions.server">
+            <field name="name">Copy Operation to Multiple Operations</field>
+            <field name="model_id" ref="mrp.model_mrp_bom_line"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_bom_line"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                for line in records:
+                    if line.operation_id and line.operation_id.id not in line.workcenter_capacities.ids:
+                        line.write({'workcenter_capacities': [(4, line.operation_id.id)]})
+            </field>
+        </record>
+
+        <record id="mrp_bom_line_form_inherit_workcenter_capacities" model="ir.ui.view">
+            <field name="name">mrp.bom.line.form.inherit.workcenter.capacities</field>
+            <field name="model">mrp.bom.line</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_line_view_form"/>
+            <field name="arch" type="xml">
+              <!-- Place the field after 'operation_id' in the Operation group -->
+              <xpath expr="//field[@name='operation_id']" position="after">
+                <field name="workcenter_capacities"/>
+              </xpath>
+            </field>
+        </record>
+
+        <record id="action_mrp_bom_line" model="ir.actions.act_window">
+            <field name="name">BoM Components</field>
+            <field name="res_model">mrp.bom.line</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_mrp_bom_line_tree"/>
+            <field name="search_view_id" ref="view_mrp_bom_line_search"/>
+        </record>
+
+        <menuitem id="menu_mrp_bom_line"
+                  name="BoM Components"
+                  parent="mrp.menu_mrp_bom"
+                  action="action_mrp_bom_line"
+                  sequence="16"/>
+    </data>
+</odoo>

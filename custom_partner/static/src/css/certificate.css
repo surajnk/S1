@@ -1,0 +1,20 @@
+.text-center-certificate {.
+  text-align: center;
+/*  padding-left: 0.1rem;
+*/  padding-right: 0.75rem;
+}
+@font-face {
+    font-family: 'Algerian';
+    /*src: url('../fonts/Calibri.eot');*/ /* IE9 Compat Modes */
+    src: /*url('../fonts/Calibri.eot?#iefix') format('embedded-opentype'),*/ /* IE6-IE8 */
+         /*url('../fonts/Calibri.woff2') format('woff2'), /* Super Modern Browsers */
+         url('brilliant_printers_custom_module/static/src/fonts/ALGERIA.woff') format('woff'), /* Pretty Modern Browsers */
+         url('brilliant_printers_custom_module/static/src/fonts/ALGERIA.ttf')  format('truetype'),*/ /* Safari, Android, iOS */
+         
+}
+@font-face {
+font-family: 'Algeria';
+font-style: normal;
+font-weight: normal;
+src: local('Algeria'), url('brilliant_printers_custom_module/static/src/fonts/ALGERIA.woff') format('woff');
+}

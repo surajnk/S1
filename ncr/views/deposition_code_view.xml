@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="deposition_code_form_view" model="ir.ui.view">
+        <field name="name">Deposition Code</field>
+        <field name="model">deposition.code</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="disposition_code"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="deposition_code_tree_view">
+        <field name="name">Deposition Code</field>
+        <field name="model">deposition.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="disposition_code"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="deposition_code_action" model="ir.actions.act_window">
+        <field name="name">Disposition Code</field>
+        <field name="res_model">deposition.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">Create Disposition Table
+            </p>
+        </field>
+    </record>
+    <menuitem id="deposition_code_menu"
+              parent="mrp.menu_mrp_configuration"
+              name="Disposition Code"
+              action="deposition_code_action"
+    />
+</odoo>

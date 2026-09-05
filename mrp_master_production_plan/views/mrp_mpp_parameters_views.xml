@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_mpp_parameters_view_tree" model="ir.ui.view">
+        <field name="name">mrp.mpp.parameters.tree</field>
+        <field name="model">mrp.mpp.parameters</field>
+        <field name="arch" type="xml">
+            <tree string="MPP Planning Parameters">
+                <field name="active" invisible="1"/>
+                <field name="name" decoration-bf="1" />
+                <field name="product_id" optional="hide"/>
+                <field name="warehouse_id" groups="stock.group_stock_multi_warehouses" optional="hide"/>
+                <field name="company_id" invisible="1"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="bom_id"/>
+                <field name="bom_type" optional="hide"/>
+                <field name="sales_lead_time"/>
+                <field name="total_lead_time"/>
+                <field name="lot_qty_method"/>
+                <field name="mpp_coverage_days"/>
+                <field name="mpp_fixed_order_qty"/>
+                <field name="mpp_multiple_order_qty"/>
+                <field name="uom_id" groups="uom.group_uom"/>
+                <field name="mpp_minimum_stock_qty" optional="show"/>
+                <field name="mpp_safety_time" optional="show"/>
+                <field name="supplier_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="mrp_mpp_parameters_view_form" model="ir.ui.view">
+        <field name="name">mrp.mpp.parameters.form</field>
+        <field name="model">mrp.mpp.parameters</field>
+        <field name="arch" type="xml">
+            <form string="MPP Planning Parameters">
+                <header>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="product_id" options="{'no_open': True, 'no_create': True}"/>
+                            <field name="warehouse_id" options="{'no_open':True,'no_create':True}" groups="stock.group_stock_multi_warehouses"/>
+                            <field name="user_id"/>
+                            <field name="company_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="bom_id" options="{'no_open': True, 'no_create': True}"/>
+                            <field name="bom_type" invisible="1"/>
+                            <field name="supplier_id"  options="{'no_open': True, 'no_create': True}" attrs="{'required': [('bom_type', '=', 'subcontract')], 'invisible': [('bom_type', '!=', 'subcontract')]}" domain="[('product_tmpl_id','=', product_id), ('is_subcontractor','=', True)]"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="lead_times" string="Lead Times">
+                            <label for="total_lead_time"/>
+                            <div class="o_row">
+                                <field name="total_lead_time"/>
+                                days
+                            </div>
+                            <label for="sales_lead_time"/>
+                            <div class="o_row">
+                                <field name="sales_lead_time"/>
+                                days
+                            </div>
+                        </group>
+                        <group name="lot_parameters" string="Lot Parameters">
+                            <field name="lot_qty_method"/>
+                            <label for="mpp_fixed_order_qty" attrs="{'invisible':[('lot_qty_method','!=', 'F')]}"/>
+                            <div class="o_row">
+                                <field name="mpp_fixed_order_qty" attrs="{'required': [('lot_qty_method', '=', 'F')], 'invisible':[('lot_qty_method','!=', 'F')]}"/>
+                                <field name="uom_id" readonly="1" attrs="{'invisible':[('lot_qty_method','!=', 'F')]}"/>
+                            </div>
+                            <label for="mpp_coverage_days" attrs="{'invisible':[('lot_qty_method','!=', 'S')]}"/>
+                            <div class="o_row">
+                                <field name="mpp_coverage_days" attrs="{'required': [('lot_qty_method', '=', 'S')], 'invisible':[('lot_qty_method','!=', 'S')]}"/>
+                            </div>
+                            <label for="mpp_multiple_order_qty"/>
+                            <div class="o_row">
+                                <field name="mpp_multiple_order_qty"/>
+                                <field name="uom_id" readonly="1"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="safety_parameters" string="Safety Parameters">
+                            <label for="mpp_minimum_stock_qty"/>
+                            <div class="o_row">
+                                <field name="mpp_minimum_stock_qty"/>
+                                <field name="uom_id" readonly="1"/>
+                            </div>
+                            <label for="mpp_safety_time"/>
+                            <div class="o_row">
+                                <field name="mpp_safety_time"/>
+                                days
+                            </div>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_mpp_parameters_view_search" model="ir.ui.view">
+        <field name="name">mrp.mpp.parameters.search</field>
+        <field name="model">mrp.mpp.parameters</field>
+        <field name="arch" type="xml">
+            <search string="MPP Planning Parameters">
+                <field name="name" string="Product" filter_domain="['|',('default_code', 'ilike', self), ('name', 'ilike', self)]"/>
+                <filter string="My Planning Parameters" name="my_planning_parameters" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter string="Product" name="groupby_product_id" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Warehouse" name="groupby_warehouse_id" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+                <searchpanel>
+                    <field name="warehouse_id" select="multi" domain="[('manufacture_to_resupply', '!=', False)]"/>
+                    <field name="product_id" select="multi" domain="[('bom_ids','!=',False),('bom_ids.active','=',True),('bom_ids.type','in',['normal', 'subcontract']),('type', '=', 'product')]"/>
+                </searchpanel>
+            </search>
+        </field>
+    </record>
+
+   <record id="action_mrp_mpp_parameters" model="ir.actions.act_window">
+        <field name="name">MPP Planning Parameters</field>
+        <field name="res_model">mrp.mpp.parameters</field>
+        <field name="view_mode">tree,form,activity</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>

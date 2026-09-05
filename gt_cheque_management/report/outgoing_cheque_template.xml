@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cheque_outgoing_manage_report_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure">
+                            <div class="row">
+                                <div style="margin-bottom:300px;width:100%">
+                                    <h2 class="text-center" style="margin-bottom:30px">Outgoing Account Cheque Report</h2>
+                                    <!-- <div style="width:100%;">
+                                            <span style="float:left;margin-bottom:20px;width:200px;margin-left:60px;"><strong>Start Date </strong>: <t t-esc="doc.start_date"/></span>
+                                                            <span style="float:right;margin-bottom:20px;width:200px;margin-right:50px;"><strong>End Date </strong>: <t t-esc="doc.end_date"/></span>
+                                    </div> -->
+                                    <table width="100%" style="border: 1px solid #000;text-align:center;">
+                                        <tr>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Payee</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Number</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Date</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Given Date</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Bank Account</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Credit Account</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Debit Account</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Cheque Cashed/Bounced Date</th>
+                                            <th style="padding:5px;border: 1px solid #000" class="text-center">Status</th>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:5px;border: 1px solid #000">
+                                                <t t-esc="doc.payer.name"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000">
+                                                <t t-esc="doc.cheque_no"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000">
+                                                <t t-esc="doc.cheque_date"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000" >
+                                                <t t-esc="doc.cheque_receive_date"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000" >
+                                                <t t-esc="doc.bank_account.name"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000" >
+                                                <t t-esc="doc.debit_account.name"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000" >
+                                                <t t-esc="doc.credit_account.name"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000" >
+                                                <t t-esc="doc.cheque_date"/>
+                                            </td>
+                                            <td style="padding:5px;border: 1px solid #000">
+                                                <t t-esc="doc.state"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
+					

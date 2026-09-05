@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "MRP enhancement",
+    "author": "Dhvanil",
+    "website": "",
+    "license": "LGPL-3",
+    "category": "Manufacturing",
+    "summary": "",
+    "description": """MRP enhancement""",
+    'version': '14.0.1.0.1',
+    "depends": [
+        "mrp",
+        "mrp_routing_workcenter_capacity",
+        "mrp_shop_floor_control",
+        "mrp_mto_analytic",
+        "mrp_finite_capacity_control",
+    ],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/mrp_enhancement_security.xml",
+        "views/mrp_workorder_views.xml",
+        "views/mrp_workcenters_views.xml",
+        "views/res_users_views.xml",
+        "wizards/mrp_wo_scheduling_views.xml",
+        "wizards/update_frame_wizard_views.xml",
+    ],
+    "images": [],
+    "auto_install": False,
+    "application": True,
+    "installable": True,
+}

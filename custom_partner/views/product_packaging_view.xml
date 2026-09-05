@@ -1,0 +1,14 @@
+<odoo>
+    <record id="view_product_packaging_delivery_form_inherit_mm" model="ir.ui.view">
+    <field name="name">product.packaging.form.delivery.inherit.mm</field>
+    <field name="model">product.packaging</field>
+    <field name="inherit_id" ref="delivery.product_packaging_delivery_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='package_carrier_type']" position='before'>
+            <field name="display_name"/>
+            <field name="is_mm"/>
+        </xpath>
+    </field>
+    </record>
+
+</odoo>

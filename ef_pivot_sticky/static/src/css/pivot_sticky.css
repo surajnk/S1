@@ -1,0 +1,44 @@
+/* Make the pivot itself the scroll container */
+.o_pivot {
+    overflow: auto !important;
+    max-width: 100%;
+    position: relative;
+}
+
+/* Keep layout predictable */
+.o_pivot > table {
+    border-collapse: separate;
+    table-layout: auto;   /* use fixed if you want stricter widths */
+}
+
+/* Sticky header row */
+.o_pivot > table thead th {
+    position: sticky !important;
+    top: 0;
+    z-index: 3;
+    background: #fff;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Sticky first column: header + body cells
+   NOTE: no z-index here so dropdown inside can sit above */
+.o_pivot > table tr > th:first-child,
+.o_pivot > table tr > td:first-child {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: auto !important;   /* important: don't trap dropdown in this context */
+    background: #fff;
+    overflow: visible !important;  /* let dropdown overflow */
+}
+
+/* Top-left intersection slightly above other header cells */
+.o_pivot > table thead tr > th:first-child {
+    z-index: 4 !important;
+}
+
+/* Dropdown menu for pivot field selector:
+   must be above everything (header + first column) */
+.o_pivot .dropdown-menu.o_pivot_field_menu {
+    z-index: 9999 !important;
+    overflow: auto;
+}

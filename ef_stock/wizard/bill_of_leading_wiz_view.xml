@@ -1,0 +1,92 @@
+<odoo>
+
+    <!-- Boll Of Leading wizard -->
+    <record id="bill_of_leading_wiz_form_view" model="ir.ui.view">
+        <field name="name">bill.of.leading.wiz.form.view</field>
+        <field name="model">bill.of.leading.wiz</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="ship_date" required="1"/>
+                        <field name="bill_auto_no" readonly="1"
+                               attrs="{'invisible': [('is_manual_bill_no', '=', True)]}"/>
+                        <field name="is_manual_bill_no"/>
+                        <field name="bill_manual_no"
+                               attrs="{'invisible': [('is_manual_bill_no', '!=', True)], 'required': [('is_manual_bill_no', '=', True)]}"/>
+                    </group>
+                    <group>
+                        <field name="kind_of_package" required="1"/>
+                        <field name="class_or_rate" required="1"/>
+                        <field name="for_payment_send_bill_to_id"/>
+                        <field name="ship_via_id"/>
+                    </group>
+                </group>
+                <group string="Select Delivery Order">
+                    <group>
+                        <field name="partner_id" required="1"/>
+                    </group>
+                    <group>
+                        <field name="address_partner_id" domain="[('parent_id', '=', partner_id)]"
+                               options="{'no_open': True, 'no_create': True}"/>
+                    </group>
+                </group>
+                <field name="delivery_order_ids" nolabel="1"
+                       domain="[('picking_type_code', '=', 'outgoing'), ('partner_id', '=', partner_id), ('state', 'in', ['done'])]"/>
+                <group string="Freight Class Density Calculator">
+                    <group>
+                        <field name="total_weight_density" readonly="1"/>
+                        <field name="total_cubic_feet" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="density" readonly="1"/>
+                        <field name="computed_class" readonly="1"/>
+                    </group>
+                    <button name="action_apply_computed_class" type="object"
+                            string="Apply Class to Class &amp; Rate" class="btn-secondary"/>
+                </group>
+                <footer>
+                    <button name="create_bill_of_leading" type="object" string="Create" class="btn-primary"/>
+                    <button name="print_bill_of_leading" type="object" string="Print" class="btn-primary"/>
+                    <button special="cancel" string="Cancel" class="btn-default"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="bill_of_leading_wiz_tree_view" model="ir.ui.view">
+        <field name="name">bill.of.leading.wiz.tree.view</field>
+        <field name="model">bill.of.leading.wiz</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="bill_auto_no"/>
+                <field name="partner_id"/>
+                <field name="ship_date"/>
+                <field name="kind_of_package"/>
+                <field name="class_or_rate"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_bill_of_leading_wiz">
+        <field name="name">Bill of Lading</field>
+        <field name="res_model">bill.of.leading.wiz</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_bill_of_leading_form">
+        <field name="name">Bill of Lading</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">bill.of.leading.wiz</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+    <menuitem id="menu_bill_of_leading_report"
+              action="action_bill_of_leading_wiz"
+              sequence="120"
+              parent="stock.menu_stock_warehouse_mgmt"/>
+
+    <menuitem id="menu_bill_of_leading"
+              action="action_bill_of_leading_form"
+              sequence="120"
+              parent="sale.menu_sale_report"/>
+</odoo>

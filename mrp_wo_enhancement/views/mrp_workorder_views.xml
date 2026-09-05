@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_workorder_tree_view_extend" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.tree.extend</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button name="set_scheduled_date" type="object" string="Set Schedule Date" class="ml-1 btn-primary"/>
+                    <button name="create_material_request" type="object" string="Create Material Request " class="btn-primary"/>
+                    <button name="get_previous_rolls" type="object" string="Load Input Rolls" class="btn-primary"/>
+                    <button name="action_open_roll_transfer_wizard"
+                        type="object"
+                        string="Request Downstream Rolls"
+                        class="btn-primary"/>
+                    <button name="action_open_update_frame_wizard"
+                        type="object"
+                        string="Update Frame"
+                        class="btn-primary"/>
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='sequence']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='production_id']" position="after">
+                <!-- <field name="operation_id"
+                       domain="[('workcenter_id', '=', workcenter_id)]"/> -->
+                       
+                <field name="x_customer_name"/>
+                <field name="x_confirmed_date"/>
+                <field name="date_planned_start_wo" optional="show"/>
+                <field name="x_wo_delivery_date" string="Req. Date"/>
+                <field name="x_mo_product_name"/>
+                <field name="qty_output_wo" attrs="{'readonly':[('state','not in', ('pending', 'ready'))]}" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='operation_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- 2) Add operation_id next to Manufacturing Order -->
+            <!-- <xpath expr="//field[@name='production_id']" position="after">
+                <field name="operation_id"
+                       domain="[('workcenter_id', '=', workcenter_id)]"
+                       optional="hide"/>
+            </xpath>
+ -->        </field>
+    </record>
+
+    <record id="mrp_workorder_summary_tree_view" model="ir.ui.view">
+        <field name="name">mrp.workorder.summary.tree</field>
+        <field name="model">mrp.workorder</field>
+        <field name="arch" type="xml">
+            <tree string="Work Orders" editable="bottom">
+                <field name="sequence"/>
+                <field name="workcenter_id"/>
+                <field name="production_id" force_save="1" attrs="{'readonly': [('id', '!=', False)]}"/>
+                <field name="operation_id"/>
+                <field name="x_confirmed_date"/>
+                <field name="date_planned_start_wo"/>
+                <field name="x_wo_delivery_date"/>
+                <field name="x_mo_product_name"/>
+                <field name="qty_output_wo"/>
+                <!-- <field name="product_qty"/> -->
+                <field name="production_state" invisible="1"/>
+                <field name="working_state" invisible="1"/>
+                <field name="is_user_working" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="x_order_customer_mrp_wo_width" groups="mrp_enhancement_report.group_wo_user"/>
+                <field name="x_order_customer_mrp_wo_length" groups="mrp_enhancement_report.group_wo_user"/>
+                <field name="duration_expected_hrs"/>
+                <field name="duration_hours"/>
+                <field name="overall_duration" optional="show"/>
+                <field name="width" groups="mrp_enhancement_report.group_wo_mgr_user"  />
+                <field name="trim" groups="mrp_enhancement_report.group_wo_mgr_user" optional="hide"/>
+                <field name="base_avail" groups="mrp_enhancement_report.group_wo_mgr_user" optional="hide"/>
+                <field name="t_c" groups="mrp_enhancement_report.group_wo_mgr_user" optional="hide"/>
+                <field name="rod" groups="mrp_enhancement_report.group_wo_mgr_user" optional="hide"/>
+                <field name="shaded" groups="mrp_enhancement_report.group_wo_mgr_user" optional="hide"/>
+                <field name="timer_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-info="state not in ('done', 'cancel')" attrs="{'invisible': [('production_state', 'in', ('draft', 'done'))]}"/>
+                <button name="button_start_wiz" type="object" string="Start" class="btn-success" attrs="{'invisible': ['|', '|', '|', ('production_state','in', ('draft', 'done')), ('working_state', '=', 'blocked'), ('state', '=', 'done'), ('is_user_working', '!=', False)]}"/>
+                <button name="button_pending_wiz" type="object" string="Stop" class="btn-warning" attrs="{'invisible': ['|', '|', ('production_state', 'in', ('draft', 'done')), ('working_state', '=', 'blocked'), ('is_user_working', '=', False)]}"/>
+                <button name="button_stop_wiz" type="object" string="Done" class="btn-success" attrs="{'invisible': ['|', '|', ('production_state', 'in', ('draft', 'done')), ('working_state', '=', 'blocked'), ('is_user_working', '=', False)]}"/>
+               <!--  <button name="339" type="action" string="Block" context="{'default_workcenter_id': workcenter_id}" class="btn-danger" attrs="{'invisible': ['|', ('production_state', 'in', ('draft', 'done')), ('working_state', '=', 'blocked')]}"/>
+                <button name="button_unblock" type="object" string="Unblock" context="{'default_workcenter_id': workcenter_id}" class="btn-danger" attrs="{'invisible': ['|', ('production_state', 'in', ('draft', 'done')), ('working_state', '!=', 'blocked')]}"/> -->
+            </tree>
+        </field>
+    </record>
+
+   <!--  <record id="mrp_production_form_view_workorder_tree" model="ir.ui.view">
+        <field name="name">mrp.production.form.workorder.tree</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <field name="workorder_ids" position="attributes">
+                <attribute name="mode">tree,form</attribute>
+                <attribute name="context">
+                    {
+                        'tree_view_ref': 'mrp_wo_enhancement.mrp_workorder_summary_tree_view',
+                        'form_view_ref': 'mrp.mrp_production_workorder_form_view_inherit',
+                        'default_production_id': id,
+                        'active_model': 'mrp.production',
+                        'active_id': id,
+                        'default_product_uom_id': product_uom_id,
+                        'default_consumption': consumption,
+                        'default_company_id': company_id
+                    }
+                </attribute>
+            </field>
+        </field>
+    </record> -->
+
+</odoo>

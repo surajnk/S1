@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="view_mrp_ddi_tree" model="ir.ui.view">
+        <field name="name">mrp.distribution.deployment.tree</field>
+        <field name="model">mrp.distribution.deployment</field>
+        <field name="arch" type="xml">
+            <tree string="Distribution Plan" multi_edit="1" edit="1" create="0" editable="top">
+                <header>
+                    <button name="button_done" type="object" string="Approve"/>
+                    <button name="%(action_ddi_st_creation)d" type="action" string="ST Creation"/>
+                </header>
+                <field name="origin" decoration-bf="1"/>
+                <field name="product_id"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="warehouse_id" groups="stock.group_stock_multi_warehouses"/>
+                <field name="supply_warehouse_id" groups="stock.group_stock_multi_warehouses"/>
+                <field name="company_id" invisible="1"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="date" widget="date"/>
+                <field name="date_planned" widget="date" decoration-warning="state not in ('done', 'cancel') and date_planned &lt; now" decoration-danger="state not in ('done', 'cancel') and date_planned &lt; current_date" decoration-bf="state not in ('done', 'cancel') and (date_planned &lt; current_date or date_planned &lt; now)"/>
+                <button name="button_done" type="object" string="Approve" states="draft"/>
+                <field name="state" readonly="1" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'draft'" decoration-danger="state == 'cancel'"/>
+                <field name="stock_transfer_id" decoration-bf="1"/>
+                <field name="stock_transfer_state" decoration-bf="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_filter_mrp_ddi" model="ir.ui.view">
+        <field name="name">mrp.distribution.deployment.filter</field>
+        <field name="model">mrp.distribution.deployment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="origin" string="Version" filter_domain="[('origin', 'ilike', self)]"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <filter string="Draft" name="draft" domain="[('state','=','draft')]"/>
+                <filter string="Active" name="active" domain="[('state','in',('draft','done'))]"/>
+                <filter string="Cancel" name="cancel" domain="[('state','=','cancel')]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By...">
+                    <filter string="Warehouse" name="groupby_warehouse" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_ddi_action" model="ir.actions.act_window">
+        <field name="name">Distribution Deployment</field>
+        <field name="res_model">mrp.distribution.deployment</field>
+        <field name="view_mode">tree,activity</field>
+        <field name="context">{'search_default_active': 1}</field>
+    </record>
+</odoo>

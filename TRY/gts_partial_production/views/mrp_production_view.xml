@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mrp_production_tree_view_inherit_partial" model="ir.ui.view">
+        <field name="name">mrp.production.tree.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="product_qty" position="replace">
+                <field name="product_qty" sum="Qty To Produce" string="Yds To Produce"/>
+                <field name="qty_produced" sum="Produced Qty" string="Produced Qty"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="mrp_production_form_view_inherit_partial" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="open_produce_product"
+                        type="object" string="Produce" class="oe_highlight"
+                        attrs="{'invisible': ['|', '|', ('all_qty_produced', '=', True), ('is_locked', '=', True),
+                        ('state', 'in', ('done', 'cancel'))]}"/>
+                <button name="post_inventory"
+                        type="object" string="Post Entry" class="oe_highlight"
+                        attrs="{'invisible': ['|', ('partial_qty_produced', '=', False),
+                        ('state', 'in', ('done', 'cancel'))]}"/>
+            </xpath>
+
+            <field name="product_qty" position="after">
+                <field name="qty_produced" readonly="1"/>
+                <field name="partial_qty_produced" invisible="1"/>
+                <field name="all_qty_produced" invisible="1"/>
+            </field>
+
+        </field>
+
+    </record>
+
+</odoo>

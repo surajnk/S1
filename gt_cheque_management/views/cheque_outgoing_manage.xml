@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="cheque_outgoing_manage_tree_views" model="ir.ui.view">
+        <field name="name">account.payment.cheque</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <tree string="Incoming Cheque">
+                <field name="partner_id"/>
+                <field name="cheque_date"/>
+                <field name="cheque_receive_date"/>
+                <field name="state_new"/>
+            </tree>
+        </field>
+    </record>
+        
+    <record id="cheque_outgoing_manage_view_form" model="ir.ui.view">
+        <field name="name">account.payment.cheque</field>
+        <field name="model">account.payment</field>
+        <field name="arch" type="xml">
+            <form string="Incoming Cheque">
+                <header>
+                    <button name="action_submit" type="object" string="Submit" state_news="draft" class="oe_highlight"/>
+                    <button name="action_draft" state_news="cancel" string="Reset to Draft" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state_new', 'not in', ['bounce'])]}"/>
+                    
+                    
+                    <button name="action_cashed" type="object" string="Cashed" class="oe_highlight"
+                            attrs="{'invisible': [('state_new', 'in', ['draft', 'bounce', 'done', 'return'])]}"/>
+                    
+                    <button name="action_bounce" type="object" string="Bounced" class="oe_highlight"
+                            attrs="{'invisible': [('state_new', 'in', ['draft', 'bounce', 'return'])]}"/>
+                    
+                    <button name="action_return" type="object" string="Returned" class="oe_highlight"
+                            attrs="{'invisible': [('state_new', 'in', ['draft', 'return'])]}"/>
+        		 	
+                    
+                    <button name="action_done" string="Set to Reset" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state_new', 'in', ['draft', 'bounce'])]}"/>
+                    
+                    <button name="action_cancel" type="object" string="Cancel" class="oe_highlight"/>
+                    
+                    <field name="state_new" widget="statusbar" statusbar_visible="draft,register,bounce,return,done,cancel"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_attachment"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-cloud-upload">
+                            <field name="attachment_count" widget="statinfo" string="Attachment"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h3>
+                            <field name="name"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group col="2">
+                            <field name="payment_method_id" />
+                            <field name="payment_type"/>
+                            <field name="cheque_no"/>
+                            <field name="amount"/>
+                        </group>
+                        <group col="2">
+                            <field name="partner_id"/>
+                            <field name="partner_type"/>
+                            <field name="cheque_date"/>
+                            <field name="cheque_receive_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group col="2">
+                            <field name="journal_id"/>
+                            <field name="credit_account_id"/>
+                        </group>
+                        <group col="2">
+                            <field name="company_id"/>
+                            <field name="debit_account_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="desc">
+                            <field name="description"/>	
+                        </page>
+                        <page string="Attachments">
+                            <field name="cheque_out_attach_line">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="filename"/>
+                                    <field name="resource_model"/>
+                                    <field name="resource_field"/>
+                                    <field name="resource_id"/>
+                                    <field name="created_by"/>
+                                    <field name="created_on"/>
+                                </tree>
+                            </field>	
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+        		
+    <record id="action_cheque_outgoing_manage" model="ir.actions.act_window">
+        <field name="name">Outgoing Cheque</field>
+        <field name="res_model">account.payment</field>
+        <field name="type">ir.actions.act_window</field>
+    <!--     <field name="view_type">form</field> -->
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="cheque_outgoing_manage_tree_views"/>
+    </record>
+    
+    <record id="cheque_attach_view_form" model="ir.ui.view">
+        <field name="name">cheque.outgoing.attach</field>
+        <field name="model">cheque.outgoing.attach</field>
+        <field name="arch" type="xml">
+            <form string="Cheque Outgoing Attach">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="filename"/>
+                        <field name="resource_model"/>
+                        <field name="resource_field"/>
+                        <field name="resource_id"/>
+                        <field name="created_by"/>
+                        <field name="created_on"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+<!--    <menuitem id='main_menu_incoming_cheque_management' name='Cheque Management' parent='account.menu_finance'/>
+    <menuitem id='menu_incoming_cheque_management' name='Incoming Cheque' parent='main_menu_incoming_cheque_management' action='action_cheque_outgoing_manage'/>
+    <menuitem id='menu_outgoing_cheque_management' name='Outgoing Cheque' parent='main_menu_incoming_cheque_management' action='action_cheque_outgoing_manage'/>
+    -->
+</odoo>

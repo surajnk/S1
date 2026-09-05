@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_finite_capacity" model="ir.ui.view">
+        <field name="name">mrp.res.config.settings.finite.capacity</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="mrp.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@data-key='mrp']" position="inside">
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="finite_capacity_scheduling"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="finite_capacity_scheduling"/>
+                            <div class="content-group">
+                                <div class="text-muted">
+                                    Prevent workorders from being scheduled in the past or beyond available workcenter capacity.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

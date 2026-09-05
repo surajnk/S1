@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend_freeze_columns" inherit_id="web.assets_backend" name="Freeze Columns Assets">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/freeze_column_list/static/src/scss/freeze_columns.scss"/>
+            <script type="text/javascript" src="/freeze_column_list/static/src/js/freeze_columns.js"/>
+        </xpath>
+    </template>
+</odoo>

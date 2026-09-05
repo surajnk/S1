@@ -1,0 +1,21 @@
+.o_purchase_fps {
+    table {
+        tbody tr {
+            display : none;
+        }
+
+        tbody tr.o_po_parent {
+            display : table-row;
+        }
+
+        tbody tr.show_po_line {
+            display : table-row;
+        }
+
+        tbody tr.o_po_footer {
+              display : table-row;
+        }
+
+    }
+
+}

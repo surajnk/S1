@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<record id="view_sale_order_line_tree" model="ir.ui.view">
+		<field name="name">sale.order.line</field>
+		<field name="model">sale.order.line</field>
+		<field name="priority">2</field>
+		<field name="arch" type="xml">
+			<tree string="Sale Order Lines" create="false">
+				<field name="order_id" string="Order Reference" 
+                   context="{'default_id': id}" 
+                   options="{'no_open': False}" 
+                   widget="many2one"/>
+				<field name="x_mrp_line_revised_ship_date"/>
+				<field name="request_date"/>
+				<field name="delivery_dates_button" invisible="1"/>
+				<button name="action_view_delivery_dates" 
+                        type="object" 
+                        string="Delivery Dates" 
+                        class="btn-primary" 
+                        attrs="{'invisible': [('delivery_dates_button', '=', False)]}" />
+				<field name="customer_id" string="Customer"/>
+				<field name="line_customer_ref"/>
+				<field name="product_id" string="Product"></field>
+				<field name="name" string="Description"/>
+				<field name="price_unit" string="Unit Price"/>
+				<field name="product_uom_qty" string="Qty"/>
+				<field name="qty_delivered" string="Delivered"/>
+				<field name="qty_invoiced" string="Invoiced"/>
+				<field name="tax_id" string="Taxes"/>
+				<field name="price_subtotal" string="Subtotal"/>
+			</tree>
+		</field>
+	</record>
+	
+	<record id="action_sale_lines_menu"
+		model="ir.actions.act_window">
+		<field name="name">Sale Order Lines</field>
+		<field name="type">ir.actions.act_window</field>
+		<field name="res_model">sale.order.line</field>
+		<field name="view_id" ref="sale_order_line.view_sale_order_line_tree"/>
+		<field name="view_mode">tree</field>
+	</record>	
+    <!-- Tree View for Quotation Lines -->
+    <record id="view_quotation_order_line_tree" model="ir.ui.view">
+        <field name="name">Quotation Order Lines</field>
+        <field name="model">sale.order.line</field>
+        <field name="priority">2</field>
+        <field name="arch" type="xml">
+            <tree string="Quotation Lines" create="false">
+                <field name="order_id" string="Order Reference" 
+                   context="{'default_id': id}" 
+                   options="{'no_open': False}" 
+                   widget="many2one"/>
+                <field name="product_id"/>
+                <field name="name"/>
+                <field name="price_unit"/>
+                <field name="product_uom_qty"/>
+                <field name="tax_id"/>
+                <field name="price_subtotal"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action for Quotation Lines -->
+    <record id="action_quotation_lines_menu" model="ir.actions.act_window">
+        <field name="name">Quotation Lines</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="view_quotation_order_line_tree"/>
+        <field name="domain">[('order_id.state', 'in', ['draft', 'sent'])]</field>
+    </record>
+
+    <!-- Menu Item -->
+    <!-- <menuitem id="menu_quotation_lines"
+              name="Quotation Lines"
+              parent="sale.sale_order_menu"
+              action="action_quotation_lines_menu"
+              sequence="8"/>
+	 -->
+	<menuitem id="action_sale_lines_menu_id" name="Sale Lines"
+		action="sale_order_line.action_sale_lines_menu" parent="sale.sale_order_menu"
+		 sequence="7"/>
+	<menuitem id="action_quotation_lines_menu_id" name="Quotation Lines"
+		action="sale_order_line.action_quotation_lines_menu" parent="sale.sale_order_menu"
+		 sequence="8"/>
+</odoo>

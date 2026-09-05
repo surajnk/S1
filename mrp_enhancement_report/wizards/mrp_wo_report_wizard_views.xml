@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_wo_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">mrp.wo.report.wizard.form</field>
+        <field name="model">mrp.wo.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div> Print work orders</div>
+                <group>
+                    <group>
+                        <field name="start_date" class="oe_inline"/>
+                    </group>
+                    <group>
+                        <field name="end_date" class="oe_inline"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="workcenter_ids" widget="many2many_tags"/>
+                </group>
+                <footer>
+                    <button name="print_wo_report" type="object" string="Print Report" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mrp_wo_report_wizard_view_form" model="ir.actions.act_window">
+        <field name="name">Schedule</field>
+        <field name="res_model">mrp.wo.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="mrp_wo_wizard_menu"
+              action="action_mrp_wo_report_wizard_view_form"
+              parent="mrp.menu_mrp_root"
+              sequence="10"
+    />
+
+    <record id="mrp_wc_prod_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">mrp.wc.prod.report.wizard.form</field>
+        <field name="model">mrp.wc.prod.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <div> Print work orders</div>
+                <group>
+                    <group>
+                        <field name="start_date" class="oe_inline"/>
+                    </group>
+                    <group>
+                        <field name="end_date" class="oe_inline"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="print_wc_prod_report" type="object" string="Print Report" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mrp_wc_prod_report_wizard_view_form" model="ir.actions.act_window">
+        <field name="name">Work Center Production Report</field>
+        <field name="res_model">mrp.wc.prod.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="mrp_wc_prod_wizard_menu"
+              action="action_mrp_wc_prod_report_wizard_view_form"
+              parent="mrp.menu_mrp_reporting"
+              sequence="80"
+    />
+
+</odoo>

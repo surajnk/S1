@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+product_conversion_manager,Product Conversion Manager ,model_product_conversion,stock.group_stock_manager,1,1,1,1
+product_conversion_user,Product Conversion User,model_product_conversion,stock.group_stock_user,1,1,1,0
+product_conversion_line_manager,Product Conversion Line Manager,model_product_conversion_line,stock.group_stock_manager,1,1,1,1
+product_conversion_line_user,Product Conversion Line User,model_product_conversion_line,stock.group_stock_user,1,1,1,1
+product_line_manager,Product Line Manager,model_product_line,stock.group_stock_manager,1,1,1,1
+product_line_user,Product Line Uer,model_product_line,stock.group_stock_user,1,0,0,0

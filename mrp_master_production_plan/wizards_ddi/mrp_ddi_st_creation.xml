@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="view_ddi_st_creation_form" model="ir.ui.view">
+        <field name="model">mrp.ddi.st.creation</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                </group>
+                <footer>
+                    <button name="get_stock_transfer_document" string="ST Creation" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ddi_st_creation" model="ir.actions.act_window">
+        <field name="name">ST Creation</field>
+        <field name="res_model">mrp.ddi.st.creation</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ddi_st_creation_form"/>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mrp_master_production_plan.model_mrp_distribution_deployment"/>
+        <field name="binding_view_types">list</field>
+    </record>
+</odoo>

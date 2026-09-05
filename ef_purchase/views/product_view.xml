@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_supplierinfo_tree_view2_inherit_atc_add_fields" model="ir.ui.view">
+        <field name="name">product.supplierinfo.tree.view2.inherit.atc.add.fields</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="ef_product.product_supplierinfo_tree_view2_inherit_atc"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='x_product_convert_to_sku']" position="after">
+                <field name="vendor_product_code"/>
+                <field name="purchase_product_break_codes_id"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

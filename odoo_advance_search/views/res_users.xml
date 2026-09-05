@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.ui.view" id="view_res_users_form_simple_advance_search">
+		<field name="name">res.users.form.advance.search.form</field>
+		<field name="model">res.users</field>
+		<field name="inherit_id" ref="base.view_users_form_simple_modif" />
+		<field name="arch" type="xml">
+			<data>
+				<!-- <field name="tz_offset" position="before">
+					<field name="group_search_date_range" readonly="0" />
+				</field> -->
+			</data>
+		</field>
+	</record>
+</odoo>

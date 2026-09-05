@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_mrp_backorder_confirmation_inherit_warning" model="ir.ui.view">
+        <field name="name">mrp.production.backorder.warning</field>
+        <field name="model">mrp.production.backorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_backorder_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/group" position="inside">
+                <div class="alert alert-warning" attrs="{'invisible': [('warning_message', '=', False)]}">
+                    <field name="warning_message" readonly="1" nolabel="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="many2many_attachment_assets_backend" name="many2manyattachment assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript"
+                    src="/many2many_attachment_preview/static/src/js/attachment_preview.js"/>
+        </xpath>
+    </template>
+
+    <!-- Inherited sale order form view  for adding new field-->
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.view.form.inherit.many2many.attachment.preview</field>
+        <field name="inherit_id" ref="custom_partner.view_order_form_inherit_attachment"/>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <field name="partner_attachment" position="replace">
+                <field name="partner_attachment" widget="many2many_preview"/>
+            </field>
+        </field>
+    </record>
+</odoo>

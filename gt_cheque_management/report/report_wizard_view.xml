@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="cheque1_report_wizard_form_view" model="ir.ui.view">
+            <field name="name">cheque.report.wizard.form</field>
+            <field name="model">cheque.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Cheque Report">
+                    <group>
+                        <group>
+                            <field name="date_from"/>
+                        </group>
+                        <group>
+                            <field name="date_to" required="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="state" />
+                        </group>
+                        <group>
+                            <field name="cheq_type" required="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="print_report" type="object" string="Print" class="oe_highlight"/>
+                        or
+                        <button name="cancel" string="Cancel" special="cancel"/>
+                    </footer> 
+                </form>
+            </field>
+        </record>
+	            	
+       
+        <record id="action_cheque_report_wizard" model="ir.actions.act_window">
+            <field name="name">Cheque Report Wizard</field>
+            <field name="res_model">cheque.report.wizard</field>
+<!--             <field name="view_type">form</field> -->
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        
+        <menuitem action="action_cheque_report_wizard"  id="cheque_report_id" name="Cheque Report" parent="account.menu_finance_reports" groups="account.group_account_manager"/>
+    </data>
+</odoo>
+					

@@ -1,0 +1,90 @@
+<odoo>
+
+    <record id="mrp_component_lines_search_view" model="ir.ui.view">
+        <field name="name">mrp.component.lines.search</field>
+        <field name="model">stock.move</field>
+        <field eval="3" name="priority"/>
+        <field name="arch" type="xml">
+            <search string="Stock Moves">
+                <field name="origin"
+                       filter_domain="['|', '|', ('origin', 'ilike', self), ('name', 'ilike', self), ('picking_id', 'ilike', self)]"
+                       string="Reference"/>
+                <field name="product_id"/>
+                <field name="location_id" string="Source Location" groups="stock.group_stock_multi_locations"/>
+                <field name="location_dest_id" string="Destination Location"
+                       groups="stock.group_stock_multi_locations"/>
+                <field name="partner_id" string="Partner"
+                       filter_domain="[('picking_id.partner_id', 'child_of', self)]"/>
+                <filter string="Ready" name="ready" domain="[('state','=','assigned')]"
+                        help="Stock moves that are Available (Ready to process)"/>
+                <filter string="To Do" name="future" domain="[('state','in',('assigned','confirmed','waiting'))]"
+                        help="Stock moves that are Confirmed, Available or Waiting"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"
+                        help="Stock moves that have been processed"/>
+                <separator/>
+                <filter string="Incoming" name="incoming"
+                        domain="[('location_id.usage', 'not in', ('internal', 'transit')), ('location_dest_id.usage', 'in', ('internal', 'transit'))]"/>
+                <filter string="Outgoing" name="outgoing"
+                        domain="[('location_id.usage', 'in', ('internal', 'transit')), ('location_dest_id.usage', 'not in', ('internal', 'transit'))]"/>
+                <separator/>
+                <filter string="Date" name="today" date="date" help="Scheduled or processing date"/>
+                <group expand="0" string="Group By">
+                    <filter string="Manufacturing" name="by_production" domain="[]"
+                            context="{'group_by': 'raw_material_production_id'}"/>
+                    <filter string="Reserved Status" name="by_reserve_status" domain="[]"
+                            context="{'group_by': 'reserved_status'}"/>
+                    <filter string="Product" name="by_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Picking" name="groupby_picking_id" domain="[]"
+                            context="{'group_by': 'picking_id'}"/>
+                    <filter string="Source Location" name="groupby_location_id" domain="[]"
+                            context="{'group_by': 'location_id'}" groups="stock.group_stock_multi_locations"/>
+                    <filter string="Destination Location" name="groupby_dest_location_id" domain="[]"
+                            context="{'group_by': 'location_dest_id'}" groups="stock.group_stock_multi_locations"/>
+                    <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Creation Date" name="groupby_create_date" domain="[]"
+                            context="{'group_by': 'create_date'}" groups="base.group_no_one"/>
+                    <filter string="Scheduled Date" name="groupby_date" domain="[]" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="view_mrp_component_lines_tree" model="ir.ui.view">
+        <field name="name">mrp.component.lines.tree</field>
+        <field name="model">stock.move</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="origin"/>
+                <field name="product_id"/>
+                <field name="product_uom_qty" string="Qty Needed"/>
+                <field name="product_uom" string="Uom"/>
+                <field name="forecast_availability" string="Available"/>
+                <field name="reserved_status" string="Reserved status"/>
+                <field name="reserved_availability" string="Qty Reserved"/>
+                <field name="raw_material_production_id" invisible="1"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_mrp_component_lines" model="ir.actions.act_window">
+        <field name="name">Manufacturing Components</field>
+        <field name="res_model">stock.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('raw_material_production_id', '!=', False)]</field>
+        <field name="view_id" ref="ef_mrp.view_mrp_component_lines_tree"/>
+        <field name="search_view_id" ref="ef_mrp.mrp_component_lines_search_view"/>
+        <field name="context">{
+            'search_default_by_production':1,
+            }
+        </field>
+    </record>
+
+    <menuitem id="menu_mrp_component_lines_root"
+              name="Manufacturing Components"
+              parent="mrp.menu_mrp_manufacturing"
+              sequence="50"
+              action="action_mrp_component_lines"/>
+
+</odoo>

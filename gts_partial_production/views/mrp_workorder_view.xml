@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mrp_production_workcenter_form_view_inherit_partial" model="ir.ui.view">
+        <field name="name">mrp.workorder.form.inherit</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+            <!--<button name="button_scrap" position="after">-->
+                <button name="open_produce_product" type="object" string="Produce Partially" />
+                        <!--attrs="{'invisible': [('state', 'not in', ('progress'))]}"/>-->
+                <button name="action_cancel" type="object" string="Cancel"
+                        attrs="{'invisible': [('state', 'not in', ('progress'))]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_workorder_tree_view_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.workorder.tree.view.inherit</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="show_partial_produce" invisible="1"/>
+                <button name="open_produce_product" type="object" string="Produce" attrs="{
+                'invisible': [('show_partial_produce', '!=', True)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

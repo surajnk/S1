@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="view_order_pivot_inherit_custom_metrics" model="ir.ui.view">
+    <field name="name">sale.order.pivot.custom.metrics</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_sale_order_pivot"/>
+    <field name="arch" type="xml">
+      <!-- Insert after some existing measure, e.g. amount_total -->
+      <xpath expr="//field[@name='amount_total']" position="after">
+        <field name="x_metric_01" type="measure"/>
+        <field name="x_metric_02" type="measure"/>
+        <field name="x_metric_03" type="measure"/>
+        <field name="x_metric_04" type="measure"/>
+        <field name="x_metric_05" type="measure"/>
+        <field name="x_metric_06" type="measure"/>
+        <field name="x_metric_07" type="measure"/>
+        <field name="x_metric_08" type="measure"/>
+        <field name="x_metric_09" type="measure"/>
+        <field name="x_metric_10" type="measure"/>
+        <field name="x_metric_11" type="measure"/>
+        <field name="x_metric_12" type="measure"/>
+        <field name="x_metric_13" type="measure"/>
+        <field name="x_metric_14" type="measure"/>
+        <field name="x_metric_15" type="measure"/>
+        <field name="x_metric_16" type="measure"/>
+        <field name="x_metric_17" type="measure"/>
+        <field name="x_metric_18" type="measure"/>
+        <field name="x_metric_19" type="measure"/>
+        <field name="x_metric_20" type="measure"/>
+        <field name="x_metric_21" type="measure"/>
+        <field name="x_metric_22" type="measure"/>
+        <field name="x_metric_23" type="measure"/>
+        <field name="x_metric_24" type="measure"/>
+        <field name="x_metric_25" type="measure"/>
+        <field name="x_metric_26" type="measure"/>
+        <field name="x_metric_27" type="measure"/>
+        <field name="x_metric_28" type="measure"/>
+        <field name="x_metric_29" type="measure"/>
+        <field name="x_metric_30" type="measure"/>
+        <field name="x_metric_31" type="measure"/>
+        <field name="x_metric_32" type="measure"/>
+        <field name="x_metric_33" type="measure"/>
+        <field name="x_metric_34" type="measure"/>
+        <field name="x_metric_35" type="measure"/>
+        <field name="x_metric_36" type="measure"/>
+        <field name="x_metric_37" type="measure"/>
+        <field name="x_metric_38" type="measure"/>
+        <field name="x_metric_39" type="measure"/>
+        <field name="x_metric_40" type="measure"/>
+        <field name="x_metric_41" type="measure"/>
+        <field name="x_metric_42" type="measure"/>
+        <field name="x_metric_43" type="measure"/>
+        <field name="x_metric_44" type="measure"/>
+        <field name="x_metric_45" type="measure"/>
+        <field name="x_metric_46" type="measure"/>
+      </xpath>
+    </field>
+  </record>
+</odoo>

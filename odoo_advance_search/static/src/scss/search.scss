@@ -1,0 +1,25 @@
+/* div.odoo_field_search_expan{
+	line-height: unset !important;
+	height: 30px !important;
+} */
+input[type="date"] {
+	&:before {
+		content: attr(placeholder) !important;
+		color: #aaa;
+	}
+	&:focus {
+		&:before {
+			content: "";
+		}
+	}
+	&:valid {
+		&:before {
+			content: "";
+		}
+	}
+}
+.odoo_field_search_expan {
+	border: 1px solid #bfbcbc;
+	border-radius: 2px;
+	height: 32px;
+}

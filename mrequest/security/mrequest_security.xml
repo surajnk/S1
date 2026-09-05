@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="module_mrequest" model="ir.module.category">
+            <field name="name">Material Request</field>
+        </record>
+
+        <record id="group_mrequest_user" model="res.groups">
+            <field name="name">Request material requests</field>
+            <field name="category_id" ref="mrequest.module_mrequest"/>
+        </record>
+
+        <record id="group_mrequest_manager" model="res.groups">
+            <field name="name">Approve material requests</field>
+            <field name="category_id" ref="mrequest.module_mrequest"/>
+        </record>
+
+        <record id="group_mrequest_purchase" model="res.groups">
+            <field name="name">Purchase material</field>
+            <field name="category_id" ref="mrequest.module_mrequest"/>
+        </record>
+
+    </data>
+</odoo>

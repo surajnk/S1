@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_manifest">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page">
+                    <div class="row" style="margin-bottom: 12px;">
+                        <div class="col-4" style="font-size:11px;">
+                            <div>Date: <span t-esc="data.get('print_date')"/></div>
+                            <div>Time: <span t-esc="data.get('print_time')"/></div>
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="font-weight:bold; letter-spacing:3px; font-size:16px;">SHIPPING MANIFEST</div>
+                            <div>For <span t-esc="data.get('date')"/></div>
+                        </div>
+                        <div class="col-4 text-right" style="font-size:11px;">
+                            <div>Page: 1</div>
+                            <div>SH.MANIFEST</div>
+                        </div>
+                    </div>
+
+                    <table class="table table-sm" style="font-size:10px;">
+                        <thead>
+                            <tr>
+                                <th>Cust.</th>
+                                <th>Ship to</th>
+                                <th>P.O.</th>
+                                <th>Product</th>
+                                <th>Order</th>
+                                <th>Size</th>
+                                <th>Carrier / Terms</th>
+                                <th>Sta</th>
+                                <th>Units</th>
+                                <th>Ship Amount</th>
+                                <th>Weight</th>
+                                <th>B.O.L.</th>
+                                <th>Exp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="data.get('shipped_lines', [])" t-as="line">
+                                <tr>
+                                    <td t-esc="line.get('cust')"/>
+                                    <td t-esc="line.get('ship_to')"/>
+                                    <td t-esc="line.get('po')"/>
+                                    <td t-esc="line.get('product')"/>
+                                    <td t-esc="line.get('order')"/>
+                                    <td t-esc="line.get('size')"/>
+                                    <td t-esc="line.get('carrier_terms')"/>
+                                    <td t-esc="line.get('sta')"/>
+                                    <td t-esc="line.get('units')"/>
+                                    <td t-esc="line.get('ship_amount')"/>
+                                    <td t-esc="line.get('weight')"/>
+                                    <td t-esc="line.get('bol')"/>
+                                    <td t-esc="line.get('exp')"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <h4 t-if="data.get('pending_lines')">
+                        Bills of Lading that did not ship on or before <span t-esc="data.get('pending_date')"/>
+                    </h4>
+                    <table t-if="data.get('pending_lines')" class="table table-sm" style="font-size:10px;">
+                        <thead>
+                            <tr>
+                                <th>Cust.</th>
+                                <th>Ship to</th>
+                                <th>P.O.</th>
+                                <th>Product</th>
+                                <th>Order</th>
+                                <th>Size</th>
+                                <th>Carrier / Terms</th>
+                                <th>Shp Dte</th>
+                                <th>Created</th>
+                                <th>B.O.L.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="data.get('pending_lines', [])" t-as="line">
+                                <tr>
+                                    <td t-esc="line.get('cust')"/>
+                                    <td t-esc="line.get('ship_to')"/>
+                                    <td t-esc="line.get('po')"/>
+                                    <td t-esc="line.get('product')"/>
+                                    <td t-esc="line.get('order')"/>
+                                    <td t-esc="line.get('size')"/>
+                                    <td t-esc="line.get('carrier_terms')"/>
+                                    <td t-esc="line.get('shp_dte')"/>
+                                    <td t-esc="line.get('created')"/>
+                                    <td t-esc="line.get('bol')"/>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

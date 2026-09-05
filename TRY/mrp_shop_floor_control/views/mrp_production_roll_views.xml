@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- LIST VIEW -->
+    <record id="mrp_production_roll_view_list" model="ir.ui.view">
+        <field name="name">mrp.production.roll.list</field>
+        <field name="model">mrp.production.roll</field>
+        <field name="arch" type="xml">
+            <tree string="Rolls"
+                  decoration-success="remained_qty &gt; 0"
+                  decoration-muted="remained_qty == 0">
+                <field name="name" string="Roll ID"/>
+                <field name="lot_id" string="Lot"/>
+                <field name="total_qty" string="Initial Qty" sum="Total"/>
+                <field name="consumed_qty" string="Consumed" sum="Total"/>
+                <field name="material_cost_rate" string="Material Cost $/Yd"/>
+                <field name="remained_qty" string="Remaining" sum="Total"/>
+                <field name="roll_wip_value" string="WIP Value" sum="Total"/>
+                <field name="original_wip_value" string="Original WIP Value" sum="Total"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- SEARCH VIEW -->
+    <record id="mrp_production_roll_view_search" model="ir.ui.view">
+        <field name="name">mrp.production.roll.search</field>
+        <field name="model">mrp.production.roll</field>
+        <field name="arch" type="xml">
+            <search string="Search Rolls">
+                <field name="name" string="Roll ID"/>
+                <field name="lot_id" string="Lot"/>
+                <separator/>
+                <filter name="has_remaining" string="Has Remaining Qty"
+                        domain="[('remained_qty', '&gt;', 0)]"/>
+                <filter name="fully_consumed" string="Fully Consumed"
+                        domain="[('remained_qty', '=', 0)]"/>
+                <filter name="has_value" string="Has WIP Value"
+                        domain="[('roll_wip_value', '&gt;', 0)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_lot" string="Lot"
+                            context="{'group_by': 'lot_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_mrp_production_roll" model="ir.actions.act_window">
+        <field name="name">Rolls</field>
+        <field name="res_model">mrp.production.roll</field>
+        <field name="view_mode">tree</field>
+        <field name="search_view_id" ref="mrp_production_roll_view_search"/>
+    </record>
+
+    <!-- MENU -->
+    <menuitem
+        id="menu_mrp_production_roll"
+        name="Rolls"
+        parent="mrp.menu_mrp_root"
+        action="action_mrp_production_roll"
+        sequence="25"/>
+
+</odoo>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extra Knives Tree View -->
+    <record id="product_novaflow_tree_view" model="ir.ui.view">
+        <field name="name">product.novaflow.tree.view</field>
+        <field name="model">product.novaflow</field>
+        <field name="arch" type="xml">
+            <tree string="Product Novaflow">
+                <field name="name" required="1"/>
+                <field name="x_novaflow_product" required="1"/>
+                <field name="x_product_description"/>
+            </tree>
+        </field>
+    </record>
+    <!-- Extra Knives Form View -->
+        <record id="product_novaflow_form_view" model="ir.ui.view">
+        <field name="name">product.novaflow.form.view</field>
+        <field name="model">product.novaflow</field>
+        <field name="arch" type="xml">
+            <form string="Product Novaflow">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                            <field name="x_novaflow_product" required="1"/>
+                            <field name="x_product_description"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--Extra Knives Search View -->
+    <record id="product_novaflow_search_view" model="ir.ui.view">
+        <field name="name">product.novaflow.search.view</field>
+        <field name="model">product.novaflow</field>
+        <field name="arch" type="xml">
+            <search string="Product Novaflow">
+                <field name="name" string="Novaflow"/>
+                <field name="x_novaflow_product" string="Product"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Extra Knives Action View -->
+    <record id="product_novaflow_action_view" model="ir.actions.act_window">
+        <field name="name">Product Novaflow</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">product.novaflow</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_novaflow_tree_view"/>
+        <field name="search_view_id" ref="product_novaflow_search_view"/>
+    </record>
+
+    <!-- Extra Knives Menu View -->
+    <menuitem id="product_novaflow_menu_view"
+        name="Product Novaflow"
+        action="product_novaflow_action_view"
+        parent="stock.menu_stock_config_settings"
+        groups="ef_product.group_product_master"
+        sequence="4"/>
+</odoo>

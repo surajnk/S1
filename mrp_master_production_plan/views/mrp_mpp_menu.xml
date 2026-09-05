@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <menuitem
+        id="menu_mrp_mpp"
+        name="Master Production Plan"
+        sequence="15"
+        parent="mrp.menu_mrp_root"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_mpp_parameters_master_data"
+        name="MPP Planning Parameters"
+        sequence="5"
+        parent="menu_mrp_mpp"
+        action="action_mrp_mpp_parameters"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_planning_version"
+        sequence="10"
+        parent="menu_mrp_mpp"
+        action="mrp_planning_version_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_pir"
+        name="Demand Management"
+        sequence="20"
+        parent="menu_mrp_mpp"
+        action="mrp_pir_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <!-- SOP -->
+    <menuitem
+        id="menu_mrp_sop_root"
+        name="Sales and Operations Plan"
+        sequence="30"
+        parent="menu_mrp_mpp"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_sop_run"
+        sequence="5"
+        parent="menu_mrp_sop_root"
+        action="action_mrp_sop_massive_planning"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_sop_results"
+        sequence="10"
+        parent="menu_mrp_sop_root"
+        action="mrp_sop_plan_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_sop_finance"
+        sequence="20"
+        parent="menu_mrp_sop_root"
+        action="mrp_sop_financial_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_sop_capacity"
+        sequence="30"
+        parent="menu_mrp_sop_root"
+        action="mrp_sop_capacity_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <!-- MPP -->
+    <menuitem
+        id="menu_mrp_mpp_items"
+        name="Master Production Plan"
+        sequence="40"
+        parent="menu_mrp_mpp"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_mpp_items_1"
+        sequence="10"
+        parent="menu_mrp_mpp_items"
+        action="mrp_production_plan_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_mpp_capacity"
+        sequence="30"
+        parent="menu_mrp_mpp_items"
+        action="mrp_mpp_capacity_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_ddi"
+        name="Distribution Deployment"
+        sequence="50"
+        parent="mrp_master_production_plan.menu_mrp_mpp"
+        action="mrp_ddi_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+
+    <menuitem
+        id="menu_mrp_dpi"
+        name="Distribution Procurement"
+        sequence="60"
+        parent="mrp_master_production_plan.menu_mrp_mpp"
+        action="mrp_dpi_action"
+        groups="mrp_master_production_plan.group_mpp_user"/>
+</odoo>

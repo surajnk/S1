@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_mrp_production_workorder_form_view_filter_inherit_active_timer" model="ir.ui.view">
+        <field name="name">mrp.production.workorder.form.view.filter.active.timer</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_workorder_form_view_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[last()]" position="after">
+                <filter name="active_timer" string="Active Timer" domain="[('time_ids.date_end', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Workcenter Timesheet Search View -->
+    <record id="mrp_workcenter_machines_productivity_search_view_inherit_active_timer" model="ir.ui.view">
+        <field name="name">mrp.workcenter.machines.productivity.search.view.active.timer</field>
+        <field name="model">mrp.workcenter.productivity</field>
+        <field name="inherit_id" ref="ef_mrp.mrp_workcenter_machines_productivity_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[last()]" position="after">
+                <filter name="active_timer" string="Active Timer" domain="[('date_end', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

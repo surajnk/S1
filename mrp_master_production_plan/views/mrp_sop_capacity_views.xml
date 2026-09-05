@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_sop_capacity_tree" model="ir.ui.view">
+        <field name="name">mrp.sop.capacity.tree</field>
+        <field name="model">mrp.mpp.capacity</field>
+        <field name="arch" type="xml">
+            <tree string="MPP/SOP Capacity Items" create="false" edit="false">
+                <field name="SOP_item"/>
+                <field name="MPP_item"/>
+                <field name="workcenter_id"/>
+                <field name="product_id"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="date_planned" widget="date"/>
+                <field name="duration"/>
+                <field name="sop_duration"/>
+                <field name="capacity"/>
+            </tree>
+      </field>
+    </record>
+
+    <record id="mrp_sop_capacity_pivot" model="ir.ui.view">
+        <field name="name">mrp.sop.capacity.pivot</field>
+        <field name="model">mrp.mpp.capacity</field>
+        <field name="arch" type="xml">
+            <pivot string="Rough Cut Capacity">
+                <field name="date_planned" interval="week" type="col"/>
+                <field name="workcenter_id" type="row"/>
+                <field name="duration" type="measure"/>
+                <field name="sop_duration" type="measure"/>
+                <field name="capacity" type="measure" avg="weekly capacity"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="mrp_sop_capacity_graph" model="ir.ui.view">
+        <field name="name">mrp.sop.capacity.graph</field>
+        <field name="model">mrp.mpp.capacity</field>
+        <field name="arch" type="xml">
+            <graph string="Rough Cut Capacity">
+                <field name="date_planned" interval="week" type="row"/>
+                <field name="workcenter_id" type="row"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="mrp_sop_capacity_action" model="ir.actions.act_window">
+        <field name="name">Rough Cut Capacity</field>
+        <field name="res_model">mrp.mpp.capacity</field>
+        <field name="view_mode">pivot,tree,graph</field>
+        <field name="context">{'search_default_groupby_workcenter_id': 1}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="mrp_sop_capacity_action_pivot_view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">pivot</field>
+        <field name="view_id" ref="mrp_sop_capacity_pivot"/>
+        <field name="act_window_id" ref="mrp_sop_capacity_action"/>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="mrp_sop_capacity_action_tree_view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="mrp_sop_capacity_tree"/>
+        <field name="act_window_id" ref="mrp_sop_capacity_action"/>
+    </record>
+
+    <record model="ir.actions.act_window.view" id="mrp_sop_capacity_action_graph_view">
+        <field name="sequence" eval="3"/>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="mrp_sop_capacity_graph"/>
+        <field name="act_window_id" ref="mrp_sop_capacity_action"/>
+    </record>
+</odoo>

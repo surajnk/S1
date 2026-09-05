@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- translate template -->
+        <template id="project_mrequest_template_lang">
+            <t t-call="web.external_layout">
+                <t t-set="doc" t-value="doc.with_context({'lang':user_id.lang})"/>
+                <div class="page " dir="">
+                    <style>
+                    </style>
+                    <div class="oe_structure"/>
+                    <div>
+                        <h3 class="text-center mb32">
+                            <strong>Material Request</strong>
+                        </h3>
+                    </div>
+                    <div>
+                        <table class="table table-bordered table-striped">
+                            <tr >
+                                <td style="width:20%; ">Code</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.name"/>
+                                </td>
+                                <td style="width:20%;">Request date</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.date_of_request"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;">Project Name</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.project_id"/>
+                                </td>
+                                <td style="width:20%;">Deadline date</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.date_deadline"/>
+                                </td>
+                            </tr>
+                            <tr >
+                                <td style="width:20%;">Task Name</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.task_id"/>
+                                </td>
+                                <td style="width:20%;">Created by</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.user_id"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width:20%;">Suggested vendore</td>
+                                <td style="width:30%;">
+                                    <span t-field="doc.suggested_vendore"/>
+                                </td>
+                                <td style="width:20%;"></td>
+                                <td style="width:30%;">
+
+                                </td>
+                            </tr>
+                        </table>
+
+
+                    </div>
+
+                    <div class="pt-2">
+                        <div>
+                            <h3 class="text-center mb24">
+                                <strong>Materials</strong>
+                            </h3>
+                        </div>
+                        <div>
+                            <table class="table table-bordered table-striped ">
+                                <thead>
+                                    <tr>
+                                        <td style="width: 50%;">Product</td>
+                                        <td style="width: 20%;">Description</td>
+                                        <td style="width: 15%;">Unit</td>
+                                        <td style="width: 15%;">Quantity</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="doc.mrequest_lines" t-as="line">
+                                        <td>
+                                            <span t-field="line.product"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.description"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.unit"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.quantity"/>
+                                        </td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+                </div>
+            </t>
+        </template>
+
+        <!-- main template -->
+        <template id="project_mrequest_template">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="mrequest.project_mrequest_template_lang" t-lang="doc.user_id.lang"/>
+                </t>
+            </t>
+        </template>
+
+        <report id="mrequest_report" model="project.mrequest" string="Material Request" report_type="qweb-pdf" name="mrequest.project_mrequest_template" file="mrequest.project_mrequest_template" attachment_use="True" />
+    </data>
+</odoo>

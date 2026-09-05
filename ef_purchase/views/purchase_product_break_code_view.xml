@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Purchase Product Break Codes Tree View -->
+    <record id="purchase_product_break_codes_tree_view" model="ir.ui.view">
+        <field name="name">purchase.product.break.codes.tree.view</field>
+        <field name="model">purchase.product.break.codes</field>
+        <field name="arch" type="xml">
+            <tree string="Purchase Quantity Breaks">
+                <field name="name" required="1"/>
+                <field name="no_of_breaks"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Purchase Product Break Codes Form View -->
+    <record id="purchase_product_break_codes_form_view" model="ir.ui.view">
+        <field name="name">purchase.product.break.codes.form.view</field>
+        <field name="model">purchase.product.break.codes</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Quantity Breaks">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" required="1"/>
+                        </group>
+                        <group>
+                            <field name="effective_date"/>
+                            <field name="no_of_breaks"/>
+                        </group>
+                        <field name="purchase_product_break_codes_line">
+                            <tree editable="bottom">
+                                <field name="break_qty"/>
+                                <field name="selling_price"/>
+                                <field name="future_selling_price"/>
+                            </tree>
+                            <form>
+                                <field name="break_qty"/>
+                                <field name="selling_price"/>
+                                <field name="future_selling_price"/>
+                            </form>
+                        </field>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Purchase Product Break Codes Search View -->
+    <record id="purchase_product_break_codes_search_view" model="ir.ui.view">
+        <field name="name">purchase.product.break.codes.search.view</field>
+        <field name="model">purchase.product.break.codes</field>
+        <field name="arch" type="xml">
+            <search string="Purchase Quantity Breaks">
+                <field name="name" string="Quantity Breaks"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Purchase Product Break Codes Action View -->
+    <record id="purchase_product_break_codes_action_view" model="ir.actions.act_window">
+        <field name="name">Purchase Quantity Breaks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.product.break.codes</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="purchase_product_break_codes_tree_view"/>
+        <field name="search_view_id" ref="purchase_product_break_codes_search_view"/>
+    </record>
+
+    <!-- Purchase Product Break Codes Menu View -->
+    <menuitem id="purchase_product_break_codes_menu_view"
+        name="Purchase Quantity Breaks"
+        action="purchase_product_break_codes_action_view"
+        parent="purchase.menu_purchase_config"
+        sequence="100"/>
+</odoo>

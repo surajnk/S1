@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_template_sale_order_efconfirm" model="mail.template">
+            <field name="name">Order Confirmation</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','sh') else 'Sale Order'
+                        <p>
+                            ${object.partner_id.name} at ${object.partner_id.parent_id.name or object.partner_id.name},<br/><br/>
+                            Please find attached your order confirmation(s).<br/>
+                            Thank you for your order. We appreciate the opportunity to be of service.<br/><br/>
+                            <!-- <strong>PO#</strong>    <strong>Ship Date</strong>    <strong>Sales Order/Line#</strong>    <strong>Contact</strong> -->
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr>
+                                        <th style="border: 1px solid #000; padding: 5px;">Customer PO#</th>
+                                        <th style="border: 1px solid #000; padding: 5px;">Ship Date</th>
+                                        <th style="border: 1px solid #000; padding: 5px;">Sales Order/Line#</th>
+                                        <th style="border: 1px solid #000; padding: 5px;">Contact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 5px;">${object.client_order_ref or 'N/A'}</td>
+                                        <td style="border: 1px solid #000; padding: 5px;">${object.x_order_custom_del or 'N/A'}</td>
+                                        <td style="border: 1px solid #000; padding: 5px;">${object.name or 'N/A'}</td>
+                                        <td style="border: 1px solid #000; padding: 5px;">${object.partner_id.name or 'N/A'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </p>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="ef_sales.action_report_price_confirmed_quotation"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <record id="email_template_sale_ship_hold" model="mail.template">
+            <field name="name">Sales Order: Ship Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','sh') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been put on Ship Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <!--Ship Hold Release-->
+        <record id="email_template_sale_ship_hold_release" model="mail.template">
+            <field name="name">Sales Order: Ship Hold Release</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','sh') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been released from Ship Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!--Manual Hold-->
+        <record id="email_template_sale_manual_hold" model="mail.template">
+            <field name="name">Sales Order: Manual Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','mh') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been put on Manual Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+        <!-- Manual Hold Release-->
+        <record id="email_template_sale_manual_hold_release" model="mail.template">
+            <field name="name">Sales Order: Manual Hold Release</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','mh') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been released from Manual Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!--Credit Hold-->
+        <record id="email_template_sale_credit_hold" model="mail.template">
+            <field name="name">Sales Order: Credit Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','ch') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> is under Credit Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+                <!-- Credit Hold Release-->
+        <record id="email_template_sale_credit_hold_release" model="mail.template">
+            <field name="name">Sales Order: Credit Hold Release</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','ch') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been released from Credit Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+
+        <!--Delinquent Hold-->
+        <record id="email_template_sale_deli_hold" model="mail.template">
+            <field name="name">Sales Order: Delinquent Hold</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','dh') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> is under Delinquent Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+                <!-- Deli Hold Release-->
+        <record id="email_template_sale_deli_hold_release" model="mail.template">
+            <field name="name">Sales Order: Delinquent Hold Release</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">${object.company_id.name} ${object.state in ('draft', 'sent') and (ctx.get('proforma') and 'Proforma' or 'Quotation') or 'Order'} (Ref ${object.name or 'n/a' })</field>
+            <field name="email_from">${(object.user_id.email_formatted or user.email_formatted) | safe}</field>
+            <field name="email_to">${object.create_uid.email}</field>
+            <field name="partner_to">${object.create_uid.id}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        % set doc_name = 'Quotation' if object.state in ('draft', 'sent','ch') else 'Sale Order'
+                        Hello,
+                        <br/><br/>
+                            ${doc_name} <strong>${object.name}</strong> has been released from Delinquent Hold.
+                        <br/><br/>
+                    </p>
+                </div>
+            </field>
+            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_name">${(object.name or '').replace('/','_')}</field>
+            <field name="lang">${object.partner_id.lang}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

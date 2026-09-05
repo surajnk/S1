@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_ncr">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <center><h2><span t-field="o.name"/></h2></center>
+                        <div class="row mt32 mb32">  
+                            <table class="table table-condensed table-bordered">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <strong>Source </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                       <span t-field="o.model_selection"/>
+                                    </td>
+                                    <td>
+                                        <strong>Source Document Number </strong>
+                                    </td>
+                                    <td>
+                                        <t t-if="o.model_selection == 'po'">
+                                            <span t-field="o.purchase_id.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="o.mrp_id.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Created By </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                       <span t-field="o.created_by.name"/>
+                                    </td>
+                                    <td>
+                                        <strong>Material </strong>
+                                    </td>
+                                    <td>
+                                        <t t-if="o.model_selection == 'po'">
+                                            <span t-field="o.material_po.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="o.material_mo.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <t t-if="o.model_selection == 'po'">
+                                            <strong>Vendor </strong>
+                                        </t>
+                                        <t t-else="">
+                                            <strong>Customer </strong>
+                                        </t>
+                                    </td>
+                                    <td colspan="2">
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                        <t t-if="o.model_selection == 'po'">
+                                            <span t-field="o.vendor_id.name"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="o.partner_id.name"/>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <strong>Warehouse</strong>
+                                    </td>
+                                    <td colspan="2">
+                                        <span t-field="o.warehouse_ncr_id"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Sample Provided? </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.sample_provided"/>
+                                    </td>
+                                    <td>
+                                        <strong>Order Pulled?</strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.order_pulled"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="o.model_selection == 'mo'">
+                                    <td>
+                                        <strong>MO Status </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                        <span t-field="o.mo_status"/>
+                                    </td>
+                                    <td>
+                                        <strong>Operation </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.operation_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="o.model_selection == 'mo'">
+                                    <td>
+                                        <strong>Area </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                        <span t-field="o.work_id.name"/>
+                                    </td>
+                                    <td>
+                                        <strong>Defect </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.defect_id.defect"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="o.model_selection == 'mo'">
+                                    <td>
+                                        <strong>Pattern </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                        <span t-field="o.x_pattern_wo.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Assignee </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                       <span t-field="o.assignee.name"/>
+                                    </td>
+                                    <td>
+                                        <strong>Disposition By </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.deposition_by.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <strong>Disposition Code </strong>
+                                    </td>
+                                    <td>
+                                      <!-- <t t-if="o.model_selection == 'po'"> -->
+                                       <span t-field="o.deposition_code.disposition_code"/>
+                                    </td>
+                                    <td>
+                                        <strong>Closed By </strong>
+                                    </td>
+                                    <td>
+                                        <span t-field="o.closed_by.name"/>
+                                    </td>
+                                </tr>   
+                            </tbody>
+                        </table>
+                        </div>
+                        <h3>Lot Details</h3>
+                        <div class="row mt32 mb32">  
+                            <table class="table table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Lot</th>
+                                            <th>Quantity</th>
+                                        </tr>   
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="o.lot_ids" t-as="lot_line">
+                                            <td>
+                                                <t t-if="o.model_selection == 'po'">
+                                                    <span t-field="lot_line.lot_po_details"/> 
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-field="lot_line.lot_details"/> 
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <span t-field="lot_line.qty"/> 
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                            </table> 
+                        </div>  
+                        <h3>Log Entries</h3>
+                        <div class="row mt32 mb32">  
+                            <table class="table table-condensed table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Date-Time</th>
+                                            <th>Description</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                            
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="o.data_id" t-as="invoice_line">
+                                            <td>
+                                                <span t-field="invoice_line.date_entry"/> 
+                                            </td>
+                                            <td>
+                                                <span t-field="invoice_line.data_selection"/> 
+                                            </td>
+                                            <td>
+                                                <span t-field="invoice_line.remarks"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                            </table> 
+                        </div>  
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <data>
+        <report
+            string="NCR Details"
+            id="action_report_ncr"
+            model="res.nrc"
+            name="ncr.report_ncr"
+            file="ncr.report.report_ncr"
+            report_type="qweb-pdf"
+        />
+    </data>
+</odoo>

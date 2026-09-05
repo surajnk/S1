@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_planning_version_tree" model="ir.ui.view" >
+        <field name="name">mrp.planning.version.tree</field>
+        <field name="model">mrp.planning.version</field>
+        <field name="arch" type="xml">
+            <tree string="Planning Versions">
+                <field name="name" decoration-bf="1"/>
+                <field name="date_start" widget="date"/>
+                <field name="date_end" widget="date"/>
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="activity_ids" widget="list_activity"/>
+                <field name="company_id" invisible="1"/>
+                <field name="pirs_revenues" widget="monetary"/>
+                <field name="pirs_costs" widget="monetary"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="state" widget="badge" decoration-success="state == 'open'" decoration-warning="state == 'cancel'" decoration-danger="state == 'closed'"/>
+            </tree>
+        </field>
+    </record>
+
+   <record id="mrp_planning_version_form" model="ir.ui.view">
+         <field name="name">mrp.planning.version.form</field>
+         <field name="model">mrp.planning.version</field>
+         <field name="arch" type="xml">
+            <form string="Planning Version">
+                <header>
+                    <button name="button_close" states="open" string="Close" type="object" class="oe_highlight" groups="mrp_master_production_plan.group_mpp_manager"/>
+                    <button name="button_open" states="closed" string="Open" type="object" class="oe_highlight" groups="mrp_master_production_plan.group_mpp_manager"/>
+                    <button name="button_cancel" states="open" string="Cancel" type="object" groups="mrp_master_production_plan.group_mpp_manager" confirm="Are you sure to cancel this planning Version?"/>
+                    <button name="button_reset" states="cancel" string="Set to Open" type="object" groups="mrp_master_production_plan.group_mpp_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="open,closed" statusbar_colors='{"parts_except":"red","released":"blue"}'/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                    <widget name="web_ribbon" text="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <button  class="oe_stat_button" name="attachment_tree_view" type="object" icon="fa-files-o">
+                        <field string="Documents" name="doc_count" widget="statinfo"/>
+                    </button>
+                    <button name="action_view_pirs" type="object" class="oe_stat_button" icon="fa-pencil-square-o" attrs="{'invisible': [('pir_count', '=', 0)]}">
+                        <field name="pir_count" widget="statinfo" string="Planned Independent Requirements"/>
+                    </button>
+                    </div>
+                    <div class="oe_title">
+                        <field name="active" invisible="1"/>
+                        <h1><field name="name" default_focus="1" placeholder="Planning Version ID"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id" options="{'no_open':True,'no_create':True}"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_open':True,'no_create':True}"/>
+                        </group>
+                        <group>
+                            <label for="date_start" string="Planning Period"/>
+                            <div>
+                                <field name="date_start" widget="date" class="oe_inline"/> -
+                                <field name="date_end" widget="date" class="oe_inline" nolabel="1"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                        </group>
+                        <group>
+                            <field name="pirs_revenues" widget="monetary"/>
+                            <field name="pirs_costs" widget="monetary"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <separator string="notes"/>
+                        <newline/>
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="mrp_planning_version_activity" model="ir.ui.view">
+        <field name="name">mrp.planning.version.activity</field>
+        <field name="model">mrp.planning.version</field>
+        <field name="arch" type="xml">
+            <activity string="Planning Version">
+                <templates>
+                    <div t-name="activity-box">
+                        <div>
+                            <field name="name" display="full"/>
+                            <field name="user_id" muted="1" display="full"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+    <record id="mrp_planning_version_pivot" model="ir.ui.view">
+        <field name="name">mrp.planning.version.pivot</field>
+        <field name="model">mrp.planning.version</field>
+        <field name="arch" type="xml">
+            <pivot string="Demand Planning">
+                <field name="name" type="row"/>
+                <field name="pirs_revenues" type="measure"/>
+                <field name="pirs_costs" type="measure"/>
+                <field name="pir_count" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="mrp_planning_version_filter" model="ir.ui.view">
+        <field name="name">mrp.planning.version.filter</field>
+        <field name="model">mrp.planning.version</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="Version" filter_domain="[('name', 'ilike', self)]"/>
+                <filter string="My Planning Versions" name="my_planning_versions" domain="[('user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Open" name="open" domain="[('state','=','open')]"/>
+                <filter string="Closed" name="close" domain="[('state','=','closed')]"/>
+				<separator/>
+				<group expand="0" string="Group By">
+					<filter name="groupby_user_id" string="Planner" domain="[]" context="{'group_by': 'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_planning_version_action" model="ir.actions.act_window" >
+        <field name="name">Planning Version</field>
+        <field name="res_model">mrp.planning.version</field>
+        <field name="view_mode">tree,form,pivot,activity</field>
+    </record>
+</odoo>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <record id="mrp_production_plan_tree" model="ir.ui.view">
+        <field name="name">mrp.production.plan.tree</field>
+        <field name="model">mrp.production.plan</field>
+        <field name="arch" type="xml">
+            <tree string="Master Production Plan" editable='top'>
+                <header>
+                    <button name="button_load" type="object" string="Confirm"/>
+                    <button name="button_done" type="object" string="Approve"/>
+                    <button name="%(action_mpp_po_creation)d" type="action" string="SubPO Creation"/>
+                    <button name="button_cancel" type="object" string="Cancel"/>
+                    <button name="button_reset" type="object" string="Reset"/>
+                </header>
+                <field name="name" decoration-bf="1"/>
+                <field name="warehouse_id" attrs="{'readonly':[('changeable','=', False)]}" groups="stock.group_stock_multi_warehouses" options="{'no_open': True, 'no_create': True}"/>
+                <field name="product_id" attrs="{'readonly':[('changeable','=', False)]}" options="{'no_open': True, 'no_create': True}"/>
+                <field name="product_tmpl_id" invisible="1"/>
+                <field name="product_qty" attrs="{'readonly':[('changeable','=', False)]}"/>
+                <field name="product_uom_id" options="{'no_open': True, 'no_create': True}"/>
+                <field name="date_planned" widget="date" attrs="{'readonly':[('changeable','=', False)]}" decoration-warning="state not in ('done', 'cancel') and date_planned &lt; now" decoration-danger="state not in ('done', 'cancel') and date_planned &lt; current_date" decoration-bf="state not in ('done', 'cancel') and (date_planned &lt; current_date or date_planned &lt; now)"/>
+                <field name="bom_id" options="{'no_open': True, 'no_create': True}"/>
+                <field name="subcontractor_id" domain="[('product_tmpl_id','=', product_id),('is_subcontractor','=', True)]" options="{'no_open': True, 'no_create': True}" attrs="{'invisible':[('bom_type','!=','subcontract')]}"/>
+                <field name="sop_item"/>
+                <button name="button_load" type="object" string="Confirm"  states="draft"/>
+                <button name="button_done" type="object" string="Approve"  states="load"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'" decoration-warning="state == 'draft'" decoration-info="state == 'load'" decoration-danger="state == 'cancel'"/>
+                <field name="changeable" invisible="1"/>
+                <field name="company_id" invisible="1"/>
+                <field name="bom_type" invisible="1"/>
+            </tree>
+      </field>
+    </record>
+
+    <record id="mrp_production_plan_pivot" model="ir.ui.view">
+        <field name="name">mrp.production.plan.pivot</field>
+        <field name="model">mrp.production.plan</field>
+        <field name="arch" type="xml">
+            <pivot string="Master Production Plan">
+                <field name="date_planned" interval="week" type="col"/>
+                <field name="product_id" type="row"/>
+                <field name="product_qty" type="measure"/>
+                <field name="mpp_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="mrp_production_plan_graph" model="ir.ui.view">
+        <field name="name">mrp.production.plan.graph</field>
+        <field name="model">mrp.production.plan</field>
+        <field name="arch" type="xml">
+            <graph string="Master Production Plan" type="line">
+                <field name="date_planned" type="row" interval="month"/>
+                <field name="product_id" type="row"/>
+                <field name="mpp_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="mrp_production_plan_activity" model="ir.ui.view">
+        <field name="name">mrp.production.plan.activity</field>
+        <field name="model">mrp.production.plan</field>
+        <field name="arch" type="xml">
+            <activity string="Master Production Plan">
+                <templates>
+                    <div t-name="activity-box">
+                        <div>
+                            <field name="name" display="full"/>
+                            <field name="product_id" muted="1" display="full"/>
+                            <field name="date_planned" muted="1" display="full" widget="date"/>
+                        </div>
+                    </div>
+                </templates>
+            </activity>
+        </field>
+    </record>
+
+    <record id="mrp_production_plan_filter" model="ir.ui.view">
+        <field name="name">mrp.production.plan.filter</field>
+        <field name="model">mrp.production.plan</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" string="MPP Item Reference" filter_domain="[('name', 'ilike', self)]"/>
+                <filter string="Done" name="done" domain="[('state','=','done')]"/>
+                <filter string="Active" name="active" domain="[('state','in',('draft','load'))]"/>
+                <filter string="Cancelled" name="cancelled" domain="[('state','=','cancel')]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Late Activities" name="activities_overdue" domain="[('activity_ids.date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Today Activities" name="activities_today" domain="[('activity_ids.date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Future Activities" name="activities_upcoming_all" domain="[('activity_ids.date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <group expand="0" string="Group By...">
+                    <filter string="Product" name="groupby_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                    <filter string="Warehouse" name="groupby_warehouse" domain="[]" context="{'group_by': 'warehouse_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="mrp_production_plan_action" model="ir.actions.act_window" >
+        <field name="name">Master Production Plan</field>
+        <field name="res_model">mrp.production.plan</field>
+        <field name="view_mode">tree,pivot,graph,activity</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="search_view_id" ref="mrp_production_plan_filter"/>
+    </record>
+</odoo>

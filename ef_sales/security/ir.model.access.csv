@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sale_product_bom,access.sale.product.bom,model_sale_product_bom,,1,1,1,1
+access_sale_orientation,access.sale.orientation,model_sale_orientation,,1,1,1,1
+access_sale_product_labor,access.sale.product.labor,model_sale_product_labor,,1,1,1,1
+access_sale_multi_size,access.sale.multi.size,model_sale_multi_size,,1,1,1,1
+access_ale_report_wizard,sale.report.wizard,model_sale_report_wizard,,1,1,1,1
+access_sale_order_message,access.sale.order.message,model_sale_order_message,,1,1,1,1

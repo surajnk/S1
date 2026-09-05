@@ -1,0 +1,26 @@
+<data>
+   <record id="seq_res_nrc" model="ir.sequence">
+       <field name="name">NCR Sequence</field>
+       <field name="code">res.nrc</field>
+       <field name="prefix">NCR</field>
+       <field name="padding">5</field>
+       <field name="company_id" eval="False"/>
+   </record>
+   <record id="ncr_template_email" model="mail.template">         
+         <field name="name">NCR Notification</field>
+            <field name="email_from">${object.created_by.login}</field>
+            <field name="subject">New NCR # ${object.name}</field>
+            <field name="email_to">${object.assignee.login}</field>
+            <field name="model_id" ref="ncr.model_res_nrc"/>
+            <field name="body_html">    
+            <![CDATA[
+            <br/>
+            <p>Dear ${object.assignee.name},</p>
+            <p>
+               ${object.name} has been assigned to you.
+            </p>
+            <p>Thank You</p>
+                                             
+         ]]></field>
+   </record>
+</data>

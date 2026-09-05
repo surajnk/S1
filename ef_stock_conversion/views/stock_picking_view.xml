@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_picking_view_form_inherits_kreol_stock_conversion" model="ir.ui.view">
+        <field name="name">stock.picking.view.form.inherits.kreol.stock.conversion</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button type="action" name="%(action_stock_conversion_wiz)d" string="Stock Conversion" class="oe_highlight" groups="ef_stock_conversion.group_stock_conversion"/>
+            </xpath>
+            <xpath expr="/form/sheet/div[@name='button_box']" position="inside">
+                <button type="object" name="action_view_stock_conversions" class="oe_stat_button" icon="fa-tasks" attrs="{'invisible':[('count_stock_conversion', '=', 0)]}" groups="ef_stock_conversion.group_stock_conversion">
+                    <field name="count_stock_conversion" widget="statinfo" string="Stock Conversions"/>
+                    <field name='stock_conversion_ids' invisible="1"/>
+                </button>
+            </xpath>
+            <field name="picking_type_id" position="after">
+                <field name="code" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

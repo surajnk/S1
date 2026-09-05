@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_bill_of_leading_wiz,access.bill.of.leading.wiz,model_bill_of_leading_wiz,stock.group_stock_user,1,1,1,1
+access_nmfc_density_class_user,access.nmfc.density.class.user,model_nmfc_density_class,stock.group_stock_user,1,0,0,0
+access_nmfc_density_class_manager,access.nmfc.density.class.manager,model_nmfc_density_class,stock.group_stock_manager,1,1,1,1

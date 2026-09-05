@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+	<record id="account_move_form_view_inherit_efatc" model="ir.ui.view">
+        <field name="name">account.move.form.view.inherit.efatc</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div" position="inside">
+                    <button name="action_view_complaints"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-exclamation-circle"
+                            string="Complaints"
+                            attrs="{'invisible': [('complaint_count', '=', 0)]}" />
+                    <field name="complaint_count" widget="statinfo" icon="fa-exclamation-circle" string="Complaints" invisible="1"/>
+            </xpath>
+        	<xpath expr="/form/sheet/notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/form/sheet/field[@name='name']" position="after">
+        		<field name="x_invoice_line_labor_items_new">
+                    <tree editable="bottom" create="false">
+                        <!-- <field name="x_product_labor_select"/> -->
+                        <field name="x_product_product_labor"/>
+<!--                         <field name="x_product_labor_pr"/>
+                        <field name="x_product_labor_cu"/> -->
+                        <field name="x_labor_unit_req"/>
+<!--                         <field name="x_labor_unit_value"/>
+                        <field name="x_labor_minimum"/>
+                        <field name="x_labor_extension"/> -->
+                        <field name="x_labor_amount" force_save="1" sum="Total Labor Amount"/>
+                    </tree>
+                    <form>
+                        <group>
+                            <field name="x_product_product_labor"/>
+                        </group>
+                    </form>
+                </field>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page[@id='invoice_tab']/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
+                <field name="x_customer_invoice_width"/>
+                <field name="x_customer_invoice_length"/>
+            </xpath>
+        </field>
+	</record>
+
+</odoo>

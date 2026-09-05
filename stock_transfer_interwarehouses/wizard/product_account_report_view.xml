@@ -1,0 +1,51 @@
+<odoo>
+    <record model="ir.ui.view" id="product_report_wizard_form">
+        <field name="name">Product Account Report</field>
+        <field name="model">product.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="product_ids" widget="many2many_tags"/>
+                        <field name="skip_nonavailable"/>
+                    </group>
+                    <group>
+                          <field name="item_id"/>
+                        <field name="warehouse_id"/>
+
+                    </group>
+                </group>
+                <footer>
+                    <button name="product_report_xlsx" string="Generate Excel" type="object"
+                            class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_product_report_wizard">
+        <field name="name">Product Report</field>
+        <field name="res_model">product.report.wizard</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="product_report_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <record id="product_xlsx_report_generate" model="ir.actions.report">
+        <field name="name">Product Excel Report</field>
+        <field name="model">product.report.wizard</field>
+        <field name="report_type">xlsx</field>
+        <field name="report_name">stock_transfer_interwarehouses.generate</field>
+        <field name="report_file">stock_transfer_interwarehouses.generate</field>
+    </record>
+
+    <menuitem
+            id="product_account_report_menu"
+            action="action_product_report_wizard"
+            name="Product Report"
+            parent="stock.menu_warehouse_report"
+
+    />
+</odoo>

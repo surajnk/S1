@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="mrp_workcenter_view_inherit_partial" model="ir.ui.view">
+        <field name="name">mrp.workcenter.form.inherit</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="show_partial_produce"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+<!--        <template id="report_simple_label">-->
+<!--            <div style="width: 32%; display: inline-table; height:14rem;">-->
+<!--                <table class="table table-bordered mb-0" style="border: 2px solid black;">-->
+<!--                    <tr>-->
+<!--                        <th class="table-active text-left" style="height: 4rem;">-->
+<!--                            <strong t-field="product.display_name"/>-->
+<!--                        </th>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td style="height: 2rem">-->
+<!--                            <strong>Price:</strong>-->
+<!--                            <strong t-field="product.lst_price" t-options="{'widget': 'monetary', 'display_currency': product.company_id.currency_id}"/>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td class="text-center align-middle" style="height: 6rem">-->
+<!--                            <t t-if="product.barcode">-->
+<!--                                <img alt="Barcode" t-if="len(product.barcode) == 13" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', quote_plus(product.barcode or ''), 600, 150)" style="width:100%;height::4rem;"/>-->
+<!--                                <img alt="Barcode" t-elif="len(product.barcode) == 8" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN8', quote_plus(product.barcode or ''), 600, 150)" style="width:100%;height::4rem;"/>-->
+<!--                                <img alt="Barcode" t-else="" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', quote_plus(product.barcode or ''), 600, 150)" style="width:100%;height::4rem;"/>-->
+<!--                                <span t-field="product.barcode"/>-->
+<!--                            </t>-->
+<!--                            <t t-else=""><span class="text-muted">No barcode available</span></t>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--        </template>-->
+
+    <template id="report_wc_prod_label_header_footer" name="mrp work center productivity label view">
+        <div class="col-12 text-center">
+            <h3 class="font-weight-bold"><t t-esc="last_roll_line.roll_id.name"/></h3>
+        </div>
+        <div class="col-12 text-center">
+            <h3><t t-esc="last_productivity_label_data.get('item')"/></h3>
+        </div>
+    </template>
+
+        <!-- report_wc_prod_label -->
+        <template id="report_wc_prod_label">
+            <t t-call="web.basic_layout">
+                <t t-set="last_productivity_label_data" t-value=""/>
+                <t t-set="last_roll_line" t-value=""/>
+                <div class="page">
+                    <t t-foreach="docs" t-as="roll_line">
+                        <t t-set="productivity_label_data" t-value="roll_line.workorder_id.get_productivity_label_data(roll_line, roll_line.workorder_id)"/>
+                        <div class="row border-bottom border-dark">
+                            <t t-set="last_productivity_label_data" t-value="productivity_label_data"/>
+                            <t t-set="last_roll_line" t-value="roll_line"/>
+                            <t t-call="mrp_routing_workcenter_capacity.report_wc_prod_label_header_footer"/>
+                        </div>                        
+<!--                         <div class="row" width="100%" style="font-size: 3em;">
+                            <div class="col-6 mb4">
+                                <b><t t-esc="productivity_label_data.get('sale_name')"/></b>
+                            </div>
+                            <div class="col-6 mb4 text-right">
+                                <b><t t-esc="roll_line.roll_id and roll_line.roll_id.name"/></b>
+                            </div>
+                        </div> -->
+<!--                         <div class="row border-bottom border-dark">
+                            <div class="col-7 mb4">
+                                <small>Item : <t t-esc="productivity_label_data.get('item')"/></small>
+                            </div>
+                            <div class="col-5 mb4">
+                                <small>EFO P.O. : <t t-esc="productivity_label_data.get('efi_po')"/></small>
+                            </div>
+                        </div> -->
+                        <div class="row border-bottom border-dark text-center">
+                            <img class="text-center p-2" t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s'%('Code128', roll_line.roll_id.name or '00000', 580, 150)"/>
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-11" style="font-size: 2.2em;">
+                                <t t-esc="productivity_label_data.get('name_01')"/>
+                            </div>
+                        </div>
+                        <!-- <div class="row">
+                            <div class="col-12" style="font-size: 3.5em;">
+                                <b><t t-esc="productivity_label_data.get('name_02')"/></b>
+                            </div>
+                        </div> -->
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <b>
+                                        <div style="font-size: 2.2em;">
+                                            <t t-esc="int(productivity_label_data.get('customer_width'))"/>"
+                                        </div>
+                                    </b>
+                                </td>
+                                <td colspan="1" class="text-center">
+                                    <b>
+                                        <div style="font-size: 2.2em;">
+                                            <t t-esc="productivity_label_data.get('customer_ref')"/>
+                                        </div>
+                                    </b>
+                                </td>
+                                <td class="text-center">
+                                    <b>
+                                        <div style="font-size: 2.2em;">
+                                            <t t-esc="productivity_label_data.get('so_expected_date')"/>
+                                        </div>
+                                    </b>
+                                </td>
+                                <td colspan="2" style="color: #fff; background: black;" class="text-center p-2">
+                                    <b>
+                                        <div style="font-size: 2.2em;">
+                                            <t t-esc="productivity_label_data.get('total_yards')"/>
+                                        </div>
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border-bottom">
+                                    <strong>Machine</strong>
+                                </td>
+                                <td class="text-center border-bottom">
+                                    <strong>Oper</strong>
+                                </td>
+                                <td class="text-center border-bottom">
+                                    <strong>Date/Time</strong>
+                                </td>
+                                <td class="text-center border-bottom">
+                                    <strong>Yards</strong>
+                                </td>
+                                <td class="text-center border-bottom">
+                                    <strong>Loc</strong>
+                                </td>
+<!--                            <t t-set="count" t-value="1"/>-->
+                            </tr>
+                            <tr t-foreach="productivity_label_data.get('data_lines')" t-as="lines">
+                                <t t-set="count" t-value="1"/>
+                                <tr t-foreach="lines.get('lines')" t-as="line">
+                                    <t t-if="count == 1">
+                                        <td class="border-bottom border-right border-left p-1" t-att-rowspan="len(lines.get('lines'))">
+                                            <t t-esc="lines.get('machine')"/>
+                                        </td>
+                                        <t t-set="count" t-value="2"/>
+                                    </t>
+                                    <td class="border-bottom border-right p-1">
+                                        <t t-esc="line.get('operator')"/>
+                                    </td>
+                                    <td class="border-bottom border-right p-1">
+                                        <t t-esc="line.get('date')"/>
+                                    </td>
+                                    <td class="border-bottom border-right p-1">
+                                        <t t-esc="line.get('yards')"/>
+                                    </td>
+                                    <td class="border-bottom border-right p-1">
+                                        <t t-esc="line.get('location')"/>
+                                    </td>
+                                </tr>
+                            </tr>
+                        </table>
+                    </t>
+                </div>
+                <div class="footer o_standard_footer">
+                    <div class="row border-top border-dark">
+                        <t t-call="mrp_routing_workcenter_capacity.report_wc_prod_label_header_footer">
+                            <t t-set="productivity_label_data" t-value="last_productivity_label_data"/>
+                            <t t-set="roll_line" t-value="last_roll_line"/>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- mrp.workcenter.productivity -->
+        <record id="mrp_workcenter_productivity_label" model="ir.actions.report">
+            <field name="name">Productivity Label (PDF)</field>
+            <field name="model">mrp.wo.roll.line</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">mrp_routing_workcenter_capacity.report_wc_prod_label</field>
+            <field name="report_file">mrp_routing_workcenter_capacity.report_wc_prod_label</field>
+            <field name="print_report_name">'Roll Labels'</field>
+        </record>
+
+        <record id="paperformat_productivity_small_label" model="report.paperformat">
+            <field name="name">Productivity Label Paper Format</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">150</field>
+            <field name="page_width">100</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">4</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">1</field>
+            <field name="margin_right">1</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+            <field name="report_ids" eval="[(6,0,[ref('mrp_routing_workcenter_capacity.mrp_workcenter_productivity_label')])]"/>
+        </record>
+
+
+    </data>
+</odoo>

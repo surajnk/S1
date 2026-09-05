@@ -1,0 +1,21 @@
+<odoo>
+    <template id="mrp_assets_backend_inherit" name="mrp assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/mrp_shop_floor_control/static/src/js/wrokorder.js"/>
+            <script type="text/javascript" src="/mrp_shop_floor_control/static/src/js/duration_hours_timer.js"/>
+        </xpath>
+    </template>
+
+    <record id="action_mrp_workorder_report" model="ir.actions.client">
+        <field name="name">Workorder Report</field>
+        <field name="res_model">mrp.workcenter.capacity.report</field>
+        <field name="tag">mrp_workorder_report</field>
+    </record>
+
+    <!-- <menuitem
+        id="menu_mrp_workoreder_report"
+        sequence="60"
+        parent="mrp.menu_mrp_reporting"
+        action="action_mrp_workorder_report"
+        groups="mrp.group_mrp_user"/> -->
+</odoo>

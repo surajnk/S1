@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="stock_inventory_form_view_inherit_kreol" model="ir.ui.view">
+        <field name="name">stock.inventory.form.view.inherit.kreol</field>
+        <field name="model">stock.inventory</field>
+        <field name="inherit_id" ref="stock.view_inventory_form"/>
+        <field name="arch" type="xml">
+            <field name="company_id" position="after">
+                <field name="stock_conversion_id" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="stock_inventory_line_form_view_inherit_kreol" model="ir.ui.view">
+        <field name="name">stock.inventory.line.form.view.inherit.kreol</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="inherit_id" ref="stock.stock_inventory_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="stock_conversion_id" invisible="1"/>
+            </field>
+            <field name="theoretical_qty" position="after">
+                <field name="on_hand_value"/>
+            </field>
+            <field name="product_qty" position="after">
+                <field name="counted_value"/>
+            </field>
+            <field name="difference_qty" position="after">
+                <field name="difference_value"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
