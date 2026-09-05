@@ -481,6 +481,15 @@ class MRPProduction(models.Model):
                             'group_id': production.procurement_group_id.id,
                             'origin': production.name,
                         })
+                        # Also fix any move lines already reserved on these moves
+                        # (writing location_dest_id on the move does not cascade
+                        # to move lines created by an earlier reservation)
+                        stale_move_lines = moves_to_reassign.mapped('move_line_ids').filtered(
+                            lambda ml: ml.state not in ('done', 'cancel')
+                            and ml.location_dest_id != target_location
+                        )
+                        if stale_move_lines:
+                            stale_move_lines.write({'location_dest_id': target_location.id})
                         # Unlink from any wrong picking
                         for move in moves_to_reassign:
                             if move.picking_id and move.picking_id.picking_type_id != pc_picking_type:
