@@ -8,7 +8,7 @@
     'website' : 'http://www.geotechnosoft.com',
     'category': 'Manufacturing',
     'support': 'info@geotechnosoft.com',
-    'depends' : ['base', 'mrp', 'mrp_enhancement', 'sale_stock', 'ef_sales'],
+    'depends' : ['base', 'stock', 'mrp', 'mrp_enhancement', 'sale_stock', 'ef_sales'],
     'summary': '''
         Manufacturing partial production from MO order and also update the stock the same time ''',
     'description': """
