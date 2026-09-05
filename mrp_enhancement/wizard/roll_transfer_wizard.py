@@ -312,12 +312,12 @@ class RollTransferWizardLine(models.TransientModel):
         readonly=True,
     )
     validated_qty = fields.Float(
-        string='Validated Qty',
+        string='Qty',
         compute='_compute_validated_qty',
     )
     validated_date = fields.Datetime(
         related='picking_id.date_done',
-        string='Validated Date',
+        string='Date',
         readonly=True,
     )
 
