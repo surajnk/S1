@@ -24,7 +24,7 @@ class StockQuant(models.Model):
         ], order='date desc, id desc', limit=1)
         return chain_line
 
-    @api.depends('quantity', 'lot_id')
+    @api.depends('quantity', 'lot_id', 'lot_id.customer_qty')
     def _compute_customer_qty(self):
         for quant in self:
             chain_line = quant._get_chain_line_for_quant()
@@ -36,10 +36,33 @@ class StockQuant(models.Model):
                 chain_line.qty_done if chain_line else None,
                 chain_line.customer_qty if chain_line else None,
             )
-            if not chain_line or not chain_line.qty_done:
+            if chain_line and chain_line.qty_done:
+                ratio = quant.quantity / chain_line.qty_done
+                quant.customer_qty = chain_line.customer_qty * ratio
+                quant.x_customer_uom_id = chain_line.x_customer_uom_id
+                continue
+
+            # No move line was ever stamped with a non-zero customer_qty for
+            # this lot (e.g. the delivery-picking sync in the production
+            # wizard aborted because no sale order or more/less than one
+            # matching picking was found). The lot itself is always stamped
+            # with customer_qty at production time regardless of that sync,
+            # so fall back to it and resolve the UOM from any move line
+            # linked to the lot.
+            if not quant.lot_id or not quant.lot_id.customer_qty:
                 quant.customer_qty = 0.0
                 quant.x_customer_uom_id = False
                 continue
-            ratio = quant.quantity / chain_line.qty_done
-            quant.customer_qty = chain_line.customer_qty * ratio
-            quant.x_customer_uom_id = chain_line.x_customer_uom_id
+
+            any_line = self.env['stock.move.line'].search([
+                ('lot_id', '=', quant.lot_id.id),
+            ], order='date desc, id desc', limit=1)
+            _logger.info(
+                "[GTS DEBUG] quant._compute_customer_qty fallback: quant.id=%s "
+                "lot_id.customer_qty=%s any_line.id=%s any_line.x_customer_uom_id=%s",
+                quant.id, quant.lot_id.customer_qty,
+                any_line.id if any_line else None,
+                any_line.x_customer_uom_id.name if any_line and any_line.x_customer_uom_id else None,
+            )
+            quant.customer_qty = quant.lot_id.customer_qty
+            quant.x_customer_uom_id = any_line.x_customer_uom_id if any_line else False
