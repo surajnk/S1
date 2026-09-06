@@ -146,7 +146,7 @@ class ShippingManifestWizard(models.TransientModel):
         linked MO produced. 'NA' when there's no linked MO."""
         if not mo:
             return 'NA'
-        if sale_line.qty_delivered < mo.qty_produced:
+        if sale_line.qty_delivered < sale_line.product_uom_qty:
             return 'I'
         return 'C' if picking.state == 'done' else picking.state
 
