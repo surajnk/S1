@@ -140,6 +140,16 @@ class ShippingManifestWizard(models.TransientModel):
         length_str = self._format_dimension(length)
         return ' X '.join(filter(None, [width_str, length_str]))
 
+    def _get_sta_label(self, mo, picking):
+        """'I' (in progress/under-produced) overrides 'C' (done) whenever the
+        linked MO hasn't reached its master yards target. 'NA' when there's
+        no MO or no master yards target to check against."""
+        if not mo or not mo.x_order_master_yards:
+            return 'NA'
+        if mo.qty_produced < mo.x_order_master_yards:
+            return 'I'
+        return 'C' if picking.state == 'done' else picking.state
+
     def _build_lines(self, pickings, bol=None):
         lines = []
         for picking in pickings:
@@ -176,7 +186,7 @@ class ShippingManifestWizard(models.TransientModel):
                         picking.ship_via_id.x_name if picking.ship_via_id else picking.carrier_id.name,
                         order.incoterm.code if order.incoterm else '',
                     ])),
-                    'sta': 'C' if picking.state == 'done' else picking.state,
+                    'sta': self._get_sta_label(mo, picking),
                     'units': self._get_units_label(move),
                     # TODO: confirm "Ship Amount" - placeholder mirrors qty
                     # in the move's UoM (e.g. yards).
