@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_mrp_wo_packaging" model="ir.actions.report">
+        <field name="name">Work Order Packaging Slip</field>
+        <field name="model">mrp.wo.packaging.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">mrp_wo_packaging_report.report_wo_packaging</field>
+        <field name="report_file">mrp_wo_packaging_report.report_wo_packaging</field>
+        <field name="print_report_name">'Work Order Packaging - %s' % (object.date)</field>
+        <field name="paperformat_id" ref="mrp_wo_packaging_report.paperformat_mrp_wo_packaging"/>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+</odoo>

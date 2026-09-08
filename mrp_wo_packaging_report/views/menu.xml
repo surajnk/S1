@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_mrp_wo_packaging_report"
+              name="Work Order Packaging Slip"
+              parent="stock.menu_warehouse_report"
+              action="mrp_wo_packaging_report.action_mrp_wo_packaging_wizard"
+              sequence="51"/>
+</odoo>
