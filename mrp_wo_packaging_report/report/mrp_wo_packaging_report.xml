@@ -179,10 +179,10 @@
                         <table class="table table-borderless table-sm mb-0" style="font-size:11px;">
                             <tbody>
                                 <tr>
-                                    <td class="py-1" style="width:25%; white-space:nowrap;">&#9744; BOX</td>
-                                    <td class="py-1" style="width:25%; white-space:nowrap;">&#9744; PALLET</td>
-                                    <td class="py-1" style="width:25%; white-space:nowrap;">&#9744; 2-PLYWOOD</td>
-                                    <td class="py-1" style="width:25%; white-space:nowrap;">&#9744; OVERSEAS SHRK/DBL COR/SHK</td>
+                                    <td class="py-1" style="width:25%; white-space:nowrap;">|___| BOX</td>
+                                    <td class="py-1" style="width:25%; white-space:nowrap;">|___| PALLET</td>
+                                    <td class="py-1" style="width:25%; white-space:nowrap;">|___| 2-PLYWOOD</td>
+                                    <td class="py-1" style="width:25%; white-space:nowrap;">|___| OVERSEAS SHRK/DBL COR/SHK</td>
                                 </tr>
                             </tbody>
                         </table>
