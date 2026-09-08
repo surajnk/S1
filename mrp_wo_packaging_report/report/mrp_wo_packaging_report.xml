@@ -153,42 +153,55 @@
                         </div>
 
                         <!-- Packaging fill-in slip -->
-                        <div class="m-0 my-3 row border-dark border-top border-bottom">
+                        <div class="m-0 my-2 row border-dark border-top border-bottom">
                             <div class="col-12 text-center">
                                 <h4 class="font-weight-bold" style="letter-spacing:2px;">PACKAGING</h4>
                             </div>
                         </div>
-                        <div class="m-0 row">
-                            <div class="col-3">DATE: <span t-esc="'_' * 20"/></div>
-                            <div class="col-3">SHIFT: <span t-esc="'_' * 15"/></div>
-                            <div class="col-3">☐ BOX</div>
-                            <div class="col-3">☐ PALLET</div>
-                        </div>
-                        <div class="m-0 row mt-2">
-                            <div class="col-6">NAME: <span t-esc="'_' * 30"/></div>
-                            <div class="col-6">☐ OVERSEAS SHRK/DBL COR/SHK</div>
-                        </div>
-                        <div class="m-0 row mt-2">
-                            <div class="col-6">START PACK: <span t-esc="'_' * 20"/></div>
-                            <div class="col-6">FINISH: <span t-esc="'_' * 20"/></div>
-                        </div>
-                        <table class="table table-sm mt-2">
+                        <table class="table table-borderless table-sm mb-0" style="font-size:11px;">
                             <tbody>
-                                <tr t-foreach="[1, 2, 3, 4, 5, 6]" t-as="line_no">
-                                    <td style="width:2em;"><t t-esc="line_no"/>.</td>
-                                    <td><span t-esc="'_' * 25"/></td>
-                                    <td class="text-right" style="width:8em;">SHT @</td>
-                                    <td><span t-esc="'_' * 15"/></td>
+                                <tr>
+                                    <td class="py-1" style="width:8%; white-space:nowrap;"><b>DATE:</b></td>
+                                    <td class="py-1" style="width:22%; border-bottom:1px solid #000;">&#160;</td>
+                                    <td class="py-1" style="width:8%; white-space:nowrap;"><b>SHIFT:</b></td>
+                                    <td class="py-1" style="width:22%; border-bottom:1px solid #000;">&#160;</td>
+                                    <td class="py-1" style="width:15%; white-space:nowrap;">&#9744; BOX</td>
+                                    <td class="py-1" style="width:15%; white-space:nowrap;">&#9744; PALLET</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1"><b>NAME:</b></td>
+                                    <td class="py-1" colspan="3" style="border-bottom:1px solid #000;">&#160;</td>
+                                    <td class="py-1" colspan="2" style="white-space:nowrap;">&#9744; OVERSEAS SHRK/DBL COR/SHK</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1"><b>START PACK:</b></td>
+                                    <td class="py-1" style="border-bottom:1px solid #000;">&#160;</td>
+                                    <td class="py-1"><b>FINISH:</b></td>
+                                    <td class="py-1" colspan="3" style="border-bottom:1px solid #000;">&#160;</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div class="m-0 row mt-2 border-dark border-bottom pb-2">
-                            <div class="col-12">
-                                SPEC SHT INST:
-                                <t t-if="o.x_mrp_order_comments" t-esc="o.x_mrp_order_comments"/>
-                                <t t-else="" t-esc="'_' * 60"/>
-                            </div>
-                        </div>
+                        <table class="table table-borderless table-sm mb-0" style="font-size:11px;">
+                            <tbody>
+                                <tr t-foreach="[1, 2, 3, 4, 5, 6]" t-as="line_no">
+                                    <td class="py-1" style="width:3%;"><t t-esc="line_no"/>.</td>
+                                    <td class="py-1" style="border-bottom:1px solid #000;">&#160;</td>
+                                    <td class="py-1 text-right" style="width:8%; white-space:nowrap;">SHT @</td>
+                                    <td class="py-1" style="width:20%; border-bottom:1px solid #000;">&#160;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="table table-borderless table-sm mt-1 mb-2 border-dark border-bottom">
+                            <tbody>
+                                <tr>
+                                    <td class="py-1" style="width:14%; white-space:nowrap;"><b>SPEC SHT INST:</b></td>
+                                    <td class="py-1" style="border-bottom:1px solid #000;">
+                                        <t t-if="o.x_mrp_order_comments" t-esc="o.x_mrp_order_comments"/>
+                                        <t t-else="">&#160;</t>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
                         <div class="m-0 row border-dark border-top">
                             <div class="col-12 mt-1 mb-2">
@@ -227,10 +240,18 @@
                                 <b t-esc="o.x_mrp_order_comments"/>
                             </div>
                         </div>
-                        <div class="m-0 row border-dark border-top" t-if="o.x_mrp_messages">
+                        <!--
+                            A historical bug in mrp_mto_analytic's action_confirm could attach
+                            every previously-confirmed MO's messages (from the same confirm batch)
+                            onto later MOs' x_mrp_messages. That's fixed at the source now, but
+                            older confirmed MOs may still carry the extra records, so only show
+                            messages that actually belong to this MO's own product.
+                        -->
+                        <t t-set="own_messages" t-value="o.x_mrp_messages.filtered(lambda m: not o.product_id.default_code or not m.x_mrp_special_message or m.x_mrp_special_message.startswith(o.product_id.default_code))"/>
+                        <div class="m-0 row border-dark border-top" t-if="own_messages">
                             <div class="col-12 mt-1 mb-2">
                                 <h5 class="font-weight-bold">Special Comments</h5>
-                                <t t-foreach="o.x_mrp_messages" t-as="msg"><span t-esc="msg.x_mrp_special_message"/><br/></t>
+                                <t t-foreach="own_messages" t-as="msg"><span t-esc="msg.x_mrp_special_message"/><br/></t>
                             </div>
                         </div>
                     </div>
