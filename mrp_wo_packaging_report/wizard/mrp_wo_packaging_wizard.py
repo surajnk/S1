@@ -7,17 +7,17 @@ class MrpWoPackagingWizard(models.TransientModel):
     _description = 'Work Order Packaging Report Wizard'
 
     date = fields.Date(
-        string='Ship/Delivery Date',
+        string='Confirmed Date',
         required=True,
         default=fields.Date.context_today,
-        help="Manufacturing Orders whose Requested Date (x_so_delivery_date) "
+        help="Manufacturing Orders whose Confirmed Date (x_mrp_confirmed_date) "
              "matches this date will be included in the report.",
     )
 
     def _get_productions(self):
         self.ensure_one()
         return self.env['mrp.production'].search([
-            ('x_so_delivery_date', '=', self.date),
+            ('x_mrp_confirmed_date', '=', self.date),
             ('state', 'in', ('confirmed', 'progress')),
         ], order='name')
 
@@ -27,7 +27,7 @@ class MrpWoPackagingWizard(models.TransientModel):
         if not self._get_productions():
             raise UserError(
                 "No confirmed or in-progress Manufacturing Orders were "
-                "found with a Ship/Delivery Date of %s."
+                "found with a Confirmed Date of %s."
                 % (self.date.strftime('%m/%d/%Y'))
             )
         return self.env.ref(
