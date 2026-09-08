@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_wo_packaging">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page border-dark border">
+                        <div class="oe_structure"/>
+                        <t t-set="sale_id" t-value="o.procurement_group_id.mrp_production_ids.move_dest_ids.group_id.sale_id"/>
+                        <t t-set="sale_line" t-value="sale_id.order_line[0] if sale_id and sale_id.order_line else False"/>
+                        <t t-set="raw_move" t-value="o.move_raw_ids.filtered(lambda m: m.product_uom and m.product_uom.name == 'yds')[:1]"/>
+
+                        <!-- Header -->
+                        <div class="row">
+                            <div class="col-6">
+                                <table class="table table-bordered border-0">
+                                    <tbody>
+                                        <tr class="p-0">
+                                            <td class="border-0 font-weight-bold h5">
+                                                Work Order: <t t-esc="o.name"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship Date:</span>
+                                                <t t-if="sale_id.expected_date">
+                                                    <t t-esc="sale_id.expected_date.date().strftime('%b %d, %Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Request Date:</span>
+                                                <t t-if="o.x_so_delivery_date">
+                                                    <t t-esc="o.x_so_delivery_date.strftime('%b %d, %Y')"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Sold:</span>
+                                                <t t-if="o.x_customer_name">
+                                                    <t t-esc="o.x_customer_name.display_name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-5">
+                                <table class="table table-bordered border-0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Print date:</span>
+                                                <t t-esc="datetime.datetime.now().date().strftime('%%b %%d, %%Y')"/>
+                                                <span t-if="o.state not in ('done', 'cancel')"> Open</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship VIA:</span>
+                                                <t t-esc="sale_id.x_sale_ship_via.x_name if sale_id.x_sale_ship_via else ''"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border-0 py-0">
+                                                <span class="font-weight-bold">Ship:</span>
+                                                <address t-field="sale_id.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-1 border-left border-dark">
+                                <h5 style="-webkit-transform: rotate(90deg);
+                                    -moz-transform: rotate(90deg);
+                                    -ms-transform: rotate(90deg);
+                                    -o-transform: rotate(90deg);
+                                    padding-top: 1.5rem;
+                                    margin-top: 2rem;
+                                    white-space: nowrap;"
+                                    class="font-weight-bold">
+                                    <t t-esc="o.name"/>
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-5 font-weight-bold">
+                                <h6>Over/Under:</h6>
+                                <span class="font-weight-bold">+ <t t-esc="o.x_order_mrp_over"/> % / - <t t-esc="o.x_order_mrp_under"/> %</span>
+                            </div>
+                            <div class="col-7">
+                                <h6>Finished:
+                                    <t t-if="sale_line and sale_line.product_uom_qty">
+                                        <span class="ml-3" t-esc="'{:,.0f}'.format(sale_line.product_uom_qty)"/>
+                                    </t>
+                                    <t t-if="sale_line and sale_line.x_order_customer_uom">
+                                        <span t-esc="sale_line.x_order_customer_uom.name"/>
+                                    </t>
+                                    <t t-if="sale_line and sale_line.x_customer_order_width">
+                                        @ <span t-esc="'{:g}'.format(sale_line.x_customer_order_width)"/>"
+                                    </t>
+                                    <t t-if="sale_line and sale_line.x_customer_order_length">
+                                        X <span t-esc="'{:g}'.format(sale_line.x_customer_order_length)"/>"
+                                    </t>
+                                </h6>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 font-weight-bold">
+                                <h5 t-esc="o.product_id.name_get()[0][1]"/>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-12">
+                                <h5>
+                                    Customer Quantity:
+                                    <t t-if="sale_line">
+                                        <t t-esc="'{:,.0f}'.format(sale_line.product_uom_qty)"/>
+                                    </t>
+                                </h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-12">
+                                <h5>W/O Quantity: <t t-esc="'{:,.0f}'.format(o.x_order_master_yards)"/></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-6">
+                                <h5>Embossing: <t t-esc="o.product_id.x_product_product_embossing.name"/></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1">
+                                <h5><t t-esc="o.product_id.default_code"/></h5>
+                            </div>
+                        </div>
+                        <div class="m-0 row" t-if="raw_move">
+                            <div class="col-12">
+                                <h6>
+                                    (USE :
+                                    <t t-esc="'{:,.0f}'.format(o.x_order_master_yards)"/>
+                                    Yards of
+                                    <t t-if="raw_move.product_id.x_item_width">
+                                        <t t-esc="'{:g}'.format(raw_move.product_id.x_item_width)"/>"
+                                    </t>
+                                    <t t-esc="raw_move.product_id.name_get()[0][1]"/>)
+                                </h6>
+                            </div>
+                        </div>
+
+                        <!-- Packaging fill-in slip -->
+                        <div class="m-0 my-3 row border-dark border-top border-bottom">
+                            <div class="col-12 text-center">
+                                <h4 class="font-weight-bold" style="letter-spacing:2px;">PACKAGING</h4>
+                            </div>
+                        </div>
+                        <div class="m-0 row">
+                            <div class="col-3">DATE: <span t-esc="'_' * 20"/></div>
+                            <div class="col-3">SHIFT: <span t-esc="'_' * 15"/></div>
+                            <div class="col-3">☐ BOX</div>
+                            <div class="col-3">☐ PALLET</div>
+                        </div>
+                        <div class="m-0 row mt-2">
+                            <div class="col-6">NAME: <span t-esc="'_' * 30"/></div>
+                            <div class="col-6">☐ OVERSEAS SHRK/DBL COR/SHK</div>
+                        </div>
+                        <div class="m-0 row mt-2">
+                            <div class="col-6">START PACK: <span t-esc="'_' * 20"/></div>
+                            <div class="col-6">FINISH: <span t-esc="'_' * 20"/></div>
+                        </div>
+                        <table class="table table-sm mt-2">
+                            <tbody>
+                                <tr t-foreach="[1, 2, 3, 4, 5, 6]" t-as="line_no">
+                                    <td style="width:2em;"><t t-esc="line_no"/>.</td>
+                                    <td><span t-esc="'_' * 25"/></td>
+                                    <td class="text-right" style="width:8em;">SHT @</td>
+                                    <td><span t-esc="'_' * 15"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="m-0 row mt-2 border-dark border-bottom pb-2">
+                            <div class="col-12">
+                                SPEC SHT INST:
+                                <t t-if="o.x_mrp_order_comments" t-esc="o.x_mrp_order_comments"/>
+                                <t t-else="" t-esc="'_' * 60"/>
+                            </div>
+                        </div>
+
+                        <div class="m-0 row border-dark border-top">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Order Putups</h5>
+                                <t t-if="o.x_put_up_uom_name == 'shts'">
+                                    <span t-esc="'{:g}'.format(sale_line.x_customer_order_width) if sale_line and sale_line.x_customer_order_width else ''"/>"
+                                    x
+                                    <span t-esc="'{:g}'.format(sale_line.x_customer_order_length) if sale_line and sale_line.x_customer_order_length else ''"/>",
+                                    <span t-esc="'{:,.0f}'.format(sale_line.product_uom_qty) if sale_line else ''"/>
+                                    SHTS
+                                </t>
+                                <t t-elif="o.x_mrp_order_slit">
+                                    <span t-foreach="o.x_mrp_order_multi_slit_size" t-as="size">
+                                        <div>
+                                            <span t-esc="int(size.x_order_mrp_outs) if size.x_order_mrp_outs % 1 == 0 else size.x_order_mrp_outs"/>
+                                            <span>Rolls @</span>
+                                            <span t-esc="int(size.x_order_mrp_size) if size.x_order_mrp_size % 1 == 0 else size.x_order_mrp_size"/>
+                                            <span>-</span>
+                                            <span t-esc="o.x_put_up_uom_name"/>
+                                        </div>
+                                    </span>
+                                </t>
+                                <t t-else="">
+                                    <span t-esc="o.x_put_up_rolls"/>
+                                    <span>Rolls @</span>
+                                    <span t-esc="o.x_uom_put_up"/>
+                                    <span>-</span>
+                                    <span t-esc="o.x_put_up_uom_name"/>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="m-0 row border-dark border-top" t-if="o.x_mrp_order_comments">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Order Comments</h5>
+                                <b t-esc="o.x_mrp_order_comments"/>
+                            </div>
+                        </div>
+                        <div class="m-0 row border-dark border-top" t-if="o.x_mrp_messages">
+                            <div class="col-12 mt-1 mb-2">
+                                <h5 class="font-weight-bold">Special Comments</h5>
+                                <t t-foreach="o.x_mrp_messages" t-as="msg"><span t-esc="msg.x_mrp_special_message"/><br/></t>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
