@@ -198,55 +198,18 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <table class="table table-borderless table-sm mt-1 mb-2 border-dark border-bottom">
+                        <table class="table table-borderless table-sm mt-1 mb-0">
                             <tbody>
                                 <tr>
                                     <td class="py-1" style="width:14%; white-space:nowrap;"><b>SPEC SHT INST:</b></td>
-                                    <td class="py-1" style="border-bottom:1px solid #000;">
-                                        <t t-if="o.x_mrp_order_comments" t-esc="o.x_mrp_order_comments"/>
-                                        <t t-else="">&#160;</t>
-                                    </td>
+                                    <td class="py-1" style="border-bottom:1px solid #000;">&#160;</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-1" colspan="2" style="border-bottom:1px solid #000;">&#160;</td>
                                 </tr>
                             </tbody>
                         </table>
 
-                        <div class="m-0 row border-dark border-top">
-                            <div class="col-12 mt-1 mb-2">
-                                <h5 class="font-weight-bold">Order Putups</h5>
-                                <t t-if="o.x_put_up_uom_name == 'shts'">
-                                    <span t-esc="'{:g}'.format(sale_line.x_customer_order_width) if sale_line and sale_line.x_customer_order_width else ''"/>"
-                                    x
-                                    <span t-esc="'{:g}'.format(sale_line.x_customer_order_length) if sale_line and sale_line.x_customer_order_length else ''"/>",
-                                    <span t-esc="'{:,.0f}'.format(sale_line.product_uom_qty) if sale_line else ''"/>
-                                    SHTS
-                                </t>
-                                <t t-elif="o.x_mrp_order_slit">
-                                    <span t-foreach="o.x_mrp_order_multi_slit_size" t-as="size">
-                                        <div>
-                                            <span t-esc="int(size.x_order_mrp_outs) if size.x_order_mrp_outs % 1 == 0 else size.x_order_mrp_outs"/>
-                                            <span>Rolls @</span>
-                                            <span t-esc="int(size.x_order_mrp_size) if size.x_order_mrp_size % 1 == 0 else size.x_order_mrp_size"/>
-                                            <span>-</span>
-                                            <span t-esc="o.x_put_up_uom_name"/>
-                                        </div>
-                                    </span>
-                                </t>
-                                <t t-else="">
-                                    <span t-esc="o.x_put_up_rolls"/>
-                                    <span>Rolls @</span>
-                                    <span t-esc="o.x_uom_put_up"/>
-                                    <span>-</span>
-                                    <span t-esc="o.x_put_up_uom_name"/>
-                                </t>
-                            </div>
-                        </div>
-
-                        <div class="m-0 row border-dark border-top" t-if="o.x_mrp_order_comments">
-                            <div class="col-12 mt-1 mb-2">
-                                <h5 class="font-weight-bold">Order Comments</h5>
-                                <b t-esc="o.x_mrp_order_comments"/>
-                            </div>
-                        </div>
                         <!--
                             A historical bug in mrp_mto_analytic's action_confirm could attach
                             every previously-confirmed MO's messages (from the same confirm batch)
@@ -255,10 +218,18 @@
                             messages that actually belong to this MO's own product.
                         -->
                         <t t-set="own_messages" t-value="o.x_mrp_messages.filtered(lambda m: not o.product_id.default_code or not m.x_mrp_special_message or m.x_mrp_special_message.startswith(o.product_id.default_code))"/>
-                        <div class="m-0 row border-dark border-top" t-if="own_messages">
+                        <t t-set="comment_lines" t-value="([o.x_mrp_order_comments] if o.x_mrp_order_comments else []) + [msg.x_mrp_special_message for msg in own_messages if msg.x_mrp_special_message]"/>
+                        <div class="m-0 row mb-2" t-if="comment_lines">
+                            <div class="col-12 mt-1">
+                                <t t-foreach="comment_lines" t-as="comment_line"><span t-esc="comment_line"/><br/></t>
+                            </div>
+                        </div>
+
+                        <div class="m-0 row border-dark border-top">
                             <div class="col-12 mt-1 mb-2">
-                                <h5 class="font-weight-bold">Special Comments</h5>
-                                <t t-foreach="own_messages" t-as="msg"><span t-esc="msg.x_mrp_special_message"/><br/></t>
+                                <h5 class="font-weight-bold">Order Putups:</h5>
+                                <div t-esc="putup_sizes.get(o.id, '')"/>
+                                <div t-esc="o.x_order_customer_mrp_qty"/>
                             </div>
                         </div>
                     </div>
