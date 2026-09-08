@@ -210,15 +210,7 @@
                             </tbody>
                         </table>
 
-                        <!--
-                            A historical bug in mrp_mto_analytic's action_confirm could attach
-                            every previously-confirmed MO's messages (from the same confirm batch)
-                            onto later MOs' x_mrp_messages. That's fixed at the source now, but
-                            older confirmed MOs may still carry the extra records, so only show
-                            messages that actually belong to this MO's own product.
-                        -->
-                        <t t-set="own_messages" t-value="o.x_mrp_messages.filtered(lambda m: not o.product_id.default_code or not m.x_mrp_special_message or m.x_mrp_special_message.startswith(o.product_id.default_code))"/>
-                        <t t-set="comment_lines" t-value="([o.x_mrp_order_comments] if o.x_mrp_order_comments else []) + [msg.x_mrp_special_message for msg in own_messages if msg.x_mrp_special_message]"/>
+                        <t t-set="comment_lines" t-value="([o.x_mrp_order_comments] if o.x_mrp_order_comments else []) + [msg.x_mrp_special_message for msg in o.x_mrp_messages if msg.x_mrp_special_message]"/>
                         <div class="m-0 row mb-2" t-if="comment_lines">
                             <div class="col-12 mt-1">
                                 <t t-foreach="comment_lines" t-as="comment_line"><span t-esc="comment_line"/><br/></t>
