@@ -158,10 +158,13 @@ class ProductionOrder(models.Model):
         return sale_lines[:1]
 
     def action_confirm(self):
-        res1=[(5,0,0)]
-        res2=[(5,0,0)]
         interval_time = 0
         for production in self:
+            # Reset per production: these accumulate (0,0,val) create commands
+            # below and must not leak entries between MOs when action_confirm
+            # is called on a multi-record batch.
+            res1=[(5,0,0)]
+            res2=[(5,0,0)]
             # Update Row Material Quantity with req master yds if the uom is yds
             # after production
             #-----------------------------------------
