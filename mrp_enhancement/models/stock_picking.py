@@ -9,4 +9,10 @@ class StockPicking(models.Model):
 
     wo_name = fields.Char("1st Workorder", readonly=True)
     x_frame_no = fields.Char(string='Frame No')
+    reverse_of_picking_id = fields.Many2one(
+        'stock.picking',
+        string='Reverse Of',
+        readonly=True,
+        copy=False,
+    )
 

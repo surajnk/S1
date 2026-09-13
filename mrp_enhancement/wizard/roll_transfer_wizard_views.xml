@@ -13,7 +13,8 @@
                         <tree editable="top"
                               decoration-warning="state == 'waiting'"
                               decoration-success="state == 'assigned'"
-                              decoration-info="state == 'confirmed'">
+                              decoration-info="state == 'confirmed'"
+                              decoration-danger="has_reverse_transfer">
                             <field name="selected"/>
                             <field name="workorder_id" readonly="1"/>
                             <field name="target_workorder_id"/>
@@ -26,6 +27,8 @@
                                    decoration-warning="state == 'waiting'"
                                    decoration-success="state == 'assigned'"
                                    decoration-info="state == 'confirmed'"/>
+                            <field name="has_reverse_transfer" readonly="1"
+                                   string="Reverse Created"/>
                         </tree>
                     </field>
                 </sheet>
