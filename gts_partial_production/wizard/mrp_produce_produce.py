@@ -1573,6 +1573,16 @@ class MrpProductProduceLine(models.TransientModel):
         ], limit=1)
         return bool(roll_lines)
 
+    def _create_extra_move_lines(self):
+        if self.move_id and self._is_roll_tracked_component():
+            _logger.info(
+                "PRODUCE WIZARD SKIP (extra lines): move=%s product=%s "
+                "is roll-tracked - skipping extra move line creation",
+                self.move_id.id, self.product_id.display_name,
+            )
+            return []
+        return super()._create_extra_move_lines()
+
     @api.model
     def _get_raw_workorder_inverse_name(self):
         return 'raw_product_produce_id'
