@@ -73,9 +73,12 @@ class RollTransferWizard(models.TransientModel):
         if not selected:
             raise UserError(_("Please select at least one validated (Done) transfer."))
 
+        already_reversed = selected.filtered('has_reverse_transfer')
+        to_process = selected - already_reversed
+
         created_pickings = []
 
-        for line in selected:
+        for line in to_process:
             picking = line.picking_id
             wo = line.workorder_id
             target_wo = line.target_workorder_id
@@ -124,6 +127,7 @@ class RollTransferWizard(models.TransientModel):
                     'move_type': 'direct',
                     'is_reverse_transfer': True,
                     'x_frame_no': self.frame_no or False,
+                    'reverse_of_picking_id': picking.id,
                 })
 
                 for ml in move_lines:
@@ -170,16 +174,24 @@ class RollTransferWizard(models.TransientModel):
 
             line.write({'selected': False})
 
-        # Show success notification then reopen wizard
-        picking_names = ', '.join(created_pickings)
+        already_reversed.write({'selected': False})
+
+        messages = []
+        if created_pickings:
+            messages.append(_('Reverse transfer(s) created: %s') % ', '.join(created_pickings))
+        if already_reversed:
+            messages.append(_(
+                'Reverse transfer already exists for: %s'
+            ) % ', '.join(already_reversed.mapped('picking_id.name')))
+
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': _('Success'),
-                'message': _('Reverse transfer(s) created: %s') % picking_names,
-                'sticky': False,
-                'type': 'success',
+                'title': _('Warning') if already_reversed else _('Success'),
+                'message': '\n'.join(messages),
+                'sticky': bool(already_reversed),
+                'type': 'warning' if already_reversed else 'success',
                 'next': self._reopen(),
             }
         }
@@ -320,8 +332,20 @@ class RollTransferWizardLine(models.TransientModel):
         string='Date',
         readonly=True,
     )
+    has_reverse_transfer = fields.Boolean(
+        string='Reverse Already Created',
+        compute='_compute_has_reverse_transfer',
+    )
 
     @api.depends('picking_id.move_line_ids.qty_done')
     def _compute_validated_qty(self):
         for line in self:
             line.validated_qty = sum(line.picking_id.move_line_ids.mapped('qty_done'))
+
+    @api.depends('picking_id')
+    def _compute_has_reverse_transfer(self):
+        for line in self:
+            line.has_reverse_transfer = bool(line.picking_id) and bool(self.env['stock.picking'].search_count([
+                ('reverse_of_picking_id', '=', line.picking_id.id),
+                ('state', '!=', 'cancel'),
+            ]))
