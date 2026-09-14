@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_stock_skip_pick_wizard_form" model="ir.ui.view">
+        <field name="name">stock.skip.pick.wizard.form</field>
+        <field name="model">stock.skip.pick.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Skip Pick Transfer?">
+                <div class="alert alert-info" role="alert">
+                    The product(s) on this transfer can satisfy the Pick
+                    transfer(s) below. Tick "Skip Pick" for the ones you want
+                    to send straight through to Pack/Delivery without a
+                    separate Pick step. Untick any you want to keep in the
+                    normal flow.
+                </div>
+                <field name="source_picking_id" invisible="1" />
+                <field name="line_ids">
+                    <tree editable="bottom">
+                        <field name="pick_picking_id" />
+                        <field name="product_id" />
+                        <field name="quantity" />
+                        <field name="skip" />
+                        <field name="pick_move_id" invisible="1" />
+                    </tree>
+                </field>
+                <footer>
+                    <button
+                        name="action_confirm"
+                        type="object"
+                        string="Confirm"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="action_keep_normal_flow"
+                        type="object"
+                        string="Keep Normal Flow"
+                    />
+                    <button string="Cancel" class="oe_link" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>
