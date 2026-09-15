@@ -130,14 +130,18 @@ class KsDashboardNinjaItemAdvance(models.Model):
         return ks_list_view_data
 
     def ks_format_query_result(self, ks_query_result):
-        ks_list_view_data = {'label': [], 'data_rows': [], 'date_index': [], 'type': 'query'}
+        ks_list_view_data = {'label': [], 'data_rows': [], 'date_index': [], 'type': 'query',
+                             'fields': [], 'fields_type': []}
         query_result = json.loads(ks_query_result)
         if query_result:
             ks_list_fields = query_result.get('header')
+            ks_list_field_types = query_result.get('type_code') or []
 
-            for field in ks_list_fields:
-                field = field.replace("_", " ")
-                ks_list_view_data['label'].append(field.title())
+            for index, field in enumerate(ks_list_fields):
+                ks_list_view_data['fields'].append(field)
+                ks_list_view_data['fields_type'].append(
+                    ks_list_field_types[index] if index < len(ks_list_field_types) else 'string')
+                ks_list_view_data['label'].append(field.replace("_", " ").title())
             for res in query_result.get('records'):
                 data_row = {'data': [], 'ks_column_type': []}
                 for field in ks_list_fields:
@@ -414,6 +418,123 @@ class KsDashboardNinjaItemAdvance(models.Model):
         return json.dumps({'header': header,
                            'records': records, 'type_code': type_code,
                            'ks_is_group_column': False})
+
+    def ks_get_sorted_list_query_result(self, ks_query, selected_start_date, selected_end_date,
+                                        sort_field, sort_order):
+        try:
+            type_code = []
+            new_env = self.pool.cursor()
+            query_params = {}
+            if self.ks_is_date_ranges:
+                ks_start_date = 'ks_start_date'
+                ks_end_date = 'ks_end_date'
+                if self.ks_custom_query and (("%(ks_start_datetime)" in self.ks_custom_query) or (
+                        "%(ks_start_datetime)" in self.ks_custom_query)):
+                    ks_start_date = 'ks_start_datetime'
+                    ks_end_date = 'ks_end_datetime'
+
+                start_date = self.ks_query_start_date
+                end_date = self.ks_query_end_date
+                if selected_end_date or selected_start_date:
+                    start_date = selected_start_date if selected_start_date else selected_end_date - relativedelta.relativedelta(
+                        years=1000)
+                    end_date = selected_end_date if selected_end_date else selected_start_date + relativedelta.relativedelta(
+                        years=1000)
+                query_params = {ks_start_date: str(start_date), ks_end_date: str(end_date)}
+
+            limit = self.ks_pagination_limit
+            if ks_query and "{#MYCOMPANY}" in ks_query:
+                ks_query = ks_query.replace("{#MYCOMPANY}", str(self.env.company.id))
+            if ks_query and "{#UID}" in ks_query:
+                ks_query = ks_query.replace("{#UID}", str(self.env.user.id))
+
+            base_query = "with ks_list_query as (" + ks_query + ") select * from ks_list_query"
+
+            # Only a column name the query itself exposes (via cursor.description) may ever
+            # reach the SQL string, so a clicked header can't be turned into SQL injection.
+            new_env.execute(base_query + " limit 0", query_params)
+            ks_valid_columns = [col.name for col in new_env.description]
+            order_clause = ''
+            if sort_field in ks_valid_columns:
+                ks_sort_order = sort_order if sort_order in ('ASC', 'DESC') else 'ASC'
+                order_clause = ' order by "%s" %s' % (sort_field, ks_sort_order)
+
+            new_env.execute(
+                base_query + order_clause + " limit %(ks_limit)s offset %(ks_offset)s",
+                dict(query_params, ks_limit=limit, ks_offset=0))
+            header = [col.name for col in new_env.description]
+
+            records = new_env.dictfetchall()
+            if records:
+                for header_key in header:
+                    if type(records[0][header_key]).__name__ == 'float' or \
+                            type(records[0][header_key]).__name__ == 'int':
+                        type_code.append('numeric')
+                    else:
+                        type_code.append('string')
+
+        except ProgrammingError as e:
+            if e.args[0] == 'no results to fetch':
+                raise ValidationError(_("You can only read the Data from Database"))
+            else:
+                raise ValidationError(_(e))
+        except Exception as e:
+            if type(e).__name__ == 'KeyError':
+                raise ValidationError(_(
+                    'Wrong date variables, Please use ks_start_date and ks_end_date or ks_start_datetime and ks_end_datetime in custom query'))
+            raise ValidationError(_(e))
+        finally:
+            new_env.close()
+
+        for res in records:
+            for key in res:
+                if type(res[key]).__name__ == 'datetime':
+                    res[key] = res[key].strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+                elif type(res[key]).__name__ == 'date':
+                    res[key] = res[key].strftime(DEFAULT_SERVER_DATE_FORMAT)
+        return json.dumps({'header': header,
+                           'records': records, 'type_code': type_code,
+                           'ks_is_group_column': False})
+
+    @api.model
+    def ks_sort_list_view_data(self, ks_item_id, sort_params, item_domain=[]):
+        record = self.browse(ks_item_id)
+        if self.ks_data_calculation_type != 'query':
+            return super(KsDashboardNinjaItemAdvance, self).ks_sort_list_view_data(ks_item_id, sort_params, item_domain)
+
+        selected_start_date = False
+        selected_end_date = False
+        if self._context.get('ksDateFilterSelection', False):
+            ksDateFilterSelection = self._context.get('ksDateFilterSelection', False)
+            if ksDateFilterSelection == 'l_custom':
+                ks_timezone = self._context.get('tz') or self.env.user.tz
+                selected_start_date = self._context['ksDateFilterStartDate']
+                selected_end_date = self._context['ksDateFilterEndDate']
+                selected_start_date = ks_convert_into_utc(selected_start_date, ks_timezone)
+                selected_end_date = ks_convert_into_utc(selected_end_date, ks_timezone)
+            if ksDateFilterSelection not in ['l_custom', 'l_none']:
+                ks_get_date_ranges = ks_get_date(ksDateFilterSelection, self, 'datetime')
+                selected_start_date = ks_get_date_ranges['selected_start_date']
+                selected_end_date = ks_get_date_ranges['selected_end_date']
+
+        ks_query = str(record.ks_custom_query)
+        ks_start_date = record.ks_query_start_date
+        ks_end_date = record.ks_query_end_date
+        if selected_start_date or selected_end_date:
+            ks_start_date = selected_start_date
+            ks_end_date = selected_end_date
+
+        sort_field = sort_params.get('field_id')
+        sort_order = sort_params.get('sort_order')
+        ks_query_result = record.ks_get_sorted_list_query_result(ks_query, ks_start_date, ks_end_date,
+                                                                  sort_field, sort_order)
+        ks_list_view_data = record.ks_format_query_result(ks_query_result)
+        return {
+            'ks_list_view_data': json.dumps(ks_list_view_data),
+            'offset': 1,
+            'next_offset': len(ks_list_view_data['data_rows']),
+            'limit': record.ks_record_data_limit if record.ks_record_data_limit else 0,
+        }
 
     @api.model
     def ks_get_next_offset(self, ks_item_id, offset, item_domain=[]):
