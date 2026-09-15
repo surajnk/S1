@@ -215,6 +215,7 @@ odoo.define('ks_dashboard_ninja.ks_dashboard', function(require) {
             'click .ks_item_click': '_onKsItemClick',
             'click .ks_load_previous': 'ksLoadPreviousRecords',
             'click .ks_load_next': 'ksLoadMoreRecords',
+            'click .ks_sortable_header': 'ksSortListView',
             //            'click .ks_dashboard_item_action': '_onKsItemActionClick',
             'click .ks_dashboard_item_customize': '_onKsItemCustomizeClick',
             'click .ks_dashboard_item_delete': '_onKsDeleteItemClick',
@@ -3034,6 +3035,62 @@ odoo.define('ks_dashboard_ninja.ks_dashboard', function(require) {
                 $(e.currentTarget.parentElement).find('.ks_load_next').removeClass('ks_event_offer_list');
                 if (result.offset === 1) {
                     $(e.currentTarget).addClass('ks_event_offer_list');
+                }
+            });
+        },
+
+        // Click on a list view column header to sort by that field
+        ksSortListView: function(e) {
+            var self = this;
+            var $th = $(e.currentTarget);
+            if ($th.hasClass('ks_not_sortable')) {
+                return;
+            }
+            var fieldId = $th.data('field-id');
+            if (!fieldId) {
+                return;
+            }
+            var itemId = parseInt($th.closest('table').data('item-id'));
+            var item_data = self.ks_dashboard_data.ks_item_data[itemId];
+            var newOrder = $th.data('current-order') === 'ASC' ? 'DESC' : 'ASC';
+
+            if (itemId in self.ksUpdateDashboard) {
+                clearInterval(self.ksUpdateDashboard[itemId]);
+                delete self.ksUpdateDashboard[itemId];
+            }
+            var params = self.ksGetParamsForItemFetch(itemId);
+            this._rpc({
+                model: 'ks_dashboard_ninja.board',
+                method: 'ks_get_list_view_data_sort',
+                context: self.getContext(),
+                args: [itemId, {field_id: fieldId, sort_order: newOrder}, parseInt(self.ks_dashboard_id), params],
+            }).then(function(result) {
+                item_data['ks_list_view_data'] = result.ks_list_view_data;
+                var item_view = self.$el.find(".grid-stack-item[gs-id=" + itemId + "]");
+                item_view.find('.card-body').empty();
+                item_view.find('.card-body').append(self.renderListViewData(item_data));
+
+                item_view.find('.btn-group').attr('data-next_offset', result.next_offset).attr('data-prev-offset', result.offset);
+                item_view.find('.ks_counter .ks_value').text(result.offset + '-' + result.next_offset);
+                item_view.find('.ks_load_previous').addClass('ks_event_offer_list');
+                var offset = item_data.ks_pagination_limit;
+                if (result.next_offset < result.offset + (offset - 1) || result.next_offset === item_data.ks_record_count || result.next_offset === result.limit) {
+                    item_view.find('.ks_load_next').addClass('ks_event_offer_list');
+                } else {
+                    item_view.find('.ks_load_next').removeClass('ks_event_offer_list');
+                }
+
+                item_view.find('.ks_sortable_header').removeClass('ks_sort_asc ks_sort_desc').removeAttr('data-current-order');
+                item_view.find('.ks_sortable_header[data-field-id="' + fieldId + '"]')
+                    .attr('data-current-order', newOrder)
+                    .addClass(newOrder === 'ASC' ? 'ks_sort_asc' : 'ks_sort_desc');
+
+                var updateValue = item_data['ks_update_items_data'];
+                if (updateValue) {
+                    var updateinterval = setInterval(function() {
+                        self.ksFetchUpdateItem(itemId);
+                    }, updateValue);
+                    self.ksUpdateDashboard[itemId] = updateinterval;
                 }
             });
         },

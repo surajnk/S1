@@ -98,6 +98,47 @@ table#ksListViewTable {
     cursor:pointer;
 }
 
+.ks_sortable_header {
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.ks_sortable_header .ks_sort_icon {
+    margin-left: 5px;
+    font-size: 11px;
+    opacity: 0.35;
+}
+
+.ks_sortable_header .ks_sort_icon:before {
+    content: "\f0dc";
+}
+
+.ks_sortable_header.ks_sort_asc .ks_sort_icon {
+    opacity: 1;
+}
+
+.ks_sortable_header.ks_sort_asc .ks_sort_icon:before {
+    content: "\f0de";
+}
+
+.ks_sortable_header.ks_sort_desc .ks_sort_icon {
+    opacity: 1;
+}
+
+.ks_sortable_header.ks_sort_desc .ks_sort_icon:before {
+    content: "\f0dd";
+}
+
+.ks_sortable_header.ks_not_sortable {
+    cursor: default;
+}
+
+.ks_sortable_header.ks_not_sortable .ks_sort_icon {
+    display: none;
+}
+
 .ks_chart_heading{
     /*width: 50%; */
     white-space: nowrap;

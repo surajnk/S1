@@ -3128,6 +3128,21 @@ class KsDashboardNinjaItems(models.Model):
             'limit': record.ks_record_data_limit if record.ks_record_data_limit else 0,
         }
 
+    # List View column sorting (triggered by clicking a column header)
+    @api.model
+    def ks_sort_list_view_data(self, ks_item_id, sort_params, item_domain=[]):
+        record = self.browse(ks_item_id)
+        ks_list_domain = self.ks_convert_into_proper_domain(record.ks_domain, self, item_domain)
+        orderid = sort_params.get('field_id')
+        sort_order = sort_params.get('sort_order')
+        ks_list_view_data = record.get_list_view_record(orderid, sort_order, ks_list_domain)
+        return {
+            'ks_list_view_data': json.dumps(ks_list_view_data),
+            'offset': 1,
+            'next_offset': len(ks_list_view_data['data_rows']),
+            'limit': record.ks_record_data_limit if record.ks_record_data_limit else 0,
+        }
+
     @api.model
     def get_sorted_month(self, display_format, ftype='date'):
         query = """

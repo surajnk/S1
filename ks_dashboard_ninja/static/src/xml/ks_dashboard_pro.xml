@@ -361,7 +361,7 @@
 
     <t t-name="ks_list_view_table">
         <t t-if="list_view_data">
-            <table id="ksListViewTable" class="table table-hover ks_list_view_layout_1" t-att-data-model="list_view_data['model']">
+            <table id="ksListViewTable" class="table table-hover ks_list_view_layout_1" t-att-data-model="list_view_data['model']" t-att-data-item-id="item_id">
                 <thead>
                     <t t-call="ks_list_view_header"/>
                 </thead>
@@ -379,8 +379,11 @@
     <t t-name="ks_list_view_header">
         <tr>
             <t t-foreach="list_view_data['label']" t-as="table_header">
-                <th>
-                    <t t-esc="table_header"/>
+                <th t-attf-class="ks_sortable_header #{list_view_data['fields_type'] ? (['one2many', 'many2many', 'binary', 'html'].indexOf(list_view_data['fields_type'][table_header_index]) !== -1 ? 'ks_not_sortable' : '') : 'ks_not_sortable'}"
+                    t-att-data-field-id="list_view_data['fields'] ? list_view_data['fields'][table_header_index] : false"
+                    t-att-data-field-type="list_view_data['fields_type'] ? list_view_data['fields_type'][table_header_index] : false">
+                    <span class="ks_header_label"><t t-esc="table_header"/></span>
+                    <i class="fa ks_sort_icon"/>
                 </th>
             </t>
             <th/>
