@@ -463,6 +463,14 @@ class KsDashboardNinjaBoard(models.Model):
 
         return item.ks_get_next_offset(ks_dashboard_item_id, offset, item_domain)
 
+    @api.model
+    def ks_get_list_view_data_sort(self, ks_dashboard_item_id, sort_params, dashboard_id, params={}):
+        item_domain = params.get('ks_domain_1', [])
+        self = self.ks_set_date(dashboard_id)
+        item = self.ks_dashboard_items_ids.browse(ks_dashboard_item_id)
+
+        return item.ks_sort_list_view_data(ks_dashboard_item_id, sort_params, item_domain)
+
     def ks_view_items_view(self):
         self.ensure_one()
         return {
