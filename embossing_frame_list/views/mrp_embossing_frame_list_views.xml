@@ -10,8 +10,8 @@
                 <field name="type" string="Ty"/>
                 <field name="slot" string="Sl"/>
                 <field name="pattern_id" string="Pattern"/>
-                <field name="mo_number" string="MO Number"/>
-                <field name="so_number" string="SO Number"/>
+                <field name="production_id" string="MO Number"/>
+                <field name="sale_id" string="SO Number"/>
                 <field name="status" string="Status"/>
                 <field name="date_planned_start_wo" string="Scheduled Start"/>
                 <field name="workcenter_id" invisible="1"/>
@@ -26,8 +26,8 @@
             <search string="Embossing Frame List">
                 <field name="pattern_id" string="Pattern"/>
                 <field name="workcenter_id" string="Work Center"/>
-                <field name="mo_number" string="MO Number"/>
-                <field name="so_number" string="SO Number"/>
+                <field name="production_id" string="MO Number"/>
+                <field name="sale_id" string="SO Number"/>
                 <field name="date_planned_start_wo" string="Scheduled Start"/>
                 <filter string="Scheduled Start" name="filter_date" date="date_planned_start_wo"/>
                 <group expand="0" string="Group By">

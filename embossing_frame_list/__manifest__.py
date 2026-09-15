@@ -9,6 +9,7 @@
     'license': 'Other proprietary',
     'depends': [
         'mrp',
+        'sale',
         'ef_mrp',
         'ef_product',
         'mrp_shop_floor_control',

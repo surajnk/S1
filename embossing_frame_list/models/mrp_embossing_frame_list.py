@@ -19,9 +19,8 @@ class MrpEmbossingFrameList(models.Model):
     slot = fields.Char(string='Sl', readonly=True)
     status = fields.Char(string='Status', readonly=True)
     pattern_id = fields.Many2one('product.embossing', string='Pattern', readonly=True)
-    production_id = fields.Many2one('mrp.production', string='Manufacturing Order', readonly=True)
-    mo_number = fields.Char(string='MO Number', readonly=True)
-    so_number = fields.Char(string='SO Number', readonly=True)
+    production_id = fields.Many2one('mrp.production', string='MO Number', readonly=True)
+    sale_id = fields.Many2one('sale.order', string='SO Number', readonly=True)
     date_planned_start_wo = fields.Datetime(string='Scheduled Start', readonly=True)
 
     def _select(self):
@@ -36,8 +35,7 @@ class MrpEmbossingFrameList(models.Model):
                 NULL::varchar AS status,
                 wo.x_pattern_wo AS pattern_id,
                 mp.id AS production_id,
-                mp.name AS mo_number,
-                mp.origin AS so_number,
+                so.id AS sale_id,
                 wo.date_planned_start_wo AS date_planned_start_wo
         """
 
@@ -46,6 +44,7 @@ class MrpEmbossingFrameList(models.Model):
             mrp_workorder wo
             JOIN mrp_workcenter wc ON wc.id = wo.workcenter_id
             LEFT JOIN mrp_production mp ON mp.id = wo.production_id
+            LEFT JOIN sale_order so ON so.name = mp.origin
         """
 
     def _where(self):
