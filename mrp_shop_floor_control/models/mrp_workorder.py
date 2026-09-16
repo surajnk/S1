@@ -989,17 +989,25 @@ class MrpWorkorder(models.Model):
     def _get_generic_transfer_product(self):
         """Return the placeholder 'Generic' product used on the WC receipt
         and WC-to-WC internal transfer moves for output rolls, instead of
-        the MO's actual product being produced."""
-        product = self.env['product.product'].search([('name', '=', 'Generic')])
+        the MO's actual product being produced. Scoped to this workorder's
+        branch (mrp.workorder.branch_id, via bi_odoo_mrp_multi_branch) —
+        there must be exactly one 'Generic' product for that branch."""
+        branch = self.branch_id
+        product = self.env['product.product'].search([
+            ('name', '=', 'Generic'),
+            ('branch_id', '=', branch.id if branch else False),
+        ])
+        branch_label = branch.name if branch else _('(no branch)')
         if not product:
             raise UserError(_(
-                "No product named 'Generic' found. Please create a product "
-                "named 'Generic' before producing output rolls."))
+                "No product named 'Generic' found for branch '%s'. Please "
+                "create one before producing output rolls."
+            ) % branch_label)
         if len(product) > 1:
             raise UserError(_(
-                "Multiple products named 'Generic' found (%s). There must "
-                "be exactly one."
-            ) % ', '.join(product.mapped('display_name')))
+                "Multiple products named 'Generic' found for branch '%s' "
+                "(%s). There must be exactly one."
+            ) % (branch_label, ', '.join(product.mapped('display_name'))))
         return product
 
     @staticmethod

@@ -18,6 +18,7 @@
             'ef_mrp',
             'stock',
             'mrp_confirmed_date_base',
+            'bi_odoo_mrp_multi_branch',
             # 'mrp_enhancement_report',
             # 'custom_mrp_component_workorder_line_m2m',
     ],
