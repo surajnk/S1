@@ -23,7 +23,7 @@
                                 <field name="prev_roll_id" domain="[('id', 'in', prev_roll_ids)]" context="{'workorder_id': context.get('active_id')}"/>
                                 <field name="prev_roll_remained_qty"/>
                                 <field name="full_consumed"/>
-                                <field name="consumed_qty" sum="Consumed"/>
+                                <field name="consumed_qty" sum="Consumed" required="1"/>
                                 <field name="roll_id"
                                        options="{'limit': 0}"
                                        context="{'workorder_id': context.get('active_id')}"/>
@@ -49,7 +49,7 @@
                             <!-- <field name="previous_roll_quantity"/> -->
                             <!-- <field name="date_start"/> -->
                             <field name="is_fully_consumed"/>
-                            <field name="consumed_qty" sum="Total"/>
+                            <field name="consumed_qty" sum="Total" required="1"/>
                             <field name="total_qty" sum="Total"/>
                             <field name="yards_qty" sum="Total"/>
                             
