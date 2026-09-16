@@ -124,6 +124,13 @@ class MrpWorkorder(models.Model):
             'context': {'default_workorder_id': self.id},
         }
 
+    def action_open_pick_components_return(self):
+        """Row action on the Work Orders list — open the Return wizard
+        for this workorder's manufacturing order's Pick Components
+        transfer, without having to open the transfer first."""
+        self.ensure_one()
+        return self.production_id.action_open_pick_components_return()
+
     # ══════════════════════════════════════════════════════════════════════════
     # SEMI-FIN GL POSTING HELPERS
     # ══════════════════════════════════════════════════════════════════════════
