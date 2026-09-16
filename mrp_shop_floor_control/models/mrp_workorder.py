@@ -986,6 +986,22 @@ class MrpWorkorder(models.Model):
             self.production_id.product_id, 'property_stock_production', False)
         return prop or False
 
+    def _get_generic_transfer_product(self):
+        """Return the placeholder 'Generic' product used on the WC receipt
+        and WC-to-WC internal transfer moves for output rolls, instead of
+        the MO's actual product being produced."""
+        product = self.env['product.product'].search([('name', '=', 'Generic')])
+        if not product:
+            raise UserError(_(
+                "No product named 'Generic' found. Please create a product "
+                "named 'Generic' before producing output rolls."))
+        if len(product) > 1:
+            raise UserError(_(
+                "Multiple products named 'Generic' found (%s). There must "
+                "be exactly one."
+            ) % ', '.join(product.mapped('display_name')))
+        return product
+
     @staticmethod
     def _extract_roll_move_data(line):
         """Return quantity and lot (if any) for a roll output line."""
@@ -1170,14 +1186,13 @@ class MrpWorkorder(models.Model):
 
         moves_created = []
         move_lot_map = {}
+        product = self._get_generic_transfer_product()
+        uom = product.uom_id
 
         for line in output_lines:
             qty, lot = self._extract_roll_move_data(line)
             if not qty or qty <= 0.0:
                 continue
-
-            product = self.production_id.product_id
-            uom = self.production_id.product_uom_id
 
             move_vals = {
                 'name': '%s: %s' % (

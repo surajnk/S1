@@ -97,8 +97,8 @@ class MrpWoRollLine(models.Model):
             return False
 
         production = workorder.production_id
-        product = production.product_id
-        uom = production.product_uom_id
+        product = workorder._get_generic_transfer_product()
+        uom = product.uom_id
         qty = line.remained_qty or line.quantity or 0.0
 
         _logger.info("product=%s uom=%s qty=%s roll_id=%s", product, uom, qty, line.roll_id)
