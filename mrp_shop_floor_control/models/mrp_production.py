@@ -129,6 +129,27 @@ class MrpProduction(models.Model):
             'target': 'new',
         }
 
+    def action_open_pick_components_return(self):
+        """Open the 'Return' wizard directly for this MO's Pick Components
+        transfer, without having to open the transfer itself first."""
+        self.ensure_one()
+        pbm_type = self.picking_type_id.warehouse_id.pbm_type_id
+        picking = self.picking_ids.filtered(
+            lambda p: p.picking_type_id == pbm_type and p.state == 'done'
+        )
+        if not picking:
+            raise UserError(_(
+                "There is no validated Pick Components transfer to return "
+                "for manufacturing order %s."
+            ) % self.name)
+        action = self.env["ir.actions.actions"]._for_xml_id("stock.act_stock_return_picking")
+        action['context'] = {
+            'active_id': picking[0].id,
+            'active_ids': [picking[0].id],
+            'active_model': 'stock.picking',
+        }
+        return action
+
     @api.depends('x_mrp_confirmed_date', 'date_planned_start_pivot', 'product_id', 'company_id', 'picking_type_id')
     def _compute_planned_pivot_finished_date(self):
         date_start = False

@@ -50,6 +50,11 @@
             <field name="state" position="before">
                 <field name="total_produce_quantity"/>
             </field>
+            <button name="button_unblock" position="after">
+                <button name="action_open_pick_components_return" type="object"
+                        string="Return Components" icon="fa-undo"
+                        attrs="{'invisible': [('production_state', 'in', ('draft', 'cancel'))]}"/>
+            </button>
         </field>
     </record>
 
