@@ -1,5 +1,4 @@
 from odoo import models
-from odoo.osv import expression
 
 
 class ProductProduct(models.Model):
@@ -7,8 +6,5 @@ class ProductProduct(models.Model):
 
     def action_open_quants(self):
         action = super().action_open_quants()
-        action['domain'] = expression.AND([
-            action['domain'],
-            ['!', ('lot_id.name', '=like', 'MO/%')],
-        ])
+        action['context'] = dict(action.get('context') or {}, search_default_hide_mo_lots=1)
         return action

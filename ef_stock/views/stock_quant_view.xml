@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="quant_search_view_hide_mo_lots" model="ir.ui.view">
+        <field name="name">stock.quant.search.hide.mo.lots</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.quant_search_view"/>
+        <field name="arch" type="xml">
+            <filter name="on_hand" position="after">
+                <filter name="hide_mo_lots" string="Hide MO Lots"
+                        domain="['!', ('lot_id.name', '=like', 'MO/%')]"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>
