@@ -37,6 +37,10 @@
             <xpath expr="//field[@name='responsible_id']" position="attributes">
                 <attribute name="optional">hide</attribute>
             </xpath>
+            <xpath expr="//field[@name='qty_available']" position="after">
+                <button name="action_open_quants" type="object"
+                    icon="fa-search-plus" title="View On Hand Details"/>
+            </xpath>
         </field>
     </record>
     <!-- Product Template Inherit Form View (Inherited) -->
