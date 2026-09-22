@@ -21,6 +21,7 @@
         'views/report_view.xml',
         'views/product_replenish_view.xml',
         'views/stock_picking_view.xml',
+        'views/stock_quant_view.xml',
         'views/ef_stock_view.xml',
         'wizard/bill_of_leading_wiz_view.xml',
         'security/tow_security.xml',
