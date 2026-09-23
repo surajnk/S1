@@ -1625,6 +1625,7 @@ class SaleOrderLine(models.Model):
             val1={}
             res1=[(5,0,0)]
             res2=[(5,0,0)]
+            matched_bom_vals=None
             labor_min_charge=labor_charge=labor_extension=labor_amount=0
             rl1=rl2=nameval_labor=''
             product_ids = []
@@ -1798,16 +1799,17 @@ class SaleOrderLine(models.Model):
                         'x_mps_out':mpsot,
                         'x_mps':master_prod_sheet
                     }
+                    if rec == self.product_id.id:
+                        val1['x_product_bom_select'] = True
+                        matched_bom_vals = val1
                     res2.append((0,0,val1))
             #_logger.warning("Res 2'%s'",res2)
             if self.x_customer_order_width > 0.0 and self.product_uom_qty > 0.0:
                 self.x_order_line_bom = res2
-                # for bom in self.x_order_line_bom:
-                #     if bom.x_product_product_bom == self.product_id:
-                #         # bom.write({'x_product_bom_select': True})
-                #         self.update_units_required()
-                #     else:
-                        # bom.write({'x_product_bom_select': False})
+                if matched_bom_vals:
+                    self.x_selected_item_width = matched_bom_vals['x_product_product_widthInt'] - self.x_product_order_trim_width
+                    self.update_units_required()
+                    self.over_under_values()
         res = super(SaleOrderLine, self).product_id_change()
         return res
 
