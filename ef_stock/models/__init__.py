@@ -1,5 +1,6 @@
 from . import ef_stock
 from . import product_product
+from . import res_config_settings
 from . import res_branch
 from . import stock_picking
 from . import stock_picking_type
