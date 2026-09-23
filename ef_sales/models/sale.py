@@ -1707,7 +1707,7 @@ class SaleOrderLine(models.Model):
                     product_ids_br = self.env['product.product'].browse(rec)
                     if product_ids_br and self.x_customer_order_width and self.x_customer_order_length>0.0:
                         #Width Outs
-                        widthouts = (product_ids_br.x_item_width/self.x_customer_order_width)
+                        widthouts = ((product_ids_br.x_item_width - self.x_product_order_trim_width)/self.x_customer_order_width)
                         ad,bd = math.modf(widthouts)
                         #Length Outs
                         lengthouts = (self.x_order_machine_length/self.x_customer_order_length)
