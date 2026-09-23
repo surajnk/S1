@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_exclude_mo_lot_qty" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.exclude.mo.lot.qty</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="stock.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div name="operations_setting_container" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="exclude_mo_lot_qty">
+                    <div class="o_setting_left_pane">
+                        <field name="exclude_mo_lot_qty"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="exclude_mo_lot_qty"/>
+                        <div class="text-muted">
+                            Do not count quantities held in "MO/" lots towards a product's On Hand / Available Quantity
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+</odoo>
