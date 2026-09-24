@@ -1812,20 +1812,12 @@ class SaleOrderLine(models.Model):
                     self.over_under_values()
         res = super(SaleOrderLine, self).product_id_change()
         if self.product_id and matched_bom_vals:
-            # super().product_id_change() overwrites price_unit with the generic
-            # pricelist price; re-run the master-yards/pricing compute so the
-            # custom BOM-tier price (set above) wins, same as when a user
-            # manually toggles x_product_bom_select after this method has run.
             self._compute_master_yards()
         return res
 
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
         res = super(SaleOrderLine, self).product_uom_change()
-        # Core product_uom_change() (addons/sale) unconditionally resets
-        # price_unit from the generic pricelist price whenever product_uom_qty
-        # changes. Re-run the BOM-tier pricing compute afterward so it isn't
-        # lost, the same way it is protected against in product_id_change().
         if self.x_order_line_bom.filtered('x_product_bom_select'):
             self._compute_master_yards()
         return res
