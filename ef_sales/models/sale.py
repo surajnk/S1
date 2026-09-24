@@ -1811,6 +1811,12 @@ class SaleOrderLine(models.Model):
                     self.update_units_required()
                     self.over_under_values()
         res = super(SaleOrderLine, self).product_id_change()
+        if self.product_id and matched_bom_vals:
+            # super().product_id_change() overwrites price_unit with the generic
+            # pricelist price; re-run the master-yards/pricing compute so the
+            # custom BOM-tier price (set above) wins, same as when a user
+            # manually toggles x_product_bom_select after this method has run.
+            self._compute_master_yards()
         return res
 
 
