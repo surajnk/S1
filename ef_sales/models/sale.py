@@ -1819,6 +1819,17 @@ class SaleOrderLine(models.Model):
             self._compute_master_yards()
         return res
 
+    @api.onchange('product_uom', 'product_uom_qty')
+    def product_uom_change(self):
+        res = super(SaleOrderLine, self).product_uom_change()
+        # Core product_uom_change() (addons/sale) unconditionally resets
+        # price_unit from the generic pricelist price whenever product_uom_qty
+        # changes. Re-run the BOM-tier pricing compute afterward so it isn't
+        # lost, the same way it is protected against in product_id_change().
+        if self.x_order_line_bom.filtered('x_product_bom_select'):
+            self._compute_master_yards()
+        return res
+
 
 
 class ProductCommodityCodeLabor(models.Model):
