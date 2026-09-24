@@ -1609,7 +1609,7 @@ class SaleOrderLine(models.Model):
 
 
 
-    @api.onchange('product_id','product_uom_qty','x_product_order_trim_width','x_product_order_trim_length','x_customer_order_width','x_customer_order_length','x_sale_line_item_group','x_order_customer_uom')
+    @api.onchange('product_id','product_uom_qty','x_product_order_trim_width','x_product_order_trim_length','x_product_order_waste','x_customer_order_width','x_customer_order_length','x_sale_line_item_group','x_order_customer_uom')
     def values_change(self):
         res1=[(5,0,0)]
         if not self.product_id or not self.x_sale_line_item_group:
@@ -1618,7 +1618,7 @@ class SaleOrderLine(models.Model):
             self.name=''
 
 
-    @api.onchange('product_id','product_uom_qty','x_product_order_trim_width','x_product_order_trim_length','x_customer_order_width','x_customer_order_length','x_sale_line_item_group','x_order_customer_uom')
+    @api.onchange('product_id','product_uom_qty','x_product_order_trim_width','x_product_order_trim_length','x_product_order_waste','x_customer_order_width','x_customer_order_length','x_sale_line_item_group','x_order_customer_uom')
     def product_id_change(self):
         if self.product_id:
             val={}
