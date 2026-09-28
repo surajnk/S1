@@ -187,6 +187,7 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
             'is_trial': is_trial,
             'is_past_due': False,
             'past_due_days': 0,
+            'is_current': False,
         }
         return row, qty_planned, qty_remaining
 
@@ -242,6 +243,7 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
             day = planned
 
             row, qty_planned, qty_remaining = self._build_mo_row(production, wo_list_sorted)
+            row['is_current'] = (day == self.date_from)
             days_map.setdefault(day, []).append(row)
             by_mo_ids.add(production.id)
 

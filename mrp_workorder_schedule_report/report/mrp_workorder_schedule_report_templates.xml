@@ -25,6 +25,7 @@
         .wc-done { background-color:#b3b3b3; color:black; }
         .weekly-header { text-align:center; margin-top:20px; margin-bottom:10px; }
         .past-due-badge { color:#b30000; font-weight:700; }
+        .current-badge { color:#0a7a2f; font-weight:700; }
       </style>
 
       <!-- ================== WEEK BY WEEK: DAILY PAGES, THEN THAT WEEK'S SUMMARY ================== -->
@@ -64,6 +65,9 @@
                     <t t-esc="r['order_no']"/>
                     <t t-if="r.get('is_past_due')">
                       <span class="past-due-badge"> (<t t-esc="r['past_due_days']"/>)</span>
+                    </t>
+                    <t t-if="r.get('is_current')">
+                      <span class="current-badge"> (Current)</span>
                     </t>
                   </td>
                   <td><t t-esc="r['part_no']"/></td>
