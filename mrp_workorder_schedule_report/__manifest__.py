@@ -7,6 +7,7 @@
     'data': [
         'security/ir.model.access.csv',
         'data/mrp_production_trial_sequence.xml',
+        'data/mrp_production_sample_sequence.xml',
         'wizard/mrp_workorder_schedule_wizard_views.xml',
         'report/mrp_workorder_schedule_report_templates.xml',
         'report/mrp_workorder_schedule_report_actions.xml',

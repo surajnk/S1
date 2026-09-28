@@ -46,6 +46,7 @@ class ProductionOrder(models.Model):
     workorder_week_field_ids = fields.One2many('workorder.week.field','workorder_week_prod','Workorder Info')
     x_mrp_order_comments = fields.Text(string='Order Comments')
     x_customer_name = fields.Many2one('res.partner',string='Customer')
+    sample = fields.Boolean(string='Sample')
 
     def _action_cancel(self):
         documents_by_production = {}
@@ -173,6 +174,7 @@ class ProductionOrder(models.Model):
             sale_order_line = production._get_related_sale_order_line(sale_order)
             if sale_order:
                 production.x_mrp_order_slit = sale_order.x_is_multi_slit
+                production.sample = sale_order.x_is_sample
                 # production.x_so_delivery_date = sale_order.commitment_date
                 if sale_order.commitment_date:
                     user_tz = pytz.timezone(self.env.user.tz or 'UTC')

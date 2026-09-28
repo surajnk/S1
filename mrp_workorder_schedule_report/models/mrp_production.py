@@ -16,6 +16,12 @@ class MrpProduction(models.Model):
         readonly=True,
         help='Auto-assigned sequence number for trial orders (e.g. T02681).',
     )
+    sample_no = fields.Char(
+        string='Sample No.',
+        copy=False,
+        readonly=True,
+        help='Auto-assigned sequence number for sample orders (e.g. C07176).',
+    )
 
     def _assign_trial_no(self):
         for production in self:
@@ -24,14 +30,24 @@ class MrpProduction(models.Model):
                     'mrp.production.trial'
                 )
 
+    def _assign_sample_no(self):
+        for production in self:
+            if production.sample and not production.sample_no:
+                production.sample_no = self.env['ir.sequence'].next_by_code(
+                    'mrp.production.sample'
+                )
+
     @api.model_create_multi
     def create(self, vals_list):
         productions = super().create(vals_list)
         productions._assign_trial_no()
+        productions._assign_sample_no()
         return productions
 
     def write(self, vals):
         res = super().write(vals)
         if vals.get('trial'):
             self._assign_trial_no()
+        if vals.get('sample'):
+            self._assign_sample_no()
         return res
