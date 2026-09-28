@@ -133,8 +133,10 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
         first_wo = wo_list_sorted[0]
 
         qty_planned = float(getattr(first_wo, 'qty_output_wo', 0.0) or 0.0)
-        qty_done = float(getattr(first_wo, 'total_produce_quantity', 0.0) or 0.0)
-        qty_remaining = max(0.0, qty_planned - qty_done)
+        qty_remaining = max(
+            0.0,
+            float(production.x_order_master_yards or 0.0) - float(production.qty_produced or 0.0),
+        )
 
         buckets = {
             'ctr': [], 'plt': [], 'lam': [], 'prt': [],
@@ -166,10 +168,25 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
                     _add_chip(cat, label, wo.state == 'done')
 
         is_trial = bool(production.trial)
+        is_sample = bool(production.sample)
+
+        if is_trial:
+            order_no = production.trial_no or production.name
+            part_no = 'TRIAL'
+            customer = production.trial_no or ''
+        elif is_sample:
+            order_no = production.sample_no or production.name
+            part_no = production.product_id.default_code or ''
+            customer = 'Office Samp'
+        else:
+            order_no = production.name
+            part_no = production.product_id.default_code or ''
+            customer = self._mo_customer_name(production)
+
         row = {
-            'order_no': production.trial_no if is_trial and production.trial_no else production.name,
-            'part_no': 'TRIAL' if is_trial else (production.product_id.default_code or ''),
-            'customer': (production.trial_no or '') if is_trial else self._mo_customer_name(production),
+            'order_no': order_no,
+            'part_no': part_no,
+            'customer': customer,
             'wo_yards': qty_planned,
             'wo_yards_s': self._fmt(qty_planned, digits=2),
             'remain_yd': qty_remaining,
@@ -185,6 +202,7 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
 
             'wc_name': wo_list_sorted[0].workcenter_id.display_name,
             'is_trial': is_trial,
+            'is_sample': is_sample,
             'is_past_due': False,
             'past_due_days': 0,
             'is_current': False,

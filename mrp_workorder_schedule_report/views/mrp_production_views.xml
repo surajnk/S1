@@ -8,6 +8,8 @@
             <field name="product_qty" position="after">
                 <field name="trial"/>
                 <field name="trial_no" readonly="1" attrs="{'invisible': [('trial', '=', False)]}"/>
+                <field name="sample"/>
+                <field name="sample_no" readonly="1" attrs="{'invisible': [('sample', '=', False)]}"/>
             </field>
         </field>
     </record>
