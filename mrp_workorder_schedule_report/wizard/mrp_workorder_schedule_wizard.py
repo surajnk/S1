@@ -123,6 +123,73 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
 
     # ---------------- Data prep ----------------
 
+    def _build_mo_row(self, production, wo_list_sorted):
+        """Build one report row for a manufacturing order.
+
+        `wo_list_sorted` supplies the "first" workorder used for the
+        planned/remaining quantities and the workcenter name; chips are
+        always built from ALL of the MO's workorders.
+        """
+        first_wo = wo_list_sorted[0]
+
+        qty_planned = float(getattr(first_wo, 'qty_output_wo', 0.0) or 0.0)
+        qty_done = float(getattr(first_wo, 'total_produce_quantity', 0.0) or 0.0)
+        qty_remaining = max(0.0, qty_planned - qty_done)
+
+        buckets = {
+            'ctr': [], 'plt': [], 'lam': [], 'prt': [],
+            'embossing': [], 'roll': [], 'sht': [],
+        }
+        seen_label = set()
+
+        def _add_chip(cat, label, is_done):
+            if label and (cat, label) not in seen_label:
+                buckets[cat].append({'label': label, 'is_done': is_done})
+                seen_label.add((cat, label))
+
+        all_wos = sorted(
+            production.workorder_ids,
+            key=lambda w: (w.sequence or 0, w.id),
+        )
+        for wo in all_wos:
+            cats = self._categorize_workcenter(wo.workcenter_id)
+            short = self._short_wc_label(wo.workcenter_id)
+            for cat, active in cats.items():
+                if active and cat in buckets:
+                    label = (
+                        wo.operation_id.name
+                        if (cat == 'embossing'
+                            and getattr(wo, 'operation_id', False)
+                            and wo.operation_id.name)
+                        else short
+                    )
+                    _add_chip(cat, label, wo.state == 'done')
+
+        is_trial = bool(production.trial)
+        row = {
+            'order_no': production.trial_no if is_trial and production.trial_no else production.name,
+            'part_no': 'TRIAL' if is_trial else (production.product_id.default_code or ''),
+            'customer': (production.trial_no or '') if is_trial else self._mo_customer_name(production),
+            'wo_yards': qty_planned,
+            'wo_yards_s': self._fmt(qty_planned, digits=2),
+            'remain_yd': qty_remaining,
+            'remain_yd_s': self._fmt(qty_remaining, digits=2),
+
+            'ctr': buckets['ctr'],
+            'plt': buckets['plt'],
+            'lam': buckets['lam'],
+            'prt': buckets['prt'],
+            'embossing': buckets['embossing'],
+            'roll': buckets['roll'],
+            'sht': buckets['sht'],
+
+            'wc_name': wo_list_sorted[0].workcenter_id.display_name,
+            'is_trial': is_trial,
+            'is_past_due': False,
+            'past_due_days': 0,
+        }
+        return row, qty_planned, qty_remaining
+
     def _prepare_report_data(self):
         """
         Build:
@@ -158,6 +225,8 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
         grand_total_qty = 0.0
         grand_total_remaining = 0.0
 
+        by_mo_ids = set()
+
         for production, wo_list in by_mo.items():
             # sort WOs inside the MO by sequence (then id)
             wo_list_sorted = sorted(
@@ -170,72 +239,49 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
             planned = first_wo.x_confirmed_date or production.x_mrp_confirmed_date
             if not planned:
                 continue
-            day = planned 
-            # planned = first_wo.date_planned_start or production.date_planned_start
-            # if not planned:
-            #     continue
-            # local_dt = fields.Datetime.context_timestamp(self, planned)
-            # day = local_dt.date()
+            day = planned
 
-            # Quantities from FIRST WO
-            qty_planned = float(getattr(first_wo, 'qty_output_wo', 0.0) or 0.0)
-            qty_done = float(getattr(first_wo, 'total_produce_quantity', 0.0) or 0.0)
-            qty_remaining = max(0.0, qty_planned - qty_done)
+            row, qty_planned, qty_remaining = self._build_mo_row(production, wo_list_sorted)
+            days_map.setdefault(day, []).append(row)
+            by_mo_ids.add(production.id)
 
-            # Per-category chips from ALL WOs of this MO
-            buckets = {
-                'ctr': [], 'plt': [], 'lam': [], 'prt': [],
-                'embossing': [], 'roll': [], 'sht': [],
-            }
-            seen_label = set()
+            # Day / grand totals use FIRST-WO quantities
+            grand_total_qty += qty_planned
+            grand_total_remaining += qty_remaining
 
-            def _add_chip(cat, label, is_done):
-                if label and (cat, label) not in seen_label:
-                    buckets[cat].append({'label': label, 'is_done': is_done})
-                    seen_label.add((cat, label))
+        # --------- Backlog: past-due (and trial) orders, shown only on the first day ----------
+        # Any MO that is still open (confirmed/in-progress), has a confirmed date
+        # that was set, and that date is before the selected date_from is "past
+        # due": it gets surfaced on date_from's page with a days-past-due badge.
+        # Trial orders (production.trial) are just a subset of this same backlog,
+        # rendered with "TRIAL" in place of the part/customer info.
+        past_due_count = 0
+        trial_count = 0
+        past_due_domain = [
+            ('state', 'in', ('confirmed', 'progress')),
+            ('x_mrp_confirmed_date_boolean', '=', True),
+            ('x_mrp_confirmed_date', '<', self.date_from),
+            ('company_id', 'in', companies.ids),
+        ]
+        Production = self.env['mrp.production']
+        past_due_productions = Production.search(past_due_domain, order='x_mrp_confirmed_date')
 
-            all_wos = sorted(
+        for production in past_due_productions:
+            if production.id in by_mo_ids or not production.workorder_ids:
+                continue
+            wo_list_sorted = sorted(
                 production.workorder_ids,
                 key=lambda w: (w.sequence or 0, w.id),
             )
-            for wo in all_wos:
-                cats = self._categorize_workcenter(wo.workcenter_id)
-                short = self._short_wc_label(wo.workcenter_id)
-                for cat, active in cats.items():
-                    if active and cat in buckets:
-                        label = (
-                            wo.operation_id.name
-                            if (cat == 'embossing'
-                                and getattr(wo, 'operation_id', False)
-                                and wo.operation_id.name)
-                            else short
-                        )
-                        _add_chip(cat, label, wo.state == 'done')
+            row, qty_planned, qty_remaining = self._build_mo_row(production, wo_list_sorted)
+            row['is_past_due'] = True
+            row['past_due_days'] = (self.date_from - production.x_mrp_confirmed_date).days
 
-            # Build row (one per MO)
-            row = {
-                'order_no': production.name,
-                'part_no': production.product_id.default_code or '',
-                'customer': self._mo_customer_name(production),
-                'wo_yards': qty_planned,
-                'wo_yards_s': self._fmt(qty_planned, digits=2),
-                'remain_yd': qty_remaining,
-                'remain_yd_s': self._fmt(qty_remaining, digits=2),
+            past_due_count += 1
+            if row['is_trial']:
+                trial_count += 1
 
-                'ctr': buckets['ctr'],
-                'plt': buckets['plt'],
-                'lam': buckets['lam'],
-                'prt': buckets['prt'],
-                'embossing': buckets['embossing'],
-                'roll': buckets['roll'],
-                'sht': buckets['sht'],
-
-                'wc_name': wo_list_sorted[0].workcenter_id.display_name,
-            }
-
-            days_map.setdefault(day, []).append(row)
-
-            # Day / grand totals use FIRST-WO quantities
+            days_map.setdefault(self.date_from, []).append(row)
             grand_total_qty += qty_planned
             grand_total_remaining += qty_remaining
 
@@ -303,6 +349,11 @@ class MrpWorkorderScheduleWizard(models.TransientModel):
 
             for key, val in footer.items():
                 val['qty_s'] = self._fmt(val['qty'], digits=0)
+
+            # Past-due / trial counts only apply to the first day's summary.
+            if day == self.date_from:
+                footer['past_due_orders'] = past_due_count
+                footer['trial_orders'] = trial_count
 
             days_payload.append({
                 'date': day,

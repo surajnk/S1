@@ -24,6 +24,7 @@
         .wc-chip { display:inline-block; padding:0 3px; border-radius:2px; margin-right:3px; }
         .wc-done { background-color:#b3b3b3; color:black; }
         .weekly-header { text-align:center; margin-top:20px; margin-bottom:10px; }
+        .past-due-badge { color:#b30000; font-weight:700; }
       </style>
 
       <!-- ================== WEEK BY WEEK: DAILY PAGES, THEN THAT WEEK'S SUMMARY ================== -->
@@ -59,7 +60,12 @@
             <tbody>
               <t t-foreach="dayblk['rows']" t-as="r" t-key="r['order_no'] + '-' + r['wc_name']">
                 <tr>
-                  <td><t t-esc="r['order_no']"/></td>
+                  <td>
+                    <t t-esc="r['order_no']"/>
+                    <t t-if="r.get('is_past_due')">
+                      <span class="past-due-badge"> (<t t-esc="r['past_due_days']"/>)</span>
+                    </t>
+                  </td>
                   <td><t t-esc="r['part_no']"/></td>
                   <td><t t-esc="r['customer']"/></td>
                   <td class="text-right"><t t-esc="r['wo_yards_s']"/></td>
@@ -174,6 +180,18 @@
                   ( <t t-esc="dayblk['footer']['sheeter_4']['count']"/> )
                 </td>
               </tr>
+
+              <t t-if="'past_due_orders' in dayblk['footer']">
+                <tr><td style="border:none; height:6px;"></td><td style="border:none; height:6px;"></td></tr>
+                <tr>
+                  <td style="border:none;"></td>
+                  <td style="border:none; text-align:right; white-space:nowrap;">
+                    Past Due Orders: <t t-esc="dayblk['footer']['past_due_orders']"/>
+                    &#160;&#160;&#160;
+                    Trial Orders: <t t-esc="dayblk['footer']['trial_orders']"/>
+                  </td>
+                </tr>
+              </t>
             </table>
           </div>
         </div>
