@@ -4,7 +4,7 @@
 {
     'name': 'MRP Shop Floor Control',
     'summary': 'MRP Shop Floor Control',
-    'version': '14.0.3.0.',
+    'version': '14.0.3.1.',
     'category': 'Manufacturing',
     'website': 'www.openvalue.cloud',
     'author': "OpenValue",
