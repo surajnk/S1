@@ -10,6 +10,15 @@ class StockMove(models.Model):
 
     x_comp_operation = fields.Many2one('mrp.routing.workcenter',string='Operation', domain="[('id', 'in', x_listed_operations)]")
     x_listed_operations = fields.Many2many('mrp.routing.workcenter')
+    x_roll_line_id = fields.Many2one(
+        'mrp.wo.roll.line',
+        string='Roll Line',
+        copy=False,
+        index=True,
+        ondelete='set null',
+        help="Input roll line whose consumption caused this stock move "
+             "(WIP roll leaving / returning to the workcenter location).",
+    )
 
     @api.onchange('production_id')
     def _onchange_production_id(self):
