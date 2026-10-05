@@ -106,6 +106,10 @@ class MrpWoRollLineConsumptionSync(models.Model):
 
         Without ``lot`` everything posted for the line is returned (line
         deleted, input roll removed or changed).
+
+        This must never stop an operator from saving the roll line: a stock
+        problem is logged and posted on the MO, and the next save retries
+        (the quantity to post is always target minus what is already posted).
         """
         for line in self:
             posted = line._get_posted_wip_roll_qty()
@@ -114,46 +118,60 @@ class MrpWoRollLineConsumptionSync(models.Model):
                 targets.setdefault(posted_lot, 0.0)
 
             for target_lot, target in targets.items():
-                product = target_lot.product_id
-                rounding = product.uom_id.rounding
                 delta = target - posted.get(target_lot, 0.0)
-                if float_compare(delta, 0.0, precision_rounding=rounding) == 0:
-                    continue
-
-                wc_loc = line.workorder_id.workcenter_id.location_id
-                prod_loc = line._get_wip_roll_production_location(product)
-                if not wc_loc or not prod_loc:
-                    _logger.warning(
-                        "WIP ROLL STOCK: line=%s lot=%s - missing workcenter "
-                        "or production location, skipping",
-                        line.id, target_lot.name,
+                try:
+                    with self.env.cr.savepoint():
+                        line._post_wip_roll_delta(target_lot, delta)
+                except Exception as err:  # noqa: BLE001
+                    _logger.exception(
+                        "WIP ROLL STOCK: line=%s lot=%s delta=%s failed",
+                        line.id, target_lot.name, delta,
                     )
-                    continue
-
-                if delta > 0:
-                    available = self.env['stock.quant'].sudo()._get_available_quantity(
-                        product, wc_loc, lot_id=target_lot, strict=True)
-                    if float_compare(
-                            available, delta, precision_rounding=rounding) < 0:
-                        raise UserError(_(
-                            "Cannot consume %(qty)s of roll %(roll)s: only "
-                            "%(avail)s available at %(loc)s. Make sure the "
-                            "transfer of this roll to the work center is "
-                            "validated.") % {
-                            'qty': delta, 'roll': target_lot.name,
-                            'avail': available, 'loc': wc_loc.complete_name,
+                    production = line.workorder_id.production_id
+                    if production:
+                        production.sudo().message_post(body=_(
+                            "Stock for WIP roll %(roll)s was not updated "
+                            "(%(qty)s): %(err)s. It will be retried the next "
+                            "time the consumed quantity is saved.") % {
+                            'roll': target_lot.name, 'qty': delta,
+                            'err': getattr(err, 'name', False) or str(err),
                         })
-                    line._post_wip_roll_move(target_lot, delta, wc_loc, prod_loc)
-                else:
-                    # Return to where the roll was originally consumed from.
-                    consumed_from = self.env['stock.move'].sudo().search([
-                        ('x_roll_line_id', '=', line.id),
-                        ('state', '=', 'done'),
-                        ('location_dest_id.usage', '=', 'production'),
-                        ('move_line_ids.lot_id', '=', target_lot.id),
-                    ], order='id desc', limit=1).location_id
-                    line._post_wip_roll_move(
-                        target_lot, -delta, prod_loc, consumed_from or wc_loc)
+
+    def _post_wip_roll_delta(self, lot, delta):
+        """Post the consume (delta > 0) or return (delta < 0) move."""
+        self.ensure_one()
+        product = lot.product_id
+        rounding = product.uom_id.rounding
+        if float_compare(delta, 0.0, precision_rounding=rounding) == 0:
+            return
+
+        wc_loc = self.workorder_id.workcenter_id.location_id
+        prod_loc = self._get_wip_roll_production_location(product)
+        if not wc_loc or not prod_loc:
+            _logger.warning(
+                "WIP ROLL STOCK: line=%s lot=%s - missing workcenter "
+                "or production location, skipping", self.id, lot.name)
+            return
+
+        if delta > 0:
+            available = self.env['stock.quant'].sudo()._get_available_quantity(
+                product, wc_loc, lot_id=lot, strict=True)
+            if float_compare(available, delta, precision_rounding=rounding) < 0:
+                raise UserError(_(
+                    "only %(avail)s available at %(loc)s; make sure the "
+                    "transfer of this roll to the work center is validated"
+                ) % {'avail': available, 'loc': wc_loc.complete_name})
+            self._post_wip_roll_move(lot, delta, wc_loc, prod_loc)
+        else:
+            # Return to where the roll was originally consumed from.
+            consumed_from = self.env['stock.move'].sudo().search([
+                ('x_roll_line_id', '=', self.id),
+                ('state', '=', 'done'),
+                ('location_dest_id.usage', '=', 'production'),
+                ('move_line_ids.lot_id', '=', lot.id),
+            ], order='id desc', limit=1).location_id
+            self._post_wip_roll_move(
+                lot, -delta, prod_loc, consumed_from or wc_loc)
 
     def _get_component_moves_for_workorder(self, workorder):
 
@@ -215,7 +233,8 @@ class MrpWoRollLineConsumptionSync(models.Model):
                     production.name, rec.workorder_id.name, lot.name,
                     lot.product_id.display_name,
                 )
-                rec._sync_wip_roll_stock(lot)
+                if lot.product_id == production.product_id:
+                    rec._sync_wip_roll_stock(lot)
                 continue
 
             total_consumed = sum(
