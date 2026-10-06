@@ -12,6 +12,20 @@ _logger = logging.getLogger(__name__)
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
+    def _early_consumed_unit_cost(self, move):
+        """Unit cost of a raw move completed early (quants already gone).
+
+        Only used when ``mrp_shop_floor_control.early_raw_consumption`` is on;
+        returns None otherwise so the quant based logic is unchanged.
+        """
+        if move.state != 'done' or not self.env['stock.move']._early_raw_consumption_enabled():
+            return None
+        layers = move.stock_valuation_layer_ids
+        qty = sum(layers.mapped('quantity'))
+        if not layers or not qty:
+            return None
+        return abs(sum(layers.mapped('value')) / qty)
+
     def action_variances_postings(self):
         for record in self:
             qty_produced = record._get_qty_produced()
@@ -126,7 +140,11 @@ class MrpProduction(models.Model):
                         [('product_id', '=', move.product_id.id), ('lot_id', '=', line.lot_id.id),
                          ('location_id', '=', line.location_id.id)])
                     #avg_price = (quatity_val.value / quatity_val.available_quantity) * line.qty_done
-                    avg_price = (quatity_val.value / quatity_val.quantity) * line.qty_done
+                    early_unit_cost = None if quatity_val.quantity else record._early_consumed_unit_cost(move)
+                    if early_unit_cost is not None:
+                        avg_price = early_unit_cost * line.qty_done
+                    else:
+                        avg_price = (quatity_val.value / quatity_val.quantity) * line.qty_done
                     comp_qty = line.qty_done
                     # matamount += move.product_id.standard_price * move.product_qty
                     matamount += avg_price
@@ -185,7 +203,10 @@ class MrpProduction(models.Model):
                         [('product_id', '=', move.product_id.id), ('lot_id', '=', line.lot_id.id),
                          ('location_id', '=', line.location_id.id)])
 
-                    if quatity_val.available_quantity:
+                    early_unit_cost = None if quatity_val.available_quantity else record._early_consumed_unit_cost(move)
+                    if early_unit_cost is not None:
+                        avg_price = early_unit_cost * line.qty_done
+                    elif quatity_val.available_quantity:
                         avg_price = (quatity_val.value / quatity_val.available_quantity) * line.qty_done
                     else:
                         avg_price = 0.0

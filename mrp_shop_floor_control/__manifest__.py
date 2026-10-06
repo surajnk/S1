@@ -14,6 +14,7 @@
     'currency': 'EUR',
     'depends': [
             'mrp',
+            'mrp_account',  # _cal_price override must load after it
             'openvalue_warehouse_calendar',
             'ef_mrp',
             'stock',

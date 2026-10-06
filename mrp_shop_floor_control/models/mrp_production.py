@@ -923,6 +923,22 @@ class MrpProduction(models.Model):
                     raise UserError(_('workorder still running, please close it'))
         return super().action_cancel()
 
+    def _cal_price(self, consumed_moves):
+        """Finished product cost must include raw moves completed early.
+
+        Odoo only passes the raw moves completed during this MO-done call.
+        Raw moves completed when the consumption was saved are added here
+        (once: the marker is cleared so a later partial production does not
+        count them again).
+        """
+        if self.env['stock.move']._early_raw_consumption_enabled():
+            for order in self:
+                early_moves = order.move_raw_ids.filtered(
+                    lambda m: m.state == 'done' and m.x_early_consumed)
+                consumed_moves = consumed_moves | early_moves
+                early_moves.write({'x_early_consumed': False})
+        return super()._cal_price(consumed_moves)
+
     def button_mark_done(self):
         for production in self:
             if production.workorder_ids:

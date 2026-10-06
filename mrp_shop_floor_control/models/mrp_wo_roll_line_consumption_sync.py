@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from odoo import models, api, _
 from odoo.exceptions import UserError
-from odoo.tools import float_compare
+from odoo.tools import float_compare, float_is_zero
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -20,15 +20,53 @@ class MrpWoRollLineConsumptionSync(models.Model):
         return rec
 
     def write(self, vals):
+        # With early raw consumption, an input roll that is replaced must
+        # have its consumption reduced as well.
+        old_pairs = self._get_early_raw_pairs() if 'prev_roll_id' in vals else []
         res = super().write(vals)
         if 'consumed_qty' in vals or 'prev_roll_id' in vals:
             self._sync_raw_move_consumed()
+        if old_pairs:
+            self._resync_early_raw_pairs(old_pairs)
         return res
 
     def unlink(self):
         # Give the stock back before the line (and its consumption) is gone.
         self._sync_wip_roll_stock()
-        return super().unlink()
+        pairs = self._get_early_raw_pairs()
+        res = super().unlink()
+        if pairs:
+            self.env['mrp.wo.roll.line']._resync_early_raw_pairs(pairs)
+        return res
+
+    def _get_early_raw_pairs(self):
+        """(input roll, production) pairs whose raw consumption may change."""
+        if not self.env['stock.move']._early_raw_consumption_enabled():
+            return []
+        pairs = []
+        for rec in self:
+            production = rec.workorder_id.production_id
+            if rec.prev_roll_id and production and (rec.prev_roll_id, production) not in pairs:
+                pairs.append((rec.prev_roll_id, production))
+        return pairs
+
+    def _resync_early_raw_pairs(self, pairs):
+        """Re-align the raw move quantity of each (roll, production) pair
+        with what the remaining roll lines say was consumed."""
+        for roll, production in pairs:
+            lot = roll.lot_id
+            if not lot and roll.name:
+                lot = self.env['stock.production.lot'].search([
+                    ('name', '=', roll.name),
+                    ('company_id', '=', production.company_id.id),
+                ], limit=1)
+            if not lot or lot.product_id == production.product_id:
+                continue  # WIP rolls are handled by _sync_wip_roll_stock
+            total_consumed = sum(self.env['mrp.wo.roll.line'].search([
+                ('prev_roll_id', '=', roll.id),
+                ('workorder_id.production_id', '=', production.id),
+            ]).mapped('consumed_qty'))
+            self._sync_raw_move_early(production, lot, False, total_consumed)
 
     # ── WIP roll stock handling ───────────────────────────────────────────
     # A WIP roll is a lot of the finished product, so there is no raw
@@ -173,6 +211,103 @@ class MrpWoRollLineConsumptionSync(models.Model):
             self._post_wip_roll_move(
                 lot, -delta, prod_loc, consumed_from or wc_loc)
 
+    def _sync_raw_move_early(self, production, lot, raw_move, total_consumed):
+        """Early raw consumption (``mrp_shop_floor_control.early_raw_consumption``).
+
+        Keep the lot's done quantity on the MO's raw move lines equal to
+        ``total_consumed`` and complete the raw move, so the stock leaves the
+        work center when the quantity is saved. Once a move is done, further
+        edits of ``qty_done`` are corrected by Odoo itself (quants, valuation
+        layer and journal entry).
+        """
+        product = lot.product_id
+        rounding = product.uom_id.rounding
+        Move = self.env['stock.move'].sudo()
+
+        # Completing a move can split it (extra / backorder moves), so the
+        # lot's lines may sit on several raw moves of the product.
+        moves = Move.search([
+            ('raw_material_production_id', '=', production.id),
+            ('product_id', '=', product.id),
+            ('state', '!=', 'cancel'),
+        ])
+        lines = self.env['stock.move.line'].sudo().search([
+            ('move_id', 'in', moves.ids),
+            ('lot_id', '=', lot.id),
+        ], order='id')
+        diff = total_consumed - sum(lines.mapped('qty_done'))
+
+        if float_is_zero(diff, precision_rounding=rounding):
+            pass
+        elif diff > 0 and lines:
+            last = lines[-1]
+            last.with_context(skip_remained_update=True).write({
+                'qty_done': last.qty_done + diff,
+            })
+        elif diff > 0:
+            target = moves.filtered(lambda m: m.state == 'done')[:1] or raw_move
+            if not target:
+                return
+            self.env['stock.move.line'].sudo().create({
+                'move_id': target.id,
+                'picking_id': target.picking_id.id,
+                'product_id': product.id,
+                'product_uom_id': target.product_uom.id,
+                'location_id': target.location_id.id,
+                'location_dest_id': target.location_dest_id.id,
+                'lot_id': lot.id,
+                'product_uom_qty': 0.0,  # never reserved
+                'qty_done': diff,
+                'company_id': target.company_id.id,
+            })
+        else:
+            remaining = -diff
+            for ml in lines.sorted('id', reverse=True):
+                take = min(ml.qty_done, remaining)
+                if take:
+                    ml.with_context(skip_remained_update=True).write({
+                        'qty_done': ml.qty_done - take,
+                    })
+                    remaining -= take
+                if float_is_zero(remaining, precision_rounding=rounding):
+                    break
+        _logger.info(
+            "RAW CONSUMED SYNC (early): MO=%s lot=%s total_consumed=%s diff=%s",
+            production.name, lot.name, total_consumed, diff)
+
+        # Complete the raw move(s) holding the consumption, once.
+        open_moves = Move.search([
+            ('raw_material_production_id', '=', production.id),
+            ('product_id', '=', product.id),
+            ('state', 'not in', ('done', 'cancel')),
+        ]).filtered(lambda m: any(
+            ml.lot_id == lot and ml.qty_done > 0 for ml in m.move_line_ids))
+        if not open_moves:
+            return
+        try:
+            with self.env.cr.savepoint():
+                done_before = Move.search([
+                    ('raw_material_production_id', '=', production.id),
+                    ('state', '=', 'done'),
+                ])
+                open_moves._action_done()
+                newly_done = Move.search([
+                    ('raw_material_production_id', '=', production.id),
+                    ('state', '=', 'done'),
+                ]) - done_before
+                newly_done.write({'x_early_consumed': True})
+        except Exception as err:  # noqa: BLE001
+            _logger.exception(
+                "RAW CONSUMED SYNC (early): completing raw move of %s for "
+                "MO %s failed", product.display_name, production.name)
+            production.sudo().message_post(body=_(
+                "Raw material %(product)s lot %(lot)s was not taken out of "
+                "stock when the consumption was saved: %(err)s. It will be "
+                "consumed when the MO is marked done.") % {
+                'product': product.display_name, 'lot': lot.name,
+                'err': getattr(err, 'name', False) or str(err),
+            })
+
     def _get_component_moves_for_workorder(self, workorder):
 
         moves = workorder.production_id.move_raw_ids
@@ -249,6 +384,10 @@ class MrpWoRollLineConsumptionSync(models.Model):
             #         ('prev_roll_id', '=', rec.prev_roll_id.id)
             #     ]).mapped('consumed_qty')
             # )
+
+            if self.env['stock.move']._early_raw_consumption_enabled():
+                rec._sync_raw_move_early(production, lot, raw_move, total_consumed)
+                continue
 
             existing_line = raw_move.move_line_ids.filtered(lambda ml: ml.lot_id == lot)
 
