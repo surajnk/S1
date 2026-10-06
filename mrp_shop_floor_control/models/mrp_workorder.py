@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import logging
 from collections import defaultdict
 from pytz import timezone, utc
-from odoo.tools.float_utils import float_compare
+from odoo.tools.float_utils import float_compare, float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -329,6 +329,23 @@ class MrpWorkorder(models.Model):
         return chemical_cost
 
 
+    def _get_early_consumed_unit_cost(self, lot):
+        """Unit cost of ``lot`` from the done raw moves of this MO, or None
+        when no completed raw move holds it (fall back to the quant)."""
+        self.ensure_one()
+        moves = self.env['stock.move'].sudo().search([
+            ('raw_material_production_id', '=', self.production_id.id),
+            ('product_id', '=', lot.product_id.id),
+            ('state', '=', 'done'),
+            ('move_line_ids.lot_id', '=', lot.id),
+        ])
+        layers = moves.stock_valuation_layer_ids
+        qty = sum(layers.mapped('quantity'))
+        if not layers or float_is_zero(
+                qty, precision_rounding=lot.product_id.uom_id.rounding):
+            return None
+        return abs(sum(layers.mapped('value')) / qty)
+
     def _get_roll_material_value_first_wo(self, roll_line):
         """
         For the FIRST workorder:
@@ -374,6 +391,24 @@ class MrpWorkorder(models.Model):
                     self.name, line.prev_roll_id.name,
                 )
                 continue
+
+            # ── Early raw consumption: the quant is already gone, so take
+            #    the unit cost from the completed raw move's valuation layer.
+            if self.env['stock.move']._early_raw_consumption_enabled():
+                unit_cost = self._get_early_consumed_unit_cost(lot)
+                if unit_cost is not None:
+                    line_material = round(
+                        unit_cost * (line.consumed_qty or 0.0), 2)
+                    material_value += line_material
+                    material_value += self._get_chemical_cost(
+                        roll_line.consumed_qty or 0.0)
+                    _logger.info(
+                        "WO %s: roll %s lot %s (valuation layer) — "
+                        "cost/unit=%s consumed=%s material=%s",
+                        self.name, line.prev_roll_id.name, lot.name,
+                        unit_cost, line.consumed_qty, line_material,
+                    )
+                    continue
 
             # ── Step 2: Find location from validated picking ──────────────
             location = False
