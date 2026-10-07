@@ -20,6 +20,25 @@ class StockMove(models.Model):
              "(WIP roll leaving / returning to the workcenter location).",
     )
 
+    x_early_consumed = fields.Boolean(
+        string='Consumed Early',
+        copy=False,
+        help="Raw move completed when the roll consumption was saved (not "
+             "at MO done). Cleared once its cost is part of the finished "
+             "product cost.",
+    )
+
+    @api.model
+    def _early_raw_consumption_enabled(self):
+        """System parameter ``mrp_shop_floor_control.early_raw_consumption``.
+
+        Off unless explicitly set to True/1: raw component moves are then
+        completed only when the MO is marked done (standard Odoo).
+        """
+        value = self.env['ir.config_parameter'].sudo().get_param(
+            'mrp_shop_floor_control.early_raw_consumption', default='False')
+        return str(value).strip().lower() in ('true', '1', 'yes')
+
     @api.onchange('production_id')
     def _onchange_production_id(self):
         for move in self:
