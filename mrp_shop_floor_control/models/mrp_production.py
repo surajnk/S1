@@ -923,6 +923,28 @@ class MrpProduction(models.Model):
                     raise UserError(_('workorder still running, please close it'))
         return super().action_cancel()
 
+    def _compute_state(self):
+        """An MO is not done while its finished moves are still open.
+
+        Odoo marks an MO done as soon as every raw move is done. Raw moves
+        completed when the consumption was saved (early raw consumption)
+        would therefore close the MO before anything was produced. Keep it
+        in progress / to close until the finished moves are done, which
+        only happens in button_mark_done.
+        """
+        super()._compute_state()
+        for production in self:
+            if production.state != 'done':
+                continue
+            finished = production.move_finished_ids
+            if not finished or all(m.state in ('done', 'cancel') for m in finished):
+                continue
+            if production.qty_producing >= production.product_qty:
+                production.state = 'to_close'
+            else:
+                production.state = 'progress'
+            production.reservation_state = False
+
     def _cal_price(self, consumed_moves):
         """Finished product cost must include raw moves completed early.
 
