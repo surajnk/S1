@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- One-off: MOs saved as done while a work order is unfinished lost the
+         Start / Stop buttons. Runs once after the module update; it can also
+         be run manually from Settings > Technical > Scheduled Actions. -->
+    <record id="ir_cron_fix_premature_done_mo" model="ir.cron">
+        <field name="name">MRP: reopen MOs wrongly marked done</field>
+        <field name="model_id" ref="mrp.model_mrp_production"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_fix_premature_done_state()</field>
+        <field name="user_id" ref="base.user_root"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">1</field>
+        <field name="doall" eval="True"/>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

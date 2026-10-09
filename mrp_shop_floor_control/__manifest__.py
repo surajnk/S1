@@ -25,6 +25,7 @@
     'demo': [],
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_cron_fix_done_state.xml',
         'views/mrp_floating_times_views.xml',
         'views/mrp_workcenter_views.xml',
         'views/mrp_routing_workcenter_views.xml',
