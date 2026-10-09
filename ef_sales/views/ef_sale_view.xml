@@ -20,20 +20,6 @@
 
 
 
-    <!-- Sample Sales filter: shared by the Quotations and Sales Orders list views -->
-    <record id="sale_order_view_search_sample_sale" model="ir.ui.view">
-        <field name="name">sale.order.search.sample.sale</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='activities_overdue']" position="before">
-                <separator/>
-                <filter string="Sample Sales" name="x_is_sample_filter" domain="[('x_is_sample', '=', True)]"/>
-                <separator/>
-            </xpath>
-        </field>
-    </record>
-
     <!--Tree view one2many css-->
 
     <template id="sale_ef_backend" name="ef assets" inherit_id="web.assets_backend">
