@@ -20,6 +20,20 @@
 
 
 
+    <!-- Sample Sales filter: shared by the Quotations and Sales Orders list views -->
+    <record id="sale_order_view_search_sample_sale" model="ir.ui.view">
+        <field name="name">sale.order.search.sample.sale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='activities_overdue']" position="before">
+                <separator/>
+                <filter string="Sample Sales" name="x_is_sample_filter" domain="[('x_is_sample', '=', True)]"/>
+                <separator/>
+            </xpath>
+        </field>
+    </record>
+
     <!--Tree view one2many css-->
 
     <template id="sale_ef_backend" name="ef assets" inherit_id="web.assets_backend">
@@ -105,7 +119,8 @@
                 <!-- <field name="picking_policy" position="move"/> -->
                 <field name="commitment_date" position="move"/>
                 <span name="expected_date_span" class="text-muted">Expected: <field name="expected_date" position="move"/></span>
-                <field name="x_is_sample" attrs="{'readonly': [('id', '>', 0)]}"/>
+                <field name="x_is_sample" attrs="{'readonly': [('state', 'not in', ['draft', 'hc', 'sent'])]}"/>
+                <field name="x_sample_printed" attrs="{'invisible': [('x_is_sample', '=', False)]}"/>
                 <field name="x_is_multi_slit" invisible="1"/>
             </field>
             <field name="payment_term_id" position="after">
@@ -129,6 +144,22 @@
             <field name="product_uom" position="attributes">
                 <attribute name="string">Product UOM</attribute>
             </field> -->
+            <xpath expr="/form/sheet/notebook/page[@name='order_lines']" position="after">
+                <page string="Sample Sale Tracking" name="sample_sale_tracking" attrs="{'invisible': [('x_is_sample', '=', False)]}">
+                    <group name="sample_tracking_group">
+                        <group name="sample_tracking_left">
+                            <field name="x_sample_ship_date"/>
+                            <field name="x_sample_account_no" force_save="1"/>
+                            <field name="x_sample_manager_id" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group name="sample_tracking_right">
+                            <field name="x_sample_actual_ship_date"/>
+                            <field name="x_sample_freight_amount"/>
+                            <field name="x_sample_tracking_no"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
             <xpath expr="/form/sheet/notebook/page[@name='other_information']" position="after">
                 <page string="Customer Notes" name="customer_notes">
                     <group>

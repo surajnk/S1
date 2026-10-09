@@ -203,6 +203,15 @@ class SaleOrder(models.Model):
         return "[('parent_id', '=', partner_id), ('type', 'in', ['delivery'])]"
 
     x_is_sample = fields.Boolean('Sample Sale')
+    x_sample_printed = fields.Boolean('Sample Printed', readonly=True, copy=False)
+    x_sample_ship_date = fields.Date('Ship Date', related='x_order_custom_del_date', readonly=True)
+    x_sample_account_no = fields.Char('Account #', copy=False)
+    x_sample_manager_id = fields.Many2one(
+        'res.users', string='Manager Approval', copy=False,
+        domain=lambda self: [('groups_id', 'in', self.env.ref('sales_team.group_sale_manager').id)])
+    x_sample_actual_ship_date = fields.Char('Actual Ship Date', copy=False)
+    x_sample_freight_amount = fields.Float('Freight Amount', copy=False)
+    x_sample_tracking_no = fields.Char('Tracking Number', copy=False)
     x_sale_ship_via = fields.Many2one('ship.via',string='Ship Via')
     x_sale_freight_terms = fields.Many2one('freight.terms',string='Freight Terms')
     x_sale_incoterms = fields.Many2one('account.incoterms',string='Freight Incoterms')
@@ -863,6 +872,16 @@ class SaleOrder(models.Model):
         # Return the updated data including x_sale_line_customer_message
         return {'x_sale_line_customer_message': customer_messages}
 
+
+    @api.onchange('partner_id', 'x_is_sample')
+    def _onchange_sample_account_no(self):
+        for rec in self:
+            partner = rec.partner_id
+            # x_shipper_acct is defined in custom_partner, which loads after ef_sales
+            if rec.x_is_sample and partner and 'x_shipper_acct' in partner._fields:
+                rec.x_sample_account_no = partner.x_shipper_acct
+            else:
+                rec.x_sample_account_no = False
 
     @api.onchange('x_is_sample')
     def onchange_sample(self):
