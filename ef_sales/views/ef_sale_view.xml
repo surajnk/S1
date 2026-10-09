@@ -120,6 +120,7 @@
                 <field name="commitment_date" position="move"/>
                 <span name="expected_date_span" class="text-muted">Expected: <field name="expected_date" position="move"/></span>
                 <field name="x_is_sample" attrs="{'readonly': [('state', 'not in', ['draft', 'hc', 'sent'])]}"/>
+                <field name="x_sample_printed" attrs="{'invisible': [('x_is_sample', '=', False)]}"/>
                 <field name="x_is_multi_slit" invisible="1"/>
             </field>
             <field name="payment_term_id" position="after">
@@ -145,8 +146,16 @@
             </field> -->
             <xpath expr="/form/sheet/notebook/page[@name='order_lines']" position="after">
                 <page string="Sample Sale Tracking" name="sample_sale_tracking" attrs="{'invisible': [('x_is_sample', '=', False)]}">
-                    <group>
-                        <!-- Sample sale tracking fields go here -->
+                    <group name="sample_tracking_group">
+                        <group name="sample_tracking_left">
+                            <field name="x_sample_ship_date"/>
+                            <field name="x_sample_manager_id" options="{'no_create': True, 'no_open': True}"/>
+                        </group>
+                        <group name="sample_tracking_right">
+                            <field name="x_sample_actual_ship_date"/>
+                            <field name="x_sample_freight_amount"/>
+                            <field name="x_sample_tracking_no"/>
+                        </group>
                     </group>
                 </page>
             </xpath>

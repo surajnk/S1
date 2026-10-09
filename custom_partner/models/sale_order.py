@@ -10,6 +10,8 @@ class SaleOrder(models.Model):
 
     partner_attachment = fields.Many2many('ir.attachment', string="Attachment", compute="_compute_partner_attachment")
 
+    x_sample_account_no = fields.Char('Account #', related='partner_id.x_shipper_acct', readonly=True)
+
     proforma_order_line_ids = fields.One2many(
         comodel_name='sale.order.line',
         inverse_name='order_id',
