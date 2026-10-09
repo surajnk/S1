@@ -105,7 +105,7 @@
                 <!-- <field name="picking_policy" position="move"/> -->
                 <field name="commitment_date" position="move"/>
                 <span name="expected_date_span" class="text-muted">Expected: <field name="expected_date" position="move"/></span>
-                <field name="x_is_sample" attrs="{'readonly': [('id', '>', 0)]}"/>
+                <field name="x_is_sample" attrs="{'readonly': [('state', 'not in', ['draft', 'hc', 'sent'])]}"/>
                 <field name="x_is_multi_slit" invisible="1"/>
             </field>
             <field name="payment_term_id" position="after">
