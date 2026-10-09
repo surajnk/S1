@@ -930,14 +930,20 @@ class MrpProduction(models.Model):
         completed when the consumption was saved (early raw consumption)
         would therefore close the MO before anything was produced. Keep it
         in progress / to close until the finished moves are done, which
-        only happens in button_mark_done.
+        only happens in button_mark_done. The same goes while a work order
+        is unfinished (partial production completes the finished moves, and
+        a done MO hides the work order Start / Stop buttons).
         """
         super()._compute_state()
         for production in self:
             if production.state != 'done':
                 continue
             finished = production.move_finished_ids
-            if not finished or all(m.state in ('done', 'cancel') for m in finished):
+            open_workorders = production.workorder_ids.filtered(
+                lambda wo: wo.state not in ('done', 'cancel'))
+            finished_open = finished and any(
+                m.state not in ('done', 'cancel') for m in finished)
+            if not finished_open and not open_workorders:
                 continue
             if production.qty_producing >= production.product_qty:
                 production.state = 'to_close'
