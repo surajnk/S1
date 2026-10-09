@@ -951,6 +951,16 @@ class MrpProduction(models.Model):
                 production.state = 'progress'
             production.reservation_state = False
 
+    @api.model
+    def _cron_fix_premature_done_state(self):
+        """Recompute MOs saved as done while a work order is unfinished."""
+        productions = self.search([('state', '=', 'done')]).filtered(
+            lambda mo: any(
+                wo.state not in ('done', 'cancel') for wo in mo.workorder_ids))
+        productions._compute_state()
+        _logger.info("Reopened %s MO(s) wrongly marked done: %s",
+                     len(productions), productions.mapped('name'))
+
     def _cal_price(self, consumed_moves):
         """Finished product cost must include raw moves completed early.
 
