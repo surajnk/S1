@@ -56,6 +56,21 @@ class StockMoveLine(models.Model):
             lambda l: l.product_id.id == self.product_id.id)[:1]
         return sale_line
 
+    def write(self, vals):
+        if 'qty_done' in vals and self.env.context.get('gts_keep_finished_qty_done'):
+            protected = self.filtered(
+                lambda l: l.state == 'done' and l.move_id.production_id)
+            if protected:
+                rest = self - protected
+                other_vals = {k: v for k, v in vals.items() if k != 'qty_done'}
+                res = True
+                if other_vals:
+                    res = super(StockMoveLine, protected).write(other_vals)
+                if rest:
+                    res = super(StockMoveLine, rest).write(vals)
+                return res
+        return super().write(vals)
+
     @api.model_create_multi
     def create(self, vals_list):
         """When a new move line is created with a lot_id that already

@@ -16,6 +16,22 @@ class MrpProduction(models.Model):
         for prod in self:
             prod.all_qty_produced = prod.product_qty == prod.qty_produced
 
+    def write(self, vals):
+        # Odoo core copies a written qty_producing onto every done finished
+        # move line of a done MO. In partial production each line holds its
+        # own lot quantity, so that would overwrite all of them (and their
+        # stock) with the same value. Shield them for partial productions.
+        if 'qty_producing' in vals:
+            partial = self.filtered('partial_qty_produced')
+            if partial:
+                res = super(MrpProduction, partial.with_context(
+                    gts_keep_finished_qty_done=True)).write(vals)
+                rest = self - partial
+                if rest:
+                    res = super(MrpProduction, rest).write(vals)
+                return res
+        return super().write(vals)
+
     def _compute_customer_qty_from_yards(self, yards):
         """Shared yards -> customer-qty conversion (width/length 'outs' math)."""
         self.ensure_one()
