@@ -85,7 +85,7 @@
                 <button name="action_draft" states="cancel,ch,dh,sh,mh" type="object" string="Set to Quotation"/>
             </xpath>
             <xpath expr="/form/header/button[@name='action_cancel']" position="replace">
-                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','ch','dh','hc','sh','mh']), ('id', '=', False)]}"/>
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','ch','dh','hc','sh','mh','sample_printed']), ('id', '=', False)]}"/>
             </xpath>
             <field name="date_order" position="after">
                 <field name="client_order_ref" position="move"/>
