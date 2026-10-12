@@ -22,7 +22,7 @@
             <xpath expr="//filter[@name='activities_overdue']" position="before">
                 <separator/>
                 <filter string="Sample Sales" name="x_is_sample_filter" domain="[('x_is_sample', '=', True)]"/>
-                <filter string="Sample Printed" name="x_sample_printed_filter" domain="[('state', '=', 'sample_printed')]"/>
+                <filter string="Sample Printed" name="x_sample_printed_filter" domain="[('x_sample_printed', '=', True)]"/>
                 <separator/>
             </xpath>
         </field>
