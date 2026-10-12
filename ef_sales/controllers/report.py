@@ -22,7 +22,7 @@ class SampleReportController(ReportController):
         return response
 
     def _mark_sample_printed(self, data, response):
-        """Set Sample Printed on sample orders when the SALES ORDER report is
+        """Move sample orders to Sample Printed status when the SALES ORDER report is
         downloaded from the Print menu."""
         if response.status_code != 200:
             return
@@ -35,5 +35,5 @@ class SampleReportController(ReportController):
         ids = [int(i) for i in parts[1].split(',')]
         # sudo: users who can print an order may not have write access on it
         orders = request.env['sale.order'].sudo().browse(ids).filtered(
-            lambda o: o.x_is_sample and not o.x_sample_printed)
-        orders.write({'x_sample_printed': True})
+            lambda o: o.x_is_sample and o.state not in ('sample_printed', 'closed', 'cancel'))
+        orders.write({'x_sample_printed': True, 'state': 'sample_printed'})

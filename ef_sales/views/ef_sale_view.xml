@@ -85,7 +85,7 @@
                 <button name="action_draft" states="cancel,ch,dh,sh,mh" type="object" string="Set to Quotation"/>
             </xpath>
             <xpath expr="/form/header/button[@name='action_cancel']" position="replace">
-                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','ch','dh','hc','sh','mh']), ('id', '=', False)]}"/>
+                <button name="action_cancel" type="object" string="Cancel" attrs="{'invisible': ['|', ('state', 'not in', ['draft', 'sent','sale','ch','dh','hc','sh','mh','sample_printed']), ('id', '=', False)]}"/>
             </xpath>
             <field name="date_order" position="after">
                 <field name="client_order_ref" position="move"/>
@@ -377,6 +377,15 @@
         </field>
     </record>
 
+
+        <record id="model_sale_order_action_close_sample" model="ir.actions.server">
+            <field name="name">Close Sale Order</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.action_close_sample_orders()</field>
+        </record>
 
         <record id="model_sale_order_action_ship_hold" model="ir.actions.server">
             <field name="name">Ship Hold</field>

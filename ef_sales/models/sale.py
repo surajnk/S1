@@ -273,6 +273,8 @@ class SaleOrder(models.Model):
         ('sh', 'Ship Hold'),
         ('sale', 'Sales Order'),
         ('done', 'Locked'),
+        ('sample_printed', 'Sample Printed'),
+        ('closed', 'Closed'),
         ('cancel', 'Cancelled'),
         ('complained', 'Complained')
         ], string='Status', readonly=True, copy=False, index=True, tracking=True, default='draft')
@@ -872,6 +874,15 @@ class SaleOrder(models.Model):
         # Return the updated data including x_sale_line_customer_message
         return {'x_sale_line_customer_message': customer_messages}
 
+
+    def action_close_sample_orders(self):
+        not_printed = self.filtered(lambda o: o.state != 'sample_printed')
+        if not_printed:
+            raise UserError(_(
+                "Only sale orders in 'Sample Printed' status can be closed. Please unselect: %s"
+            ) % ', '.join(not_printed.mapped('name')))
+        self.write({'state': 'closed'})
+        return True
 
     @api.onchange('partner_id', 'x_is_sample')
     def _onchange_sample_account_no(self):
