@@ -884,7 +884,6 @@ class SaleOrder(models.Model):
                 "Only orders with 'Sample Printed' ticked can be closed. Please unselect: %s"
             ) % ', '.join(not_printed.mapped('name')))
         self.filtered(lambda o: o.state != 'closed').write({'state': 'closed'})
-        return True
 
     @api.onchange('partner_id', 'x_is_sample')
     def _onchange_sample_account_no(self):
