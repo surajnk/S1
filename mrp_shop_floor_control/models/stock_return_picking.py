@@ -48,10 +48,11 @@ class StockReturnPicking(models.TransientModel):
 
     @api.model
     def _early_consumed_return_vals(self, stock_move, vals):
-        """Default return quantity when raw moves were completed early.
+        """Default return quantity when consumption is recorded early.
 
         Only active with ``mrp_shop_floor_control.early_raw_consumption``
-        and when a raw move fed by this transfer is already done.
+        and when a raw move fed by this transfer is done or already has a
+        quantity recorded as consumed on its lines.
 
         Odoo subtracts a done raw move's own quantity, but consuming more
         than the demand splits an extra move that is not linked to the
@@ -63,7 +64,8 @@ class StockReturnPicking(models.TransientModel):
             return None
         dest_raw = stock_move.move_dest_ids.filtered(
             lambda m: m.raw_material_production_id and m.state != 'cancel')
-        if not dest_raw.filtered(lambda m: m.state == 'done'):
+        if not dest_raw.filtered(lambda m: m.state == 'done') and not any(
+                ml.qty_done > 0 for ml in dest_raw.mapped('move_line_ids')):
             return None
 
         # What Odoo already subtracted for these raw moves.
