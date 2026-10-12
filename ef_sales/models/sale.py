@@ -876,12 +876,8 @@ class SaleOrder(models.Model):
 
 
     def action_close_sample_orders(self):
-        not_printed = self.filtered(lambda o: o.state != 'sample_printed')
-        if not_printed:
-            raise UserError(_(
-                "Only sale orders in 'Sample Printed' status can be closed. Please unselect: %s"
-            ) % ', '.join(not_printed.mapped('name')))
-        self.write({'state': 'closed'})
+        # Closing is allowed from any state
+        self.filtered(lambda o: o.state != 'closed').write({'state': 'closed'})
         return True
 
     @api.onchange('partner_id', 'x_is_sample')
