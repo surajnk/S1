@@ -876,7 +876,13 @@ class SaleOrder(models.Model):
 
 
     def action_close_sample_orders(self):
-        # Closing is allowed from any state
+        # Sample Printed orders can be closed from any state.
+        # TODO: closing rules for the remaining orders are to be defined.
+        not_printed = self.filtered(lambda o: not o.x_sample_printed)
+        if not_printed:
+            raise UserError(_(
+                "Only orders with 'Sample Printed' ticked can be closed. Please unselect: %s"
+            ) % ', '.join(not_printed.mapped('name')))
         self.filtered(lambda o: o.state != 'closed').write({'state': 'closed'})
         return True
 
