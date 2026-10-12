@@ -215,10 +215,9 @@ class MrpWoRollLineConsumptionSync(models.Model):
         """Early raw consumption (``mrp_shop_floor_control.early_raw_consumption``).
 
         Keep the lot's done quantity on the MO's raw move lines equal to
-        ``total_consumed`` and complete the raw move, so the stock leaves the
-        work center when the quantity is saved. Once a move is done, further
-        edits of ``qty_done`` are corrected by Odoo itself (quants, valuation
-        layer and journal entry).
+        ``total_consumed``. The raw move stays open (one component line), so
+        the consumption can be edited freely until the MO is done and the
+        unconsumed rest can be returned from the transfer.
         """
         product = lot.product_id
         rounding = product.uom_id.rounding
@@ -275,38 +274,11 @@ class MrpWoRollLineConsumptionSync(models.Model):
             "RAW CONSUMED SYNC (early): MO=%s lot=%s total_consumed=%s diff=%s",
             production.name, lot.name, total_consumed, diff)
 
-        # Complete the raw move(s) holding the consumption, once.
-        open_moves = Move.search([
-            ('raw_material_production_id', '=', production.id),
-            ('product_id', '=', product.id),
-            ('state', 'not in', ('done', 'cancel')),
-        ]).filtered(lambda m: any(
-            ml.lot_id == lot and ml.qty_done > 0 for ml in m.move_line_ids))
-        if not open_moves:
-            return
-        try:
-            with self.env.cr.savepoint():
-                done_before = Move.search([
-                    ('raw_material_production_id', '=', production.id),
-                    ('state', '=', 'done'),
-                ])
-                open_moves._action_done()
-                newly_done = Move.search([
-                    ('raw_material_production_id', '=', production.id),
-                    ('state', '=', 'done'),
-                ]) - done_before
-                newly_done.write({'x_early_consumed': True})
-        except Exception as err:  # noqa: BLE001
-            _logger.exception(
-                "RAW CONSUMED SYNC (early): completing raw move of %s for "
-                "MO %s failed", product.display_name, production.name)
-            production.sudo().message_post(body=_(
-                "Raw material %(product)s lot %(lot)s was not taken out of "
-                "stock when the consumption was saved: %(err)s. It will be "
-                "consumed when the MO is marked done.") % {
-                'product': product.display_name, 'lot': lot.name,
-                'err': getattr(err, 'name', False) or str(err),
-            })
+        # The raw move is deliberately left open: completing it would split
+        # the component into a done line plus an open backorder line on every
+        # save. The consumption stays recorded as qty_done on the move line;
+        # stock leaves when the MO is marked done, and the return default
+        # (stock_return_picking) already discounts the recorded quantity.
 
     def _get_component_moves_for_workorder(self, workorder):
 
