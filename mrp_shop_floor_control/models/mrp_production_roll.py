@@ -241,7 +241,7 @@ class MrpWoRollLine(models.Model):
         """Return the quantity to subtract for a related roll line."""
         return line.consumed_qty or line.quantity or 0.0
 
-    def _compute_prev_roll_remaining_qty(self, workorder=None, prev_roll=None, exclude_line=None):
+    def _compute_prev_roll_remaining_qty(self, workorder=None, prev_roll=None, exclude_line=None, before_line=None):
         workorder = workorder or self.workorder_id
         prev_roll = prev_roll or self.prev_roll_id
 
@@ -257,6 +257,11 @@ class MrpWoRollLine(models.Model):
         related_lines = workorder.roll_line_ids.filtered(
             lambda line: line.prev_roll_id == prev_roll and line != (exclude_line or self)
         )
+        if before_line:
+            # Only the lines saved before this one, so the stored value does
+            # not change when later lines are added or any line is rewritten.
+            related_lines = related_lines.filtered(
+                lambda line: line.id and line.id < before_line.id)
         consumed_so_far = sum(self._line_consumption(line) for line in related_lines)
 
         return max(base_available - consumed_so_far, 0.0)
@@ -270,6 +275,7 @@ class MrpWoRollLine(models.Model):
                 workorder=rec.workorder_id,
                 prev_roll=rec.prev_roll_id,
                 exclude_line=rec,
+                before_line=rec,
             )
 
             rec.with_context(skip_remained_update=True).write({
