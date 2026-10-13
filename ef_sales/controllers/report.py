@@ -17,6 +17,9 @@ class SampleReportController(ReportController):
     @http.route()
     def report_download(self, data, token, context=None):
         response = super().report_download(data, token, context=context)
+        # TEMPORARY diagnostics (warning level so it shows even with log_level=warn)
+        _logger.warning("SamplePrinted diag: report_download called, status=%s, data=%s",
+                        getattr(response, 'status_code', None), data)
         try:
             self._mark_sample_printed(data, response)
         except Exception:
