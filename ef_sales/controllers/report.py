@@ -11,6 +11,9 @@ _logger = logging.getLogger(__name__)
 
 SAMPLE_PRINT_REPORT = 'ef_sales.report_sales_custom'
 
+# TEMPORARY diagnostic: shows once at server start if this file is imported
+_logger.warning('SamplePrinted diag: ef_sales/controllers/report.py imported')
+
 
 class SampleReportController(ReportController):
 
