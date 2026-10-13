@@ -211,7 +211,7 @@ class SaleOrder(models.Model):
         domain=lambda self: [('groups_id', 'in', self.env.ref('sales_team.group_sale_manager').id)])
     x_sample_actual_ship_date = fields.Char('Actual Ship Date', copy=False)
     x_sample_freight_amount = fields.Float('Freight Amount', copy=False)
-    x_sample_tracking_no = fields.Char('Tracking Number', copy=False)
+    x_sample_tracking_ids = fields.One2many('sale.sample.tracking', 'order_id', string='Tracking Numbers', copy=False)
     x_sale_ship_via = fields.Many2one('ship.via',string='Ship Via')
     x_sale_freight_terms = fields.Many2one('freight.terms',string='Freight Terms')
     x_sale_incoterms = fields.Many2one('account.incoterms',string='Freight Incoterms')
@@ -2053,3 +2053,12 @@ class ResConfigSettings(models.TransientModel):
             so_order_approval=params.get_param('ef_sales.so_order_approval'),
         ),
         return res
+
+
+class SaleSampleTracking(models.Model):
+    _name = 'sale.sample.tracking'
+    _description = 'Sample Sale Tracking Number'
+
+    order_id = fields.Many2one('sale.order', string='Sale Order', ondelete='cascade', required=True, index=True)
+    tracking_no = fields.Char('Tracking Number')
+    remarks = fields.Char('Remarks')

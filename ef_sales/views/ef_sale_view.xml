@@ -141,9 +141,14 @@
                         <group name="sample_tracking_right">
                             <field name="x_sample_actual_ship_date"/>
                             <field name="x_sample_freight_amount"/>
-                            <field name="x_sample_tracking_no"/>
                         </group>
                     </group>
+                    <field name="x_sample_tracking_ids">
+                        <tree editable="bottom">
+                            <field name="tracking_no"/>
+                            <field name="remarks"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
             <xpath expr="/form/sheet/notebook/page[@name='other_information']" position="after">
