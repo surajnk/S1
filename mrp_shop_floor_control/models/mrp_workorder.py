@@ -43,8 +43,7 @@ class MrpWorkorder(models.Model):
         states={'ready': [('readonly', False)], 'pending': [('readonly', False)]},
         copy=True)
     sequence = fields.Integer(
-        'Sequence', compute='_get_sequence', store=True, readonly=True,
-        states={'ready': [('readonly', False)], 'pending': [('readonly', False)]},
+        'Sequence', compute='_get_sequence', store=True, readonly=False,
         copy=True)
     hours_uom = fields.Many2one(
         'uom.uom', 'Hours', related='workcenter_id.hours_uom')

@@ -11,7 +11,8 @@
 <!--                <attribute name="invisible">0</attribute>-->
 <!--            </field>-->
             <field name="workcenter_id" position="before">
-                <field name="sequence"/>
+                <field name="sequence"
+                       attrs="{'readonly': [('state', 'not in', ('pending', 'ready'))]}"/>
             </field>
             <field name="name" position="attributes">
                 <attribute name="invisible">1</attribute>
