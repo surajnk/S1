@@ -4,7 +4,8 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 import math
 
 class RollLines(models.TransientModel):
@@ -185,6 +186,12 @@ class RollLinesWiz(models.TransientModel):
         'mrp.production.roll',
         string='Existing Roll',
     )
+
+    @api.constrains('consumed_qty')
+    def _check_consumed_qty_positive(self):
+        for rec in self:
+            if rec.consumed_qty <= 0:
+                raise ValidationError(_("Consumed Qty must be greater than 0."))
 
     @api.depends('parent_roll_id.workorder_id')
     def _compute_prev_roll_ids(self):
@@ -460,6 +467,12 @@ class FinalRollLinesWiz(models.TransientModel):
     remained_qty = fields.Float(string="Remained Qty")
     partial_done_qty = fields.Float(string="Partially Done Quantity")
     user_id = fields.Many2one("res.users", string='User', required=True, related='parent_roll_id.user_id', copy=0)
+
+    @api.constrains('consumed_qty')
+    def _check_consumed_qty_positive(self):
+        for rec in self:
+            if rec.consumed_qty <= 0:
+                raise ValidationError(_("Consumed Qty must be greater than 0."))
 
     @api.depends('parent_roll_id.workorder_id')
     def _compute_prev_roll_ids(self):
