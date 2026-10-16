@@ -44,9 +44,19 @@ class StockMove(models.Model):
         if not raw_moves:
             return
 
+        raw_moves._consume_recorded_raw_moves()
+
+    def _consume_recorded_raw_moves(self, raise_errors=False):
+        """Complete these MO raw moves with ``_action_done(cancel_backorder=
+        True)`` and flag the newly done ones ``x_early_consumed`` so their
+        cost reaches the finished product. Per MO, inside a savepoint.
+
+        A failure is posted on the MO and swallowed, unless ``raise_errors``
+        (used by the "Consume Now" button so the user sees the reason).
+        """
         Move = self.env['stock.move'].sudo()
-        for production in raw_moves.mapped('raw_material_production_id'):
-            production_moves = raw_moves.filtered(
+        for production in self.mapped('raw_material_production_id'):
+            production_moves = self.filtered(
                 lambda m: m.raw_material_production_id == production)
             domain = [
                 ('raw_material_production_id', '=', production.id),
@@ -59,11 +69,13 @@ class StockMove(models.Model):
                     (Move.search(domain) - done_before).write(
                         {'x_early_consumed': True})
                 _logger.info(
-                    "CONSUME ON RETURN: MO=%s raw moves %s completed",
+                    "CONSUME RECORDED: MO=%s raw moves %s completed",
                     production.name, production_moves.ids)
             except Exception as err:  # noqa: BLE001
+                if raise_errors:
+                    raise
                 _logger.exception(
-                    "CONSUME ON RETURN: completing raw moves %s of MO %s "
+                    "CONSUME RECORDED: completing raw moves %s of MO %s "
                     "failed", production_moves.ids, production.name)
                 production.sudo().message_post(body=_(
                     "The consumed material was not taken out of stock when "
