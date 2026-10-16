@@ -55,6 +55,10 @@
                 <button name="action_open_pick_components_return" type="object"
                         string="Return Components" icon="fa-undo"
                         attrs="{'invisible': [('production_state', 'in', ('draft', 'cancel'))]}"/>
+                <button name="action_consume_recorded_now" type="object"
+                        string="Consume Now" icon="fa-check-square-o"
+                        confirm="Take the recorded consumption out of stock now? Any unconsumed demand on the component will be cancelled."
+                        attrs="{'invisible': [('production_state', 'in', ('draft', 'cancel', 'done'))]}"/>
             </button>
         </field>
     </record>

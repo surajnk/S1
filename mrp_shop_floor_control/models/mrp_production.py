@@ -129,6 +129,28 @@ class MrpProduction(models.Model):
             'target': 'new',
         }
 
+    def action_consume_recorded_now(self):
+        """Complete the raw moves holding consumption recorded by the roll
+        lines, without waiting for a return or the MO to be done. Same
+        completion as the Pick Components return trigger."""
+        self.ensure_one()
+        Move = self.env['stock.move']
+        if not (Move._consume_on_return_enabled()
+                and Move._early_raw_consumption_enabled()):
+            raise UserError(_(
+                "Consuming the recorded quantities early is not enabled "
+                "(system parameters mrp_shop_floor_control.consume_on_return "
+                "and mrp_shop_floor_control.early_raw_consumption)."))
+        raw_moves = self.move_raw_ids.filtered(
+            lambda m: m.state not in ('done', 'cancel')
+            and any(ml.qty_done > 0 for ml in m.move_line_ids))
+        if not raw_moves:
+            raise UserError(_(
+                "There is no recorded consumption to take out of stock for "
+                "manufacturing order %s.") % self.name)
+        raw_moves._consume_recorded_raw_moves(raise_errors=True)
+        return True
+
     def action_open_pick_components_return(self):
         """Open the 'Return' wizard directly for this MO's Pick Components
         transfer, without having to open the transfer itself first."""

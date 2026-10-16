@@ -123,6 +123,12 @@ class MrpWorkorder(models.Model):
             'context': {'default_workorder_id': self.id},
         }
 
+    def action_consume_recorded_now(self):
+        """Row action on the Work Orders list — take the consumption
+        recorded on this MO's roll lines out of stock now."""
+        self.ensure_one()
+        return self.production_id.action_consume_recorded_now()
+
     def action_open_pick_components_return(self):
         """Row action on the Work Orders list — open the Return wizard
         for this workorder's manufacturing order's Pick Components

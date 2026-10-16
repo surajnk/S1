@@ -39,6 +39,19 @@ class StockMove(models.Model):
             'mrp_shop_floor_control.early_raw_consumption', default='False')
         return str(value).strip().lower() in ('true', '1', 'yes')
 
+    @api.model
+    def _consume_on_return_enabled(self):
+        """System parameter ``mrp_shop_floor_control.consume_on_return``.
+
+        Off unless explicitly set to True/1. When on, validating the return
+        of a Pick Components transfer completes the MO raw moves holding
+        consumption recorded by the roll lines (see
+        stock_move_auto_check_availability).
+        """
+        value = self.env['ir.config_parameter'].sudo().get_param(
+            'mrp_shop_floor_control.consume_on_return', default='False')
+        return str(value).strip().lower() in ('true', '1', 'yes')
+
     @api.onchange('production_id')
     def _onchange_production_id(self):
         for move in self:
