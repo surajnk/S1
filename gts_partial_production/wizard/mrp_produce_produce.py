@@ -113,6 +113,11 @@ class MrpProductProduce(models.TransientModel):
         if float_compare(quantity, 0, precision_rounding=self.product_uom_id.rounding) <= 0:
             raise UserError(_('You should at least produce some quantity'))
         remaining_quantity = self.production_id.qty_producing - self.production_id.qty_produced
+        # Flag before the workorder qty_producing writes below: they reach
+        # mrp.production.write, whose core block rewrites done finished lines
+        # (qty_done) once the MO is done. The partial-production guard in
+        # models/mrp_production.py needs the flag set by then.
+        self.production_id.partial_qty_produced = True
         # updating produced quantity
         for workorder in self.production_id.workorder_ids:
             if self.product_id.tracking == 'serial':
