@@ -110,6 +110,35 @@ class ProductTemplate(models.Model):
             nrc = sum(tmpl.product_variant_ids.mapped('nrc_quantity'))
             tmpl.free_qty = tmpl.qty_available - (tmpl.allocated_qty + nrc + excluded.get(tmpl.id, 0.0))
 
+    def _get_so_outstanding_lines(self):
+        """(sale line, MO, undelivered qty) for SO lines of these templates that
+        are made by an MO originating from that SO. Each line is returned once."""
+        mos = self.env['mrp.production'].search([
+            ('state', 'in', ('confirmed', 'progress', 'to_close', 'done')),
+            ('product_id.product_tmpl_id', 'in', self.ids),
+            ('origin', '!=', False),
+        ])
+        mo_by_key = {}
+        for mo in mos:
+            mo_by_key.setdefault((mo.origin, mo.product_id.id), mo)
+        if not mo_by_key:
+            return []
+        lines = self.env['sale.order.line'].search([
+            ('order_id.name', 'in', list({k[0] for k in mo_by_key})),
+            ('order_id.state', 'in', ('sale', 'done')),
+            ('product_id.product_tmpl_id', 'in', self.ids),
+        ])
+        result = []
+        for line in lines:
+            mo = mo_by_key.get((line.order_id.name, line.product_id.id))
+            if not mo:
+                continue
+            outstanding = max(line.product_uom_qty - line.qty_delivered, 0.0)
+            qty = line.product_uom._compute_quantity(outstanding, line.product_id.uom_id)
+            if qty > 0:
+                result.append((line, mo, qty))
+        return result
+
     def _compute_allocated_qty(self):
         # Part A: this product used as a COMPONENT in open MOs (demand)
         comp_data = {}
@@ -123,13 +152,12 @@ class ProductTemplate(models.Model):
             tmpl_id = mv.product_id.product_tmpl_id.id
             comp_data[tmpl_id] = comp_data.get(tmpl_id, 0.0) + mv.product_uom_qty
 
-        # Part B: this product MANUFACTURED via SO-originated MOs
-        mos, so_names = self._get_open_mos_and_so_names()
+        # Part B: this product MANUFACTURED for a sale order. Stays allocated
+        # (even after the MO is produced) until the SO line is delivered.
         prod_data = {}
-        for m in mos:
-            if m.origin and m.origin in so_names:
-                tmpl_id = m.product_id.product_tmpl_id.id
-                prod_data[tmpl_id] = prod_data.get(tmpl_id, 0.0) + max(m.product_qty - m.qty_produced, 0.0)
+        for line, mo, qty in self._get_so_outstanding_lines():
+            tmpl_id = line.product_id.product_tmpl_id.id
+            prod_data[tmpl_id] = prod_data.get(tmpl_id, 0.0) + qty
 
         for tmpl in self:
             tmpl.allocated_qty = comp_data.get(tmpl.id, 0.0) + prod_data.get(tmpl.id, 0.0)
