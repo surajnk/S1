@@ -146,28 +146,18 @@ class OnOrderDetailWizard(models.TransientModel):
                     'qty': qty,
                     'state': mo.state,
                 }))
-        # Part B: SO-originated MOs producing this product
-        mos = self.env['mrp.production'].search([
-            ('state', 'in', ('confirmed', 'progress')),
-            ('product_id.product_tmpl_id', '=', tmpl_id),
-        ])
-        origins = list(set(mos.filtered(lambda m: m.origin).mapped('origin')))
-        sale_orders = self.env['sale.order'].search([('name', 'in', origins)])
-        so_map = {so.name: so for so in sale_orders}
-        for m in mos:
-            if m.origin and m.origin in so_map:
-                qty = m.product_qty - m.qty_produced
-                if qty > 0:
-                    so = so_map[m.origin]
-                    lines.append((0, 0, {
-                        'order_type': 'mo',
-                        'reference': m.name,
-                        'date_order': m.date_planned_start,
-                        'qty': qty,
-                        'state': m.state,
-                        'so_number': so.name,
-                        'customer_id': so.partner_id.id,
-                    }))
+        # Part B: SO lines made by an MO, allocated until delivered
+        for line, m, qty in self.product_tmpl_id._get_so_outstanding_lines():
+            so = line.order_id
+            lines.append((0, 0, {
+                'order_type': 'mo',
+                'reference': m.name,
+                'date_order': m.date_planned_start,
+                'qty': qty,
+                'state': m.state,
+                'so_number': so.name,
+                'customer_id': so.partner_id.id,
+            }))
         self.line_ids = lines
 
     # def _populate_allocated_lines(self):
