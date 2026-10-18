@@ -473,26 +473,36 @@ class MRPProduction(models.Model):
                             else pc_picking_type.default_location_dest_id
                         )
                         
-                        # Fix operation type, source, destination, group and origin on new moves
-                        moves_to_reassign.write({
-                            'picking_type_id': pc_picking_type.id,
-                            'location_id': pc_picking_type.default_location_src_id.id,
-                            'location_dest_id': target_location.id,
-                            'group_id': production.procurement_group_id.id,
-                            'origin': production.name,
-                        })
+                        # Fix operation type, source, destination, group and origin on new moves.
+                        # A component whose BOM line has Multiple Operations goes to the
+                        # workcenter location of its first operation (its own transfer);
+                        # the others keep the first work order's location.
+                        locations = {}
+                        for move in moves_to_reassign:
+                            split_location = move._get_operation_split_location()
+                            locations[move.id] = split_location or target_location
+                            move.write({
+                                'picking_type_id': pc_picking_type.id,
+                                'location_id': pc_picking_type.default_location_src_id.id,
+                                'location_dest_id': locations[move.id].id,
+                                'group_id': production.procurement_group_id.id,
+                                'origin': production.name,
+                                'x_pc_split': bool(split_location),
+                            })
                         # Also fix any move lines already reserved on these moves
                         # (writing location_dest_id on the move does not cascade
                         # to move lines created by an earlier reservation)
                         stale_move_lines = moves_to_reassign.mapped('move_line_ids').filtered(
                             lambda ml: ml.state not in ('done', 'cancel')
-                            and ml.location_dest_id != target_location
+                            and ml.location_dest_id != locations[ml.move_id.id]
                         )
-                        if stale_move_lines:
-                            stale_move_lines.write({'location_dest_id': target_location.id})
+                        for ml in stale_move_lines:
+                            ml.write({'location_dest_id': locations[ml.move_id.id].id})
                         # Unlink from any wrong picking
                         for move in moves_to_reassign:
-                            if move.picking_id and move.picking_id.picking_type_id != pc_picking_type:
+                            if move.picking_id and (
+                                    move.picking_id.picking_type_id != pc_picking_type
+                                    or move.picking_id.x_pc_split != move.x_pc_split):
                                 move.write({'picking_id': False})
                         # Assign to correct picking
                         moves_to_reassign.filtered(

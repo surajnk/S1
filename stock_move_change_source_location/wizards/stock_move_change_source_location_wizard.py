@@ -156,6 +156,9 @@ class StockMoveChangeSourceLocation(models.TransientModel):
             picking = move.picking_id
             if not picking or picking.picking_type_id.sequence_code != 'PC':
                 continue
+            # Split by BOM operation (mrp_enhancement): keep its own destination
+            if getattr(picking, 'x_pc_split', False):
+                continue
             production = None
             for mv in picking.move_ids_without_package:
                 if mv.raw_material_production_id:

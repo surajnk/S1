@@ -154,6 +154,9 @@ class StockPicking(models.Model):
         for picking in self:
             if picking.picking_type_id.sequence_code != 'PC':
                 continue
+            # Split by BOM operation (mrp_enhancement): keep its own destination
+            if getattr(picking, 'x_pc_split', False):
+                continue
             production = None
             for move in picking.move_ids_without_package:
                 if move.raw_material_production_id:
@@ -346,6 +349,9 @@ class StockPicking(models.Model):
 
             inventory_loc = self.env.ref('stock.location_inventory', raise_if_not_found=False)
             if inventory_loc and picking.location_id.id == inventory_loc.id:
+                continue
+            # Split by BOM operation (mrp_enhancement): keep its own destination
+            if getattr(picking, 'x_pc_split', False):
                 continue
             # Only PC pickings
             if picking.picking_type_id.sequence_code != 'PC':
