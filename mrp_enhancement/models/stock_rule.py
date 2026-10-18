@@ -25,13 +25,14 @@ class StockRule(models.Model):
         picking assignment (which groups moves by destination) puts the
         components of one operation in one transfer and the components of
         another operation in another. Nothing is rewritten afterwards, i.e.
-        nothing runs inside ``stock.move._action_confirm``. BOM lines without
+        nothing runs inside ``stock.move._action_confirm``. Only with the company
+        setting "Split Pick Components by Operation"; BOM lines without
         operations keep the standard behaviour.
         """
         move_values = super()._get_stock_move_values(
             product_id, product_qty, product_uom, location_id, name, origin,
             company_id, values)
-        if not self._is_pick_components_rule():
+        if not company_id.pc_split_by_operation or not self._is_pick_components_rule():
             return move_values
         raw_moves = (values.get('move_dest_ids') or self.env['stock.move']).filtered(
             'raw_material_production_id')

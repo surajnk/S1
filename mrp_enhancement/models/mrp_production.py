@@ -479,7 +479,9 @@ class MRPProduction(models.Model):
                         # the others keep the first work order's location.
                         locations = {}
                         for move in moves_to_reassign:
-                            split_location = move._get_operation_split_location()
+                            split_location = (
+                                production.company_id.pc_split_by_operation
+                                and move._get_operation_split_location())
                             locations[move.id] = split_location or target_location
                             move.write({
                                 'picking_type_id': pc_picking_type.id,

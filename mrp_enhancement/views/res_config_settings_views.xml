@@ -17,6 +17,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="pc_split_by_operation"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="pc_split_by_operation"/>
+                            <div class="text-muted">
+                                Create one Pick Components transfer per first operation under the BOM lines' Multiple Operations, going to that operation's workcenter location.
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
