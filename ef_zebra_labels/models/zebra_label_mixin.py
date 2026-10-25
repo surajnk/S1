@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 from odoo import _, api, models
 from odoo.exceptions import UserError
 from odoo.modules import get_module_path
@@ -9,27 +11,36 @@ from .. import zpl_utils
 class ZebraLabelMixin(models.AbstractModel):
     """Give a model its own labels.
 
-    Labels are .zpl files in ``zpl/<model _name>/<CODE>.zpl``. A model that
-    inherits this mixin only has to supply the values for the placeholders in
-    those files by overriding ``_zebra_label_values``.
+    Labels are .zpl files in ``<any module>/zpl/<model _name>/<CODE>.zpl``. A
+    model that inherits this mixin only has to supply the values for the
+    placeholders in those files by overriding ``_zebra_label_values``.
     """
     _name = "zebra.label.mixin"
     _description = "Zebra Label Mixin"
 
     @api.model
-    def _zebra_label_dirs(self):
-        """Folders searched for this model's labels; other modules can extend."""
-        return [
-            "%s/zpl/%s" % (get_module_path("ef_zebra_labels"), self._name),
-        ]
+    def _zebra_label_files(self):
+        """{code: (name, folder)} of the labels available for this model.
+
+        Every installed module may ship ``zpl/<model _name>/<CODE>.zpl``; if
+        two modules ship the same code, the later module (by name) wins.
+        """
+        modules = self.env["ir.module.module"].sudo().search(
+            [("state", "=", "installed")], order="name").mapped("name")
+        files = {}
+        for module in modules:
+            path = get_module_path(module, display_warning=False)
+            if not path:
+                continue
+            folder = os.path.join(path, "zpl", self._name)
+            for code, name in zpl_utils.list_labels(folder):
+                files[code] = (name, folder)
+        return files
 
     @api.model
     def _zebra_label_codes(self):
         """[(code, name)] of the labels available for this model."""
-        codes = {}
-        for directory in self._zebra_label_dirs():
-            codes.update(dict(zpl_utils.list_labels(directory)))
-        return sorted(codes.items())
+        return sorted((code, name) for code, (name, _folder) in self._zebra_label_files().items())
 
     def _zebra_label_values(self):
         """Placeholder values for one record. Override per model."""
@@ -39,15 +50,10 @@ class ZebraLabelMixin(models.AbstractModel):
     def _zebra_render_label(self, code, copies=1, overrides=None):
         """Return the ZPL body (no ^XA/^XZ) for this record."""
         self.ensure_one()
-        body = None
-        for directory in reversed(self._zebra_label_dirs()):
-            try:
-                body = zpl_utils.read_label(directory, code)
-                break
-            except ValueError:
-                continue
-        if body is None:
+        label = self._zebra_label_files().get(code)
+        if not label:
             raise UserError(_("Label %s is not defined for %s.") % (code, self._description))
+        body = zpl_utils.read_label(label[1], code)
         values = dict(self._zebra_label_values(), **(overrides or {}))
         values["copies"] = max(int(copies or 1), 1)
         try:

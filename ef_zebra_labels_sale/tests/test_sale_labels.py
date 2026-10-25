@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Plain unittest, no Odoo needed:  cd ef_zebra_labels/tests && python3 -m unittest test_zpl_utils
+# Plain unittest, no Odoo needed:  cd ef_zebra_labels_sale/tests && python3 -m unittest test_sale_labels
 import importlib.util
 import os
 import re
@@ -8,7 +8,8 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 MODULE = os.path.dirname(HERE)
 LABELS = os.path.join(MODULE, "zpl", "sale.order.line")
-spec = importlib.util.spec_from_file_location("zpl_utils", os.path.join(MODULE, "zpl_utils.py"))
+CORE = os.path.join(os.path.dirname(MODULE), "ef_zebra_labels")
+spec = importlib.util.spec_from_file_location("zpl_utils", os.path.join(CORE, "zpl_utils.py"))
 zpl_utils = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(zpl_utils)
 
