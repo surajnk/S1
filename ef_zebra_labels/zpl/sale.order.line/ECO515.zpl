@@ -1,0 +1,7 @@
+^FX ECOLOGICAL FIBERS INC - LA (ECO515)
+^CI0^FWN^LRN
+^FO200,0^A0B,60,50^FB1625,1,,^FDProduct:^FS
+^FO300,0^A0B,120,60^FB1625,1,,^FD{{ size }} {{ part_desc }}^FS
+^FO500,0,0^A0B,50,40^FB1625,1,,^FDProduct Putup:^FS
+^FO600,0,0^A0B,50,40^FB1625,1,,^FD{{ putups }}^FS
+^PQ{{ copies }}
