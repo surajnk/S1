@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_zebra_label_wizard_form" model="ir.ui.view">
+        <field name="name">zebra.label.wizard.form</field>
+        <field name="model">zebra.label.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Print Label">
+                <group>
+                    <field name="res_model" invisible="1"/>
+                    <field name="res_ids" invisible="1"/>
+                    <field name="label_code"/>
+                    <field name="printer_id" options="{'no_create': True}"/>
+                    <field name="copies"/>
+                    <field name="item_qty"/>
+                </group>
+                <footer>
+                    <button name="action_print" type="object" string="Print" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

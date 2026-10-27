@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Order Lines list: Action menu -> Print Label -->
+    <record id="action_print_zebra_label_line" model="ir.actions.server">
+        <field name="name">Print Label</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="binding_model_id" ref="sale.model_sale_order_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_print_zebra_label()</field>
+    </record>
+
+    <!-- Sale order form: print labels for all lines -->
+    <record id="view_order_form_zebra_label" model="ir.ui.view">
+        <field name="name">sale.order.form.zebra.label</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_zebra_labels" type="object" string="Print Labels"
+                        attrs="{'invisible': [('state', 'in', ('draft', 'sent', 'cancel'))]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
