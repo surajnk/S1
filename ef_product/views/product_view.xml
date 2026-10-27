@@ -123,6 +123,8 @@
                             <field name="x_retail_short_description"/>
                             <field name="x_retail_size_desc"/>
                             <field name="x_retail_box_label"/>
+                            <field name="x_retail_code"/>
+                            <field name="x_retail_gap"/>
                         </group>
                     </group>
                 </page>
