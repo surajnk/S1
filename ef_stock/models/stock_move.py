@@ -1,4 +1,4 @@
-from odoo import models
+from odoo import fields, models
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -6,6 +6,16 @@ _logger = logging.getLogger(__name__)
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    # Refinement of 'assigned' for Pick Components: available AND formally
+    # pulled via a Material Request. Never applied to moves that aren't
+    # already 'assigned', so stock's reservation engine (_action_assign,
+    # which only looks at 'confirmed'/'waiting'/'partially_available') is
+    # untouched.
+    state = fields.Selection(
+        selection_add=[('requested', 'Requested')],
+        ondelete={'requested': lambda recs: recs.write({'state': 'assigned'})},
+    )
 
     def _action_assign(self):
         res = super()._action_assign()
@@ -38,5 +48,13 @@ class StockMove(models.Model):
                     "[MO %s] _action_assign: forced %s move line(s) dest to %s",
                     production.name, len(move_lines), workcenter_location.complete_name,
                 )
+
+        to_promote = self.filtered(
+            lambda m: m.state == 'assigned'
+            and m.picking_id.picking_type_id.sequence_code == 'PC'
+            and m.picking_id._has_active_material_request()
+        )
+        if to_promote:
+            to_promote.write({'state': 'requested'})
 
         return res
