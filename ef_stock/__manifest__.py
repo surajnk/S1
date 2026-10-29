@@ -11,7 +11,7 @@
     'company': 'ATC ONLINE LLP',
     'maintainer': 'Suraj',
     'version': '14.0.0.1',
-    'depends': ['sale_management', 'ef_product', 'mrp', 'stock', 'branch','custom_partner'],
+    'depends': ['sale_management', 'ef_product', 'mrp', 'stock', 'branch', 'custom_partner', 'mrequest', 'inherit_mrp'],
     'data': [
         'security/ir.model.access.csv',
         'views/sequence_view.xml',
