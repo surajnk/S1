@@ -332,6 +332,18 @@
             </xpath>
         </field>
     </record>
+    <record id="product_supplierinfo_form_view_inherit_atc" model="ir.ui.view">
+        <field name="name">product.supplierinfo.form.view.inherit.atc</field>
+        <field name="model">product.supplierinfo</field>
+        <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_code']" position="after">
+                <field name="x_Vendor_FSC"/>
+                <field name="x_product_convert_from_pur_uom"/>
+                <field name="x_product_convert_to_sku"/>
+            </xpath>
+        </field>
+    </record>
     <record id="product_template_purchase_desc_relabel" model="ir.ui.view">
         <field name="name">product.template.purchase.desc.relabel</field>
         <field name="model">product.template</field>
