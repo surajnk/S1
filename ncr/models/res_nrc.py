@@ -261,13 +261,13 @@ class StockProductionLot(models.Model):
     nrc_line_ids = fields.One2many('nrc.stock.lot', 'stock_lot_id', string="NCR Lines")
     in_ncr = fields.Boolean(
         string="In NCR", compute='_compute_in_ncr', store=True,
-        help="Enabled when the lot is listed in the Inventory Lots of any NCR.",
+        help="Enabled when the lot is listed in the Inventory Lots of an open NCR.",
     )
 
-    @api.depends('nrc_line_ids')
+    @api.depends('nrc_line_ids', 'nrc_line_ids.nrc_id.status')
     def _compute_in_ncr(self):
         for lot in self:
-            lot.in_ncr = bool(lot.nrc_line_ids)
+            lot.in_ncr = any(l.nrc_id.status == 'open' for l in lot.nrc_line_ids)
 
     def _compute_nrc_quantity(self):
         lot_lines = self.env['nrc.stock.lot'].search([
