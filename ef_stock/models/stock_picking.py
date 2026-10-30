@@ -429,7 +429,7 @@ class StockPicking(models.Model):
             pc_moves = picking.move_ids_without_package.filtered(
                 lambda m: m.state not in ('done', 'cancel')
             )
-            to_unreserve = pc_moves.filtered(lambda m: m.state in ('assigned', 'partially_available'))
+            to_unreserve = pc_moves.filtered(lambda m: m.state in ('assigned', 'partially_available', 'requested'))
             if to_unreserve:
                 to_unreserve._do_unreserve()
 
