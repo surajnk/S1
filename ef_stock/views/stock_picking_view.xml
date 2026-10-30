@@ -38,6 +38,10 @@
             <xpath expr="//filter[@name='picking_type']" position="after">
                 <filter string="Contact" name="contact_picking" domain="[]" context="{'group_by': 'partner_id'}"/>
             </xpath>
+            <xpath expr="//filter[@name='available']" position="after">
+                <filter name="requested" string="Requested" domain="[('state', '=', 'requested')]"
+                        help="Available and formally requested via Material Request (Pick Components)"/>
+            </xpath>
         </field>
     </record>
 
