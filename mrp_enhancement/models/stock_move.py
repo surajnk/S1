@@ -53,4 +53,4 @@ class StockMove(models.Model):
             ('immediate_transfer', '=', False),
             ('x_pc_split', '=', self.x_pc_split),
             ('state', 'in', ['draft', 'confirmed', 'waiting',
-                             'partially_available', 'assigned'])], limit=1)
+                             'partially_available', 'assigned', 'requested'])], limit=1)
