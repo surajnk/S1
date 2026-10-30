@@ -13,6 +13,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_nrc_view.xml',
+        'views/stock_quant_view.xml',
         'views/defect_master_view.xml',
         'views/report_ncr.xml',
         'views/deposition_code_view.xml',

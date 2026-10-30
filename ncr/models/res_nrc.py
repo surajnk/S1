@@ -258,6 +258,16 @@ class StockProductionLot(models.Model):
         compute='_compute_nrc_quantity',
         digits='Product Unit of Measure',
     )
+    nrc_line_ids = fields.One2many('nrc.stock.lot', 'stock_lot_id', string="NCR Lines")
+    in_ncr = fields.Boolean(
+        string="In NCR", compute='_compute_in_ncr', store=True,
+        help="Enabled when the lot is listed in the Inventory Lots of any NCR.",
+    )
+
+    @api.depends('nrc_line_ids')
+    def _compute_in_ncr(self):
+        for lot in self:
+            lot.in_ncr = bool(lot.nrc_line_ids)
 
     def _compute_nrc_quantity(self):
         lot_lines = self.env['nrc.stock.lot'].search([
@@ -283,3 +293,9 @@ class StockProductionLot(models.Model):
             'context': {'group_by': 'order_type'},
             'target': 'new',
         }
+
+
+class StockQuant(models.Model):
+    _inherit = 'stock.quant'
+
+    lot_in_ncr = fields.Boolean(related='lot_id.in_ncr', string="Lot In NCR")
