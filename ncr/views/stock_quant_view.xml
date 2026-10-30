@@ -30,4 +30,17 @@
         </field>
     </record>
 
+    <!-- Filter on lots that are part of an open NCR -->
+    <record id="search_product_lot_filter_ncr" model="ir.ui.view">
+        <field name="name">stock.production.lot.search.ncr</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="stock.search_product_lot_filter"/>
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <filter name="in_ncr" string="In Open NCR" domain="[('in_ncr', '=', True)]"/>
+                <separator/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
