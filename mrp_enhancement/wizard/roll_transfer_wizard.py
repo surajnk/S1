@@ -310,6 +310,7 @@ class RollTransferWizardLine(models.TransientModel):
         ('waiting', 'Waiting'),
         ('confirmed', 'Confirmed'),
         ('assigned', 'Ready'),
+        ('requested', 'Requested'),
         ('done', 'Done'),
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True)
