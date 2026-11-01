@@ -199,12 +199,12 @@ class MRPProduction(models.Model):
                                 move_line.product_uom_qty = new_qty
                 _logger.info("[MO %s] picking moves synced (count=%s)", production.name, len(picking_moves))
 
-                to_reassign = picking_moves.filtered(lambda m: m.state in ('assigned', 'partially_available'))
+                to_reassign = picking_moves.filtered(lambda m: m.state in ('assigned', 'partially_available', 'requested'))
                 if to_reassign:
                     to_reassign._do_unreserve()
                 (picking_moves | comp_moves)._action_assign()
             else:
-                to_reassign = comp_moves.filtered(lambda m: m.state in ('assigned', 'partially_available'))
+                to_reassign = comp_moves.filtered(lambda m: m.state in ('assigned', 'partially_available', 'requested'))
                 if to_reassign:
                     to_reassign._do_unreserve()
                 comp_moves._action_assign()

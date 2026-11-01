@@ -39,6 +39,26 @@ class StockPicking(models.Model):
         store=True,
     )
 
+    state = fields.Selection(
+        selection_add=[('requested', 'Requested')],
+        ondelete={'requested': lambda recs: recs.write({'state': 'assigned'})},
+    )
+
+    @api.depends('move_type', 'immediate_transfer', 'move_lines.state', 'move_lines.picking_id',
+                 'mrequest_id', 'mrequest_id.state')
+    def _compute_state(self):
+        super()._compute_state()
+        for picking in self:
+            if picking.picking_type_id.sequence_code != 'PC':
+                continue
+            # Show 'Requested' as soon as an active Material Request is
+            # attached, regardless of whether the components are already
+            # reserved - the underlying move(s) only get literally promoted
+            # to 'requested' once actually assigned (see _sync_requested_state
+            # / action_assign), which can lag behind this.
+            if picking.state in ('waiting', 'confirmed', 'assigned') and picking._has_active_material_request():
+                picking.state = 'requested'
+
     @api.depends('move_lines.product_id.categ_id')
     def _compute_tow_user_id(self):
         for picking in self:
@@ -179,6 +199,21 @@ class StockPicking(models.Model):
                 "action_assign: forced move lines dest to %s for picking %s",
                 workcenter_location.name, picking.name,
             )
+
+        # Safety net: promote moves that just became 'assigned' here (the
+        # "Check Availability" button, not inside the MO confirm/reservation
+        # transaction) to 'requested' when their picking already carries an
+        # active Material Request. The primary trigger is _sync_requested_state
+        # below, which covers moves already 'assigned' at the moment the
+        # Material Request is attached; this covers ones that only become
+        # assigned afterward.
+        to_promote = self.filtered(
+            lambda p: p.picking_type_id.sequence_code == 'PC'
+            and p._has_active_material_request()
+        ).mapped('move_lines').filtered(lambda m: m.state == 'assigned')
+        if to_promote:
+            to_promote.write({'state': 'requested'})
+
         return res
 
     def write(self, vals):
@@ -186,7 +221,30 @@ class StockPicking(models.Model):
         # When moves are added to a picking, check if it's a PC picking for an MO
         if 'move_ids_without_package' in vals or 'move_lines' in vals:
             self._sync_mo_workcenter_location()
+        if 'mrequest_id' in vals:
+            self._sync_requested_state()
         return result
+
+    def _has_active_material_request(self):
+        self.ensure_one()
+        return bool(self.mrequest_id) and self.mrequest_id.state not in ('done', 'reject')
+
+    def _sync_requested_state(self):
+        # Pick Components only: promote already-reserved ('assigned') moves
+        # to 'requested' once this picking carries an active Material
+        # Request, and revert them back to 'assigned' if the request is
+        # cleared or no longer active (e.g. rejected).
+        for picking in self:
+            if picking.picking_type_id.sequence_code != 'PC':
+                continue
+            if picking._has_active_material_request():
+                assigned_moves = picking.move_lines.filtered(lambda m: m.state == 'assigned')
+                if assigned_moves:
+                    assigned_moves.write({'state': 'requested'})
+            else:
+                requested_moves = picking.move_lines.filtered(lambda m: m.state == 'requested')
+                if requested_moves:
+                    requested_moves.write({'state': 'assigned'})
 
     @api.model_create_multi
     def create(self, vals_list):
