@@ -44,19 +44,16 @@ class StockPicking(models.Model):
         ondelete={'requested': lambda recs: recs.write({'state': 'assigned'})},
     )
 
-    @api.depends('move_type', 'immediate_transfer', 'move_lines.state', 'move_lines.picking_id',
-                 'mrequest_id', 'mrequest_id.state')
+    @api.depends('move_type', 'immediate_transfer', 'move_lines.state', 'move_lines.picking_id')
     def _compute_state(self):
         super()._compute_state()
         for picking in self:
             if picking.picking_type_id.sequence_code != 'PC':
                 continue
-            # Show 'Requested' as soon as an active Material Request is
-            # attached, regardless of whether the components are already
-            # reserved - the underlying move(s) only get literally promoted
-            # to 'requested' once actually assigned (see _sync_requested_state
-            # / stock.move._action_assign), which can lag behind this.
-            if picking.state in ('waiting', 'confirmed', 'assigned') and picking._has_active_material_request():
+            moves = picking.move_lines.filtered(lambda m: m.state not in ('done', 'cancel'))
+            if not moves:
+                continue
+            if any(m.state == 'requested' for m in moves) and all(m.state in ('assigned', 'requested') for m in moves):
                 picking.state = 'requested'
 
     @api.depends('move_lines.product_id.categ_id')
