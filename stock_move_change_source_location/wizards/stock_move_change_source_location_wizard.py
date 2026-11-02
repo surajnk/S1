@@ -43,7 +43,13 @@ class StockMoveChangeSourceLocation(models.TransientModel):
         ]
 
     def _get_allowed_states(self):
-        return ["waiting", "partially_available", "confirmed", "assigned"]
+        return [
+            "waiting",
+            "partially_available",
+            "confirmed",
+            "assigned",
+            "requested",
+        ]
 
     warehouse_view_location_id = fields.Many2one(
         comodel_name="stock.location",
