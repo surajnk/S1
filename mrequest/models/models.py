@@ -33,6 +33,10 @@ class MaterialRequest(models.Model):
     workcenter_id = fields.Many2one(
         'mrp.workcenter', string='Workcenter')
     production_id = fields.Many2one("mrp.production", "Manufacturing")
+    workorder_id = fields.Many2one(
+        'mrp.workorder', string='Work Order', index=True, copy=False,
+        help="Work order this request was raised for. Set when the "
+             "manufacturing order uses split Pick Components.")
     mrequest_lines = fields.One2many(
         comodel_name='project.mrequest_lines', inverse_name='mrequest_id')
     state = fields.Selection(string="Status",
