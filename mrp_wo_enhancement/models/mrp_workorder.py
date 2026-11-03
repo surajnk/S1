@@ -86,21 +86,40 @@ class MrpWorkorder(models.Model):
         newly_created = []
 
         for rec in self:
-            # Check if MR already exists for this MO
-            existing = self.env['project.mrequest'].search([
-                ('production_id', '=', rec.production_id.id)
-            ], limit=1)
+            production = rec.production_id
+            all_pickings = production.picking_ids.filtered(
+                lambda p: p.state != 'cancel' and any(
+                    m.product_id in production.move_raw_ids.mapped('product_id')
+                    for m in p.move_lines
+                )
+            )
+            # 'x_pc_split' lives in mrp_enhancement; absent if not installed.
+            is_split = any(getattr(p, 'x_pc_split', False) for p in all_pickings)
+
+            domain = [('production_id', '=', production.id)]
+            if is_split:
+                # Split Pick Components: one request per work order.
+                domain.append(('workorder_id', '=', rec.id))
+            existing = self.env['project.mrequest'].search(domain, limit=1)
 
             if existing:
                 already_exists.append(rec.name or rec.id)
                 continue  # Skip this WO
 
+            if is_split:
+                # Only the components that belong to this work order.
+                raw_moves = self.env['mrp.wo.roll.line'
+                                     ]._get_component_moves_for_workorder(rec)
+            else:
+                raw_moves = production.move_raw_ids
+
             request_id = self.env['project.mrequest'].create({
-                'production_id': rec.production_id.id,
-                'workcenter_id': rec.workcenter_id.id
+                'production_id': production.id,
+                'workcenter_id': rec.workcenter_id.id,
+                'workorder_id': rec.id,
             })
             material_request_line = []
-            for move_raw_rec in rec.production_id.move_raw_ids:
+            for move_raw_rec in raw_moves:
                 material_request_line.append((0, 0, {
                     'product': move_raw_rec.product_id.id if move_raw_rec.product_id else False,
                     'quantity': move_raw_rec.product_uom_qty,
@@ -110,12 +129,25 @@ class MrpWorkorder(models.Model):
             request_id.mrequest_lines = material_request_line
             request_id.request()
 
-            component_pickings = rec.production_id.picking_ids.filtered(
-                lambda p: p.state != 'cancel' and any(
-                    m.product_id in rec.production_id.move_raw_ids.mapped('product_id')
-                    for m in p.move_lines
-                )
-            )
+            if is_split:
+                wo_products = raw_moves.mapped('product_id')
+
+                def _picking_belongs(p, raw_moves=raw_moves,
+                                     wo_products=wo_products):
+                    if getattr(p, 'x_pc_split', False):
+                        for m in p.move_lines:
+                            if m.move_dest_ids:
+                                if m.move_dest_ids & raw_moves:
+                                    return True
+                            elif m.product_id in wo_products:
+                                return True
+                        return False
+                    return any(m.product_id in wo_products
+                               for m in p.move_lines)
+
+                component_pickings = all_pickings.filtered(_picking_belongs)
+            else:
+                component_pickings = all_pickings
             component_pickings.write({'mrequest_id': request_id.id})
             newly_created.append(rec.name or rec.id)
 
