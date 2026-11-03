@@ -1743,16 +1743,43 @@ class MrpWorkorder(models.Model):
             if not pickings:
                 return
 
+            # Components that belong to this WO, resolved the same way the
+            # roll consumption / reports do (curr_comp -> x_comp_operation ->
+            # BOM line operations). Only needed for split pickings.
+            wo_moves = None
+
             for picking in pickings:
                 lines = (picking.move_line_ids_without_package
                          or picking.move_line_ids)
 
                 _logger.info("picking=%s total lines=%s", picking.name, len(lines))
 
-                lines = lines.filtered(
-                    lambda ml: ml.product_id
-                    and ml.product_id.id in allow_components
-                )
+                # 'x_pc_split' is defined in mrp_enhancement; absent here
+                # when that module is not installed.
+                is_split = bool(getattr(picking, 'x_pc_split', False))
+                if is_split:
+                    # Split pick components: one picking per operation, so
+                    # only load lots of components used by THIS work order.
+                    if wo_moves is None:
+                        wo_moves = wo.env[
+                            'mrp.wo.roll.line'
+                        ]._get_component_moves_for_workorder(wo)
+
+                    def _belongs_to_wo(ml, wo_moves=wo_moves):
+                        if not ml.product_id:
+                            return False
+                        chained = ml.move_id.move_dest_ids
+                        if chained:
+                            return bool(chained & wo_moves)
+                        # No chained raw move: fall back to the product.
+                        return ml.product_id in wo_moves.mapped('product_id')
+
+                    lines = lines.filtered(_belongs_to_wo)
+                else:
+                    lines = lines.filtered(
+                        lambda ml: ml.product_id
+                        and ml.product_id.id in allow_components
+                    )
 
                 _logger.info("filtered lines=%s", len(lines))
 
