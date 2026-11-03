@@ -59,6 +59,14 @@ class StockPicking(models.Model):
             if picking.state in ('waiting', 'confirmed', 'assigned') and picking._has_active_material_request():
                 picking.state = 'requested'
 
+    @api.depends('state')
+    def _compute_show_validate(self):
+        # Core hides Validate for any state outside draft/waiting/confirmed/
+        # assigned, which wrongly hides it for the custom 'requested' state.
+        super()._compute_show_validate()
+        for picking in self.filtered(lambda p: p.state == 'requested'):
+            picking.show_validate = True
+
     @api.depends('move_lines.product_id.categ_id')
     def _compute_tow_user_id(self):
         for picking in self:
