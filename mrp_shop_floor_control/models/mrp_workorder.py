@@ -1714,9 +1714,10 @@ class MrpWorkorder(models.Model):
         step with what this work order consumed.
 
         Only applies when the next work order (by sequence, id) runs on the
-        same workcenter, was already loaded via Load Input Rolls, and is not
-        finished. Recomputation reuses get_previous_rolls so the deduction
-        logic lives in one place. Never blocks the operator's save.
+        same workcenter and is not finished. It only updates input lines that
+        already exist (the context flag stops get_previous_rolls creating
+        new ones), so the deduction logic lives in one place. Never blocks
+        the operator's save.
         """
         for wo in self:
             ordered = wo.production_id.workorder_ids.sorted(
@@ -1726,12 +1727,12 @@ class MrpWorkorder(models.Model):
                 continue
             nxt = ordered[ids.index(wo.id) + 1]
             if (nxt.workcenter_id != wo.workcenter_id
-                    or not nxt.prev_roll_line_ids
                     or nxt.state in ('done', 'cancel')):
                 continue
             try:
                 with self.env.cr.savepoint():
-                    nxt.get_previous_rolls()
+                    nxt.with_context(
+                        only_update_existing_rolls=True).get_previous_rolls()
             except Exception:  # noqa: BLE001
                 _logger.exception(
                     "Same-WC input roll sync failed: WO=%s -> next WO=%s",
@@ -1855,6 +1856,11 @@ class MrpWorkorder(models.Model):
                         exists[0].quantity = qty_done
                         _logger.info(
                             "  updating existing line qty to %s", qty_done)
+                        continue
+
+                    if self.env.context.get('only_update_existing_rolls'):
+                        # Background sync: never load lots the operator
+                        # hasn't loaded themselves.
                         continue
 
                     roll = wo.env['mrp.production.roll'].search([
