@@ -333,8 +333,16 @@ class MrpWoRollLine(models.Model):
                 )
         # ─────────────────────────────────────────────────────────────────
 
+        if rec.workorder_id and rec.prev_roll_id:
+            rec.workorder_id._sync_next_same_wc_input_rolls()
 
         return rec
+
+    def unlink(self):
+        workorders = self.filtered('prev_roll_id').mapped('workorder_id')
+        res = super().unlink()
+        workorders._sync_next_same_wc_input_rolls()
+        return res
 
     def write(self, vals):
         skip_flag = self.env.context.get('skip_remained_update')
@@ -342,6 +350,10 @@ class MrpWoRollLine(models.Model):
 
         if not skip_flag:
             self._sync_prev_roll_remained_qty()
+
+            if 'consumed_qty' in vals or 'prev_roll_id' in vals:
+                self.filtered('prev_roll_id').mapped(
+                    'workorder_id')._sync_next_same_wc_input_rolls()
 
             # ── Update source roll WIP value on consumption ───────────────
             if 'consumed_qty' in vals:

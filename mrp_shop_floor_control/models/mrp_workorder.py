@@ -1709,6 +1709,35 @@ class MrpWorkorder(models.Model):
                     return consumed
         return 0.0
 
+    def _sync_next_same_wc_input_rolls(self):
+        """Keep the immediately following work order's loaded input rolls in
+        step with what this work order consumed.
+
+        Only applies when the next work order (by sequence, id) runs on the
+        same workcenter and is not finished. It only updates input lines that
+        already exist (the context flag stops get_previous_rolls creating
+        new ones), so the deduction logic lives in one place. Never blocks
+        the operator's save.
+        """
+        for wo in self:
+            ordered = wo.production_id.workorder_ids.sorted(
+                lambda w: (w.sequence, w.id))
+            ids = ordered.ids
+            if wo.id not in ids or ids.index(wo.id) + 1 >= len(ids):
+                continue
+            nxt = ordered[ids.index(wo.id) + 1]
+            if (nxt.workcenter_id != wo.workcenter_id
+                    or nxt.state in ('done', 'cancel')):
+                continue
+            try:
+                with self.env.cr.savepoint():
+                    nxt.with_context(
+                        only_update_existing_rolls=True).get_previous_rolls()
+            except Exception:  # noqa: BLE001
+                _logger.exception(
+                    "Same-WC input roll sync failed: WO=%s -> next WO=%s",
+                    wo.name, nxt.name)
+
     def get_previous_rolls(self):
         """Batch-safe: populate prev_roll_line_ids from DONE pickings'
         lots for each WO."""
@@ -1808,6 +1837,13 @@ class MrpWorkorder(models.Model):
                     if float_compare(
                             qty_done, 0.0,
                             precision_digits=precision) <= 0:
+                        # Fully consumed upstream: zero any line loaded
+                        # earlier so it doesn't keep the stale quantity.
+                        stale = wo.prev_roll_line_ids.filtered(
+                            lambda l: l.roll_id
+                            and l.roll_id.name == lot_name)
+                        if stale:
+                            stale.write({'quantity': 0.0})
                         _logger.info("  skipping — qty_done=0 after deduction")
                         continue
 
@@ -1820,6 +1856,11 @@ class MrpWorkorder(models.Model):
                         exists[0].quantity = qty_done
                         _logger.info(
                             "  updating existing line qty to %s", qty_done)
+                        continue
+
+                    if self.env.context.get('only_update_existing_rolls'):
+                        # Background sync: never load lots the operator
+                        # hasn't loaded themselves.
                         continue
 
                     roll = wo.env['mrp.production.roll'].search([
@@ -2001,6 +2042,11 @@ class MrpWorkorder(models.Model):
                 if float_compare(
                         qty_done, 0.0,
                         precision_digits=precision) <= 0:
+                    stale = self.prev_roll_line_ids.filtered(
+                        lambda l: l.roll_id
+                        and l.roll_id.name == lot_name)
+                    if stale:
+                        stale.write({'quantity': 0.0})
                     continue
 
                 exists = self.prev_roll_line_ids.filtered(
