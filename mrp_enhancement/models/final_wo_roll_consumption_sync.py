@@ -37,6 +37,8 @@ class FinalWoRollConsumptionSync(models.Model):
             return res
         if 'consumed_qty' in vals or 'previous_roll_id' in vals:
             for rec in self:
+                if rec.input_line_ids:
+                    continue  # posted per input line
                 rec._sync_final_wip_roll_stock(rec._get_input_roll_lot())
         return res
 

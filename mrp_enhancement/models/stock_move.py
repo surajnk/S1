@@ -24,6 +24,17 @@ class StockMove(models.Model):
              "workcenter location).",
     )
 
+    x_final_roll_input_id = fields.Many2one(
+        'final.wo.roll.input',
+        string='Final Roll Input Line',
+        copy=False,
+        index=True,
+        ondelete='set null',
+        help="Input line of a final roll line whose consumption caused this "
+             "stock move (used when a final roll line has several input "
+             "rolls; x_final_roll_line_id covers the single-roll case).",
+    )
+
     def _get_operation_split_location(self):
         """Workcenter location of the first operation (by sequence) under
         the "Multiple Operations" of the BOM line behind this MO raw move,
