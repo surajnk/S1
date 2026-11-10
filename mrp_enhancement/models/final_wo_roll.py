@@ -23,6 +23,63 @@ class MrpWOFinalRoll(models.Model):
     remained_qty = fields.Float(string="Remained Qty", compute="_compute_remained_qty", copy=0, readonly=0)
     partial_done_qty = fields.Float(string="Partially Done Quantity")
 
+    # One output roll can be fed by several input rolls. The single-roll
+    # fields above are kept: when input lines exist they mirror them (see
+    # _refresh_from_input_lines); when there are none this is a legacy line
+    # and those fields keep the value stored on the line itself.
+    input_line_ids = fields.One2many(
+        'final.wo.roll.input', 'final_roll_id', string='Input Rolls', copy=False)
+    has_input_lines = fields.Boolean(compute='_compute_has_input_lines')
+    input_roll_summary = fields.Char(
+        string='Input Rolls', compute='_compute_input_roll_summary', store=True)
+
+    @api.depends('input_line_ids')
+    def _compute_has_input_lines(self):
+        for rec in self:
+            rec.has_input_lines = bool(rec.input_line_ids)
+
+    @api.depends('input_line_ids.previous_roll_id.roll_id.name',
+                 'previous_roll_id.roll_id.name')
+    def _compute_input_roll_summary(self):
+        for rec in self:
+            rolls = rec.input_line_ids.mapped('previous_roll_id') or rec.previous_roll_id
+            rec.input_roll_summary = ', '.join(
+                name for name in rolls.mapped('roll_id.name') if name)
+
+    def _refresh_from_input_lines(self):
+        """Mirror the input lines into the legacy single-roll fields.
+
+        Lines without input lines are legacy lines: left untouched, so they
+        keep the values stored on them (this is the legacy fallback).
+        """
+        for rec in self:
+            lines = rec.input_line_ids
+            if not lines:
+                continue
+            vals = {
+                'previous_roll_id': lines[0].previous_roll_id.id,
+                'previous_roll_quantity': sum(lines.mapped('previous_roll_quantity')),
+                'consumed_qty': sum(lines.mapped('consumed_qty')),
+                'is_fully_consumed': all(lines.mapped('is_fully_consumed')),
+            }
+            changed = {
+                key: val for key, val in vals.items()
+                if (rec[key].id if key == 'previous_roll_id' else rec[key]) != val
+            }
+            if changed:
+                # Stock for input lines is posted per input line, never from
+                # this parent write (see final_wo_roll_consumption_sync).
+                rec.with_context(final_roll_from_inputs=True).write(changed)
+
+    def unlink(self):
+        legacy_rolls = self.filtered(lambda r: not r.input_line_ids).mapped('previous_roll_id')
+        # A DB cascade would skip the input lines' unlink (roll status
+        # reset), so delete them explicitly first.
+        self.with_context(final_roll_parent_unlink=True).mapped('input_line_ids').unlink()
+        res = super().unlink()
+        self.env['final.wo.roll.input']._set_roll_status(legacy_rolls)
+        return res
+
 
     @api.depends('total_qty')
     def _compute_yards_qty(self):
@@ -267,14 +324,21 @@ class MrpWOFinalRoll(models.Model):
             else:
                 rec.yards_qty = 0
 
-    @api.depends('total_qty', 'consumed_qty')
+    @api.depends('total_qty', 'consumed_qty', 'input_line_ids.remained_qty')
     def _compute_remained_qty(self):
         for rec in self:
+            if rec.input_line_ids:
+                # Per-roll remained qty lives on (and is written to the roll
+                # by) the input lines.
+                rec.remained_qty = sum(rec.input_line_ids.mapped('remained_qty'))
+                continue
             rec.remained_qty = rec.previous_roll_quantity - rec.consumed_qty
             rec.previous_roll_id.remained_qty = rec.previous_roll_quantity - rec.consumed_qty
 
     @api.onchange('is_fully_consumed')
     def onchange_is_fully_consumed(self):
+        if self.input_line_ids:
+            return  # roll status is driven by the input lines
         if self.is_fully_consumed:
             self.previous_roll_id.status = 'done'
         else:
