@@ -72,6 +72,22 @@ class FinalWoRollInput(models.Model):
             ('input_line_ids', '=', False)]))
 
     @api.model
+    def _confirmed_consumed(self, roll, workorder):
+        """Quantity of ``roll`` already consumed by the saved final lines of
+        ``workorder``: input lines plus legacy lines (no input lines) that
+        carry the roll on the parent. Used by the roll line wizard to work
+        out what is still available on a roll."""
+        lines = self.search([
+            ('previous_roll_id', '=', roll.id),
+            ('workorder_id', '=', workorder.id)])
+        legacy = self.env['final.wo.roll'].search([
+            ('previous_roll_id', '=', roll.id),
+            ('workorder_id', '=', workorder.id),
+            ('input_line_ids', '=', False)])
+        return (sum(lines.mapped('consumed_qty'))
+                + sum(legacy.mapped('consumed_qty')))
+
+    @api.model
     def _set_roll_status(self, rolls):
         for roll in rolls.exists():
             status = 'done' if self._roll_is_fully_consumed(roll) else 'available'

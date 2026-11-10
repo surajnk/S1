@@ -40,20 +40,48 @@
                 </group>
                 <group>
                     <field name="final_roll_line_ids">
-                        <tree string="Final Roll Detail" editable="bottom">
+                        <tree string="Final Roll Detail">
                             <field name="parent_roll_id" invisible="1"/>
                             <field name="workorder_id" invisible="1"/>
-                            <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"/>
+                            <field name="has_input_lines" invisible="1"/>
+                            <field name="input_roll_summary"/>
                             <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
-                            <field name="remained_qty" sum="Total"/>
-                            <!-- <field name="previous_roll_quantity"/> -->
-                            <!-- <field name="date_start"/> -->
-                            <field name="is_fully_consumed"/>
-                            <field name="consumed_qty" sum="Total" required="1"/>
+                            <field name="input_consumed_qty" sum="Total"/>
                             <field name="total_qty" sum="Total"/>
                             <field name="yards_qty" sum="Total"/>
-                            
                         </tree>
+                        <form string="Final Roll Detail">
+                            <group>
+                                <group>
+                                    <field name="parent_roll_id" invisible="1"/>
+                                    <field name="workorder_id" invisible="1"/>
+                                    <field name="has_input_lines" invisible="1"/>
+                                    <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
+                                    <field name="total_qty"/>
+                                    <field name="yards_qty"/>
+                                </group>
+                                <group>
+                                    <!-- Only for a row with no input roll lines (original single-roll way). -->
+                                    <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"
+                                           attrs="{'invisible': [('has_input_lines', '=', True)]}"/>
+                                    <field name="is_fully_consumed" attrs="{'invisible': [('has_input_lines', '=', True)]}"/>
+                                    <field name="consumed_qty" attrs="{'invisible': [('has_input_lines', '=', True)]}"/>
+                                    <field name="remained_qty" attrs="{'invisible': [('has_input_lines', '=', True)]}"/>
+                                </group>
+                            </group>
+                            <separator string="Input Rolls"/>
+                            <field name="input_line_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="final_wiz_id" invisible="1"/>
+                                    <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id'), 'workorder_id': context.get('active_id')}"/>
+                                    <field name="previous_roll_quantity"/>
+                                    <field name="is_fully_consumed"/>
+                                    <field name="consumed_qty" sum="Total" required="1"/>
+                                    <field name="remained_qty"/>
+                                </tree>
+                            </field>
+                        </form>
                     </field>
                 </group>
             </sheet>
