@@ -61,6 +61,16 @@ class MrpWoRollLine(models.Model):
                                tracking=True, copy=False, default='available')
     remained_qty = fields.Float(string="Remained Qty", copy=0, readonly=0)
 
+    def _get_final_input_consumed(self, production, lot):
+        """Final Yield input lines of this MO that book ``lot`` on a raw move
+        count towards the lot's total (see mrp_shop_floor_control)."""
+        total = super()._get_final_input_consumed(production, lot)
+        for line in self.env['final.wo.roll.input'].sudo().search(
+                [('workorder_id.production_id', '=', production.id)]):
+            if line._get_input_roll_lot() == lot and line._get_raw_move(lot):
+                total += line.consumed_qty
+        return total
+
     @api.model
     def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
         if self._context.get('get_prev_roll_from_workorder_id'):

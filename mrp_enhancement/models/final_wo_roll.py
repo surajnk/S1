@@ -77,6 +77,7 @@ class MrpWOFinalRoll(models.Model):
         # reset), so delete them explicitly first.
         self.with_context(final_roll_parent_unlink=True).mapped('input_line_ids').unlink()
         res = super().unlink()
+        self.env['final.wo.roll.input']._refresh_roll_remained(legacy_rolls)
         self.env['final.wo.roll.input']._set_roll_status(legacy_rolls)
         return res
 

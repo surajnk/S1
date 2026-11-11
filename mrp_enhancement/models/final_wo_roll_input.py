@@ -88,6 +88,21 @@ class FinalWoRollInput(models.Model):
                 + sum(legacy.mapped('consumed_qty')))
 
     @api.model
+    def _refresh_roll_remained(self, rolls):
+        """Set each roll's remained_qty from what is really consumed of it
+        (input lines plus legacy lines), instead of a snapshot that nothing
+        restores when a line is changed or deleted."""
+        for roll in rolls.exists():
+            consumed = (
+                sum(self.search([('previous_roll_id', '=', roll.id)]).mapped('consumed_qty'))
+                + sum(self.env['final.wo.roll'].search([
+                    ('previous_roll_id', '=', roll.id),
+                    ('input_line_ids', '=', False)]).mapped('consumed_qty')))
+            remained = roll.quantity - consumed
+            if roll.remained_qty != remained:
+                roll.remained_qty = remained
+
+    @api.model
     def _set_roll_status(self, rolls):
         for roll in rolls.exists():
             status = 'done' if self._roll_is_fully_consumed(roll) else 'available'
@@ -95,10 +110,9 @@ class FinalWoRollInput(models.Model):
                 roll.status = status
 
     def _after_input_change(self, old_rolls=None):
-        for rec in self:
-            # Same bookkeeping the legacy parent did on its single roll.
-            rec.previous_roll_id.remained_qty = rec.remained_qty
-        self._set_roll_status(self.mapped('previous_roll_id') | (old_rolls or self.env['mrp.wo.roll.line']))
+        rolls = self.mapped('previous_roll_id') | (old_rolls or self.env['mrp.wo.roll.line'])
+        self._refresh_roll_remained(rolls)
+        self._set_roll_status(rolls)
         self.mapped('final_roll_id')._refresh_from_input_lines()
 
     # ── CRUD ──────────────────────────────────────────────────────────────
@@ -121,6 +135,7 @@ class FinalWoRollInput(models.Model):
         rolls = self.mapped('previous_roll_id')
         parents = self.mapped('final_roll_id')
         res = super().unlink()
+        self._refresh_roll_remained(rolls)
         self._set_roll_status(rolls)
         # When the parent itself is being deleted it must not be refreshed.
         if not self.env.context.get('final_roll_parent_unlink'):
