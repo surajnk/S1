@@ -66,7 +66,15 @@ class MrpWoRollLineConsumptionSync(models.Model):
                 ('prev_roll_id', '=', roll.id),
                 ('workorder_id.production_id', '=', production.id),
             ]).mapped('consumed_qty'))
+            total_consumed += self._get_final_input_consumed(production, lot)
             self._sync_raw_move_early(production, lot, False, total_consumed)
+
+    def _get_final_input_consumed(self, production, lot):
+        """Hook: quantity of ``lot`` that other consumers recorded on the
+        MO's raw moves (Final Yield input lines, see mrp_enhancement). The
+        early-consumption sync adds it to the roll lines' total so that it is
+        not taken off again. Nothing here: 0."""
+        return 0.0
 
     # ── WIP roll stock handling ───────────────────────────────────────────
     # A WIP roll is a lot of the finished product, so there is no raw
@@ -358,7 +366,9 @@ class MrpWoRollLineConsumptionSync(models.Model):
             # )
 
             if self.env['stock.move']._early_raw_consumption_enabled():
-                rec._sync_raw_move_early(production, lot, raw_move, total_consumed)
+                rec._sync_raw_move_early(
+                    production, lot, raw_move,
+                    total_consumed + rec._get_final_input_consumed(production, lot))
                 continue
 
             existing_line = raw_move.move_line_ids.filtered(lambda ml: ml.lot_id == lot)
