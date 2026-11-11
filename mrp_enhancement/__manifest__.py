@@ -8,7 +8,7 @@
     "description": """
 Set Mid Point Scheduling functionality on manufacturing wo lines
 """,
-    'version': '14.0.1.0.2',
+    'version': '14.0.1.0.4',
     "depends": [
         "mrp", "stock", "sale_stock",
         "mrp_shop_floor_control", "eq_invoice_from_picking",

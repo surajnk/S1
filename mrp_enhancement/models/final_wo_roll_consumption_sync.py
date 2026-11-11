@@ -25,13 +25,20 @@ class FinalWoRollConsumptionSync(models.Model):
     def create(self, vals_list):
         recs = super().create(vals_list)
         for rec in recs:
+            if rec.input_line_ids:
+                continue  # stock is posted per input line, not from the parent
             rec._sync_final_wip_roll_stock(rec._get_input_roll_lot())
         return recs
 
     def write(self, vals):
         res = super().write(vals)
+        if self.env.context.get('final_roll_from_inputs'):
+            # Parent fields mirrored from the input lines: not a user edit.
+            return res
         if 'consumed_qty' in vals or 'previous_roll_id' in vals:
             for rec in self:
+                if rec.input_line_ids:
+                    continue  # posted per input line
                 rec._sync_final_wip_roll_stock(rec._get_input_roll_lot())
         return res
 

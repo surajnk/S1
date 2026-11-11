@@ -9,6 +9,8 @@ from . import res_users
 from . import stock_move_line
 from . import mrp_wo_roll_line
 from . import final_wo_roll
+from . import final_wo_roll_input
+from . import final_wo_roll_input_stock
 from . import final_wo_roll_consumption_sync
 from . import mrp_workcenter
 from . import res_config_settings

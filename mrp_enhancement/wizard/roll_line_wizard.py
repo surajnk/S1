@@ -50,18 +50,7 @@ class RollLines(models.TransientModel):
             if vals:
                 self.workorder_id.roll_line_ids = [val for val in vals]
         elif self.final_roll_line_ids:
-            for rec in self.final_roll_line_ids:
-                vals.append((0, 0, {
-                    'workorder_id': self.workorder_id and self.workorder_id.id,
-                    'previous_roll_id': rec.previous_roll_id and rec.previous_roll_id.id,
-                    'previous_roll_quantity' : rec.remained_qty,
-                    'user_id': rec.user_id and rec.user_id.id,
-                    'date_start': rec.date_start,
-                    'is_fully_consumed': rec.is_fully_consumed,
-                    'consumed_qty': rec.consumed_qty,
-                    'total_qty': rec.total_qty,
-                    'partial_done_qty': rec.partial_done_qty,
-                }))
+            vals = self._prepare_final_roll_vals()
             if vals:
                 self.workorder_id.final_roll_line_ids = vals
 
@@ -111,18 +100,7 @@ class RollLines(models.TransientModel):
             if vals:
                 self.workorder_id.roll_line_ids = [val for val in vals]
         elif self.final_roll_line_ids:
-            for rec in self.final_roll_line_ids:
-                vals.append((0, 0, {
-                    'workorder_id': self.workorder_id and self.workorder_id.id,
-                    'previous_roll_id': rec.previous_roll_id and rec.previous_roll_id.id,
-                    'previous_roll_quantity' : rec.remained_qty,
-                    'user_id': rec.user_id and rec.user_id.id,
-                    'date_start': rec.date_start,
-                    'is_fully_consumed': rec.is_fully_consumed,
-                    'consumed_qty': rec.consumed_qty,
-                    'total_qty': rec.total_qty,
-                    'partial_done_qty': rec.partial_done_qty,
-                }))
+            vals = self._prepare_final_roll_vals()
             if vals:
                 self.workorder_id.final_roll_line_ids = vals
 
@@ -155,6 +133,40 @@ class RollLines(models.TransientModel):
         else:
             self.workorder_id.with_context(ctx).button_pending()
         # return {'type': 'ir.actions.act_window_close'}
+
+    def _prepare_final_roll_vals(self):
+        """Create commands for ``workorder.final_roll_line_ids``.
+
+        A row with input rolls creates the Final Yield line together with its
+        input lines (the line mirrors them into its single-roll fields). A
+        row without any keeps the original single-roll values untouched.
+        """
+        vals = []
+        for rec in self.final_roll_line_ids:
+            common = {
+                'workorder_id': self.workorder_id and self.workorder_id.id,
+                'user_id': rec.user_id and rec.user_id.id,
+                'date_start': rec.date_start,
+                'total_qty': rec.total_qty,
+                'partial_done_qty': rec.partial_done_qty,
+            }
+            if rec.input_line_ids:
+                common['input_line_ids'] = [(0, 0, {
+                    'sequence': line.sequence,
+                    'previous_roll_id': line.previous_roll_id.id,
+                    'previous_roll_quantity': line.previous_roll_quantity,
+                    'consumed_qty': line.consumed_qty,
+                    'is_fully_consumed': line.is_fully_consumed,
+                }) for line in rec.input_line_ids]
+            else:
+                common.update({
+                    'previous_roll_id': rec.previous_roll_id and rec.previous_roll_id.id,
+                    'previous_roll_quantity': rec.remained_qty,
+                    'is_fully_consumed': rec.is_fully_consumed,
+                    'consumed_qty': rec.consumed_qty,
+                })
+            vals.append((0, 0, common))
+        return vals
 
 
 class RollLinesWiz(models.TransientModel):
@@ -468,11 +480,57 @@ class FinalRollLinesWiz(models.TransientModel):
     partial_done_qty = fields.Float(string="Partially Done Quantity")
     user_id = fields.Many2one("res.users", string='User', required=True, related='parent_roll_id.user_id', copy=0)
 
+    # Several input rolls can feed this one output roll. A row without input
+    # lines keeps working with the single-roll fields above.
+    input_line_ids = fields.One2many('final.wo.roll.input.wiz', 'final_wiz_id', string='Input Rolls')
+    has_input_lines = fields.Boolean(compute='_compute_input_summary')
+    input_roll_summary = fields.Char(string='Input Rolls', compute='_compute_input_summary')
+    input_consumed_qty = fields.Float(string='Consumed Qty', compute='_compute_input_summary')
+
+    @api.depends('input_line_ids.previous_roll_id', 'input_line_ids.consumed_qty',
+                 'previous_roll_id', 'consumed_qty')
+    def _compute_input_summary(self):
+        for rec in self:
+            lines = rec.input_line_ids
+            rec.has_input_lines = bool(lines)
+            rolls = lines.mapped('previous_roll_id') or rec.previous_roll_id
+            rec.input_roll_summary = ', '.join(
+                name for name in rolls.mapped('roll_id.name') if name)
+            rec.input_consumed_qty = (
+                sum(lines.mapped('consumed_qty')) if lines else rec.consumed_qty)
+
     @api.constrains('consumed_qty')
     def _check_consumed_qty_positive(self):
         for rec in self:
+            if rec.input_line_ids:
+                continue  # each input line is checked on its own
             if rec.consumed_qty <= 0:
                 raise ValidationError(_("Consumed Qty must be greater than 0."))
+
+    def _get_wizard_workorder(self):
+        workorder = self.parent_roll_id.workorder_id
+        if not workorder and self._context.get('workorder_id'):
+            workorder = self.env['mrp.workorder'].browse(
+                self._context.get('workorder_id'))
+        return workorder
+
+    def _roll_consumed_elsewhere(self, roll, workorder):
+        """Quantity of ``roll`` already consumed by the saved final lines of
+        the workorder plus the other rows of this wizard (this row excluded).
+        Rows with input lines count their input lines per roll."""
+        confirmed = self.env['final.wo.roll.input']._confirmed_consumed(
+            roll, workorder) if workorder else 0.0
+        wizard = 0.0
+        for row in self.parent_roll_id.final_roll_line_ids:
+            if row == self:
+                continue
+            if row.input_line_ids:
+                wizard += sum(
+                    line.consumed_qty or 0.0 for line in row.input_line_ids
+                    if line.previous_roll_id.id == roll.id)
+            elif row.previous_roll_id and row.previous_roll_id.id == roll.id:
+                wizard += row.consumed_qty or 0.0
+        return confirmed + wizard
 
     @api.depends('parent_roll_id.workorder_id')
     def _compute_prev_roll_ids(self):
@@ -542,28 +600,14 @@ class FinalRollLinesWiz(models.TransientModel):
 
     @api.onchange('is_fully_consumed')
     def _onchange_is_fully_consumed(self):
-        workorder = self.parent_roll_id.workorder_id
-        if not workorder and self._context.get('workorder_id'):
-            workorder = self.env['mrp.workorder'].browse(
-                self._context.get('workorder_id'))
+        workorder = self._get_wizard_workorder()
 
         if not self.previous_roll_id or not workorder:
             return
 
-        confirmed_consumed = sum(
-            line.consumed_qty or 0.0
-            for line in workorder.final_roll_line_ids
-            if line.previous_roll_id.id == self.previous_roll_id.id
-        )
-        wizard_consumed = sum(
-            line.consumed_qty or 0.0
-            for line in self.parent_roll_id.final_roll_line_ids
-            if line.previous_roll_id
-            and line.previous_roll_id.id == self.previous_roll_id.id
-            and line != self
-        )
         remaining = max(
-            self.previous_roll_id.quantity - confirmed_consumed - wizard_consumed,
+            self.previous_roll_id.quantity
+            - self._roll_consumed_elsewhere(self.previous_roll_id, workorder),
             0.0
         )
 
@@ -614,23 +658,9 @@ class FinalRollLinesWiz(models.TransientModel):
                 rec.remained_qty = 0.0
                 continue
 
-            confirmed_consumed = sum(
-                line.consumed_qty for line in workorder.final_roll_line_ids
-                if line.previous_roll_id.id == rec.previous_roll_id.id
-            )
-
-            wizard_consumed = sum(
-                line.consumed_qty or 0.0
-                for line in rec.parent_roll_id.final_roll_line_ids
-                if line.previous_roll_id
-                and line.previous_roll_id.id == rec.previous_roll_id.id
-                and line != rec
-            )
-
             rec.remained_qty = max(
                 rec.previous_roll_id.quantity
-                - confirmed_consumed
-                - wizard_consumed,
+                - rec._roll_consumed_elsewhere(rec.previous_roll_id, workorder),
                 0.0
             )
 
@@ -641,10 +671,8 @@ class FinalRollLinesWiz(models.TransientModel):
 
         workorder = self.parent_roll_id.workorder_id
 
-        confirmed_consumed = sum(
-            line.consumed_qty for line in workorder.final_roll_line_ids
-            if line.previous_roll_id.id == self.previous_roll_id.id
-        ) if workorder else 0.0
+        confirmed_consumed = self.env['final.wo.roll.input']._confirmed_consumed(
+            self.previous_roll_id, workorder) if workorder else 0.0
 
         for sibling in self.parent_roll_id.final_roll_line_ids:
             if not sibling.previous_roll_id:
@@ -747,3 +775,86 @@ class FinalRollLinesWiz(models.TransientModel):
     # def _compute_remained_qty(self):
     #     for rec in self:
     #         rec.remained_qty = rec.previous_roll_quantity - rec.consumed_qty
+
+class FinalRollInputWiz(models.TransientModel):
+    """One input roll of a Final Roll row in the roll line wizard.
+
+    Same arithmetic as the single-roll row: what is available on a roll is
+    its quantity minus what saved final lines and the other wizard lines
+    already consumed of it.
+    """
+    _name = "final.wo.roll.input.wiz"
+    _description = "Final Roll Input Roll Wizard"
+    _order = "sequence, id"
+
+    sequence = fields.Integer(default=10)
+    final_wiz_id = fields.Many2one('final.wo.roll.wiz', ondelete='cascade')
+    previous_roll_id = fields.Many2one('mrp.wo.roll.line', 'Input Roll', required=True)
+    previous_roll_quantity = fields.Float(string="Available Qty", readonly=True)
+    is_fully_consumed = fields.Boolean(string='Fully Consumed')
+    consumed_qty = fields.Float(string="Consumed Qty")
+    remained_qty = fields.Float(string="Remained Qty", compute='_compute_remained_qty')
+
+    @api.depends('previous_roll_quantity', 'consumed_qty')
+    def _compute_remained_qty(self):
+        for rec in self:
+            rec.remained_qty = rec.previous_roll_quantity - rec.consumed_qty
+
+    @api.constrains('consumed_qty')
+    def _check_consumed_qty_positive(self):
+        for rec in self:
+            if rec.consumed_qty <= 0:
+                raise ValidationError(_("Consumed Qty must be greater than 0."))
+
+    @api.constrains('previous_roll_id', 'final_wiz_id')
+    def _check_roll_not_repeated(self):
+        for rec in self:
+            same = rec.final_wiz_id.input_line_ids.filtered(
+                lambda l: l.previous_roll_id == rec.previous_roll_id)
+            if rec.previous_roll_id and len(same) > 1:
+                raise ValidationError(_(
+                    "Input roll %s is added more than once to the same "
+                    "Final Roll line.") % rec.previous_roll_id.display_name)
+
+    def _get_workorder(self):
+        workorder = self.final_wiz_id.parent_roll_id.workorder_id
+        if not workorder:
+            wo_id = self._context.get('workorder_id') or (
+                self._context.get('active_model') == 'mrp.workorder'
+                and self._context.get('active_id'))
+            workorder = self.env['mrp.workorder'].browse(wo_id) if wo_id else workorder
+        return workorder
+
+    def _get_available_qty(self):
+        """Quantity still available on the selected roll for this line."""
+        self.ensure_one()
+        roll = self.previous_roll_id
+        workorder = self._get_workorder()
+        confirmed = self.env['final.wo.roll.input']._confirmed_consumed(
+            roll, workorder) if workorder else 0.0
+        others = 0.0
+        rows = self.final_wiz_id.parent_roll_id.final_roll_line_ids or self.final_wiz_id
+        for row in rows:
+            if row.input_line_ids:
+                others += sum(
+                    line.consumed_qty or 0.0 for line in row.input_line_ids
+                    if line != self and line.previous_roll_id.id == roll.id)
+            elif row != self.final_wiz_id and row.previous_roll_id.id == roll.id:
+                others += row.consumed_qty or 0.0
+        return max(roll.quantity - confirmed - others, 0.0)
+
+    @api.onchange('previous_roll_id')
+    def _onchange_previous_roll_id(self):
+        if not self.previous_roll_id:
+            self.previous_roll_quantity = 0.0
+            return
+        self.previous_roll_quantity = self._get_available_qty()
+        if self.is_fully_consumed:
+            self.consumed_qty = self.previous_roll_quantity
+
+    @api.onchange('is_fully_consumed')
+    def _onchange_is_fully_consumed(self):
+        if not self.previous_roll_id:
+            return
+        self.previous_roll_quantity = self._get_available_qty()
+        self.consumed_qty = self.previous_roll_quantity if self.is_fully_consumed else 0.0
