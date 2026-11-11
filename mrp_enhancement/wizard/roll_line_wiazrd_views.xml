@@ -45,7 +45,6 @@
                             <field name="workorder_id" invisible="1"/>
                             <field name="has_input_lines" invisible="1"/>
                             <field name="input_roll_summary"/>
-                            <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
                             <field name="input_consumed_qty" sum="Total"/>
                             <field name="total_qty" sum="Total"/>
                             <field name="yards_qty" sum="Total"/>
@@ -56,7 +55,9 @@
                                     <field name="parent_roll_id" invisible="1"/>
                                     <field name="workorder_id" invisible="1"/>
                                     <field name="has_input_lines" invisible="1"/>
-                                    <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
+                                    <!-- shown in the list once the row is added -->
+                                    <field name="input_roll_summary" invisible="1"/>
+                                    <field name="input_consumed_qty" invisible="1"/>
                                     <field name="total_qty"/>
                                     <field name="yards_qty"/>
                                 </group>
@@ -70,11 +71,13 @@
                                 </group>
                             </group>
                             <separator string="Input Rolls"/>
-                            <field name="input_line_ids" nolabel="1">
+                            <!-- `parent` here is the wizard, whose workorder_id is always set;
+                                 the client-side active_id is not reliable inside a nested popup. -->
+                            <field name="input_line_ids" nolabel="1" context="{'workorder_id': parent.workorder_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="final_wiz_id" invisible="1"/>
-                                    <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id'), 'workorder_id': context.get('active_id')}"/>
+                                    <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('workorder_id') or context.get('active_id'), 'workorder_id': context.get('workorder_id') or context.get('active_id')}"/>
                                     <field name="previous_roll_quantity"/>
                                     <field name="is_fully_consumed"/>
                                     <field name="consumed_qty" sum="Total" required="1"/>

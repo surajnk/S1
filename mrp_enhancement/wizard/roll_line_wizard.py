@@ -145,7 +145,8 @@ class RollLines(models.TransientModel):
         for rec in self.final_roll_line_ids:
             common = {
                 'workorder_id': self.workorder_id and self.workorder_id.id,
-                'user_id': rec.user_id and rec.user_id.id,
+                # The row's user is the wizard's User (related field).
+                'user_id': (rec.user_id or self.user_id).id,
                 'date_start': rec.date_start,
                 'total_qty': rec.total_qty,
                 'partial_done_qty': rec.partial_done_qty,
