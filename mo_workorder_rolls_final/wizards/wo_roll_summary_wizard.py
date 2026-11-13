@@ -120,6 +120,15 @@ class WoRollSummaryWizard(models.TransientModel):
             for fr in wo.final_roll_line_ids:
                 final_roll_lines.append((0, 0, {
                     'previous_roll_id': fr.previous_roll_id.id,
+                    # All input rolls of the line (a line without input lines
+                    # is an older single-roll line: the summary is that roll).
+                    'input_roll_summary': fr.input_roll_summary,
+                    'input_line_ids': [(0, 0, {
+                        'previous_roll_id': il.previous_roll_id.id,
+                        'consumed_qty': il.consumed_qty,
+                        'remained_qty': il.remained_qty,
+                        'is_fully_consumed': il.is_fully_consumed,
+                    }) for il in fr.input_line_ids],
                     'user_id': fr.user_id.id,
                     'remained_qty': fr.remained_qty,
                     'is_fully_consumed': fr.is_fully_consumed,
@@ -191,6 +200,13 @@ class WoRollSummaryFinalRollLine(models.TransientModel):
 
     summary_line_id = fields.Many2one('wo.roll.summary.line')
     previous_roll_id = fields.Many2one('mrp.wo.roll.line', string='Input Roll')
+    input_roll_summary = fields.Char(string='Input Rolls')
+    input_line_ids = fields.One2many(
+        'wo.roll.summary.final.input.line',
+        'final_summary_line_id',
+        string='Input Rolls',
+        readonly=True,
+    )
     user_id = fields.Many2one('res.users', string='User')
     remained_qty = fields.Float(string='Remained Qty')
     is_fully_consumed = fields.Boolean(string='Fully Consumed')
@@ -198,3 +214,15 @@ class WoRollSummaryFinalRollLine(models.TransientModel):
     total_qty = fields.Float(string='Customer Qty')
     yards_qty = fields.Float(string='Qty(Yards)')
     date = fields.Datetime(string='Date')
+
+
+class WoRollSummaryFinalInputLine(models.TransientModel):
+    _name = 'wo.roll.summary.final.input.line'
+    _description = 'Workorder Final Roll Input Roll Line'
+
+    final_summary_line_id = fields.Many2one(
+        'wo.roll.summary.final.roll.line', ondelete='cascade')
+    previous_roll_id = fields.Many2one('mrp.wo.roll.line', string='Input Roll')
+    consumed_qty = fields.Float(string='Consumed Qty')
+    remained_qty = fields.Float(string='Remained Qty')
+    is_fully_consumed = fields.Boolean(string='Fully Consumed')

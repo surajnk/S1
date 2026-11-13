@@ -3,3 +3,4 @@ access_wo_roll_summary_wizard,access.wo.roll.summary.wizard,model_wo_roll_summar
 access_wo_roll_summary_line,access.wo.roll.summary.line,model_wo_roll_summary_line,,1,1,1,1
 access_wo_roll_summary_roll_line,access.wo.roll.summary.roll.line,model_wo_roll_summary_roll_line,,1,1,1,1
 access_wo_roll_summary_final_roll_line,access.wo.roll.summary.final.roll.line,model_wo_roll_summary_final_roll_line,,1,1,1,1
+access_wo_roll_summary_final_input_line,access.wo.roll.summary.final.input.line,model_wo_roll_summary_final_input_line,,1,1,1,1
