@@ -152,15 +152,37 @@
                     <field name="final_roll_line_ids" nolabel="1">
                         <tree string="Final Roll Detail" editable="bottom">
                             <field name="workorder_id" invisible="1"/>
-                            <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"/>
+                            <!-- Lines made with several input rolls mirror them into the
+                                 single-roll fields: those are read-only here, edit in the wizard. -->
+                            <field name="has_input_lines" invisible="1"/>
+                            <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('active_id')}"
+                                   attrs="{'readonly': [('has_input_lines', '=', True)]}"/>
+                            <field name="input_roll_summary" string="Input Rolls"/>
                             <field name="user_id" options="{'no_open':True,'no_create':True}" context="{'workorder_id': context.get('active_id')}"/>
-                            <field name="previous_roll_quantity" sum="Total"/>
+                            <field name="previous_roll_quantity" sum="Total"
+                                   attrs="{'readonly': [('has_input_lines', '=', True)]}"/>
                             <field name="date_start"/>
-                            <field name="is_fully_consumed"/>
-                            <field name="consumed_qty" sum="Total"/>
+                            <field name="is_fully_consumed"
+                                   attrs="{'readonly': [('has_input_lines', '=', True)]}"/>
+                            <field name="consumed_qty" sum="Total"
+                                   attrs="{'readonly': [('has_input_lines', '=', True)]}"/>
                             <field name="total_qty" sum="Total"/>
                             <field name="yards_qty" sum="Total"/>
                             <field name="remained_qty" sum="Total" invisible="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="Final Yield Input Rolls"
+                       attrs="{'invisible': [('final_input_line_ids', '=', [])]}">
+                    <field name="final_input_line_ids" nolabel="1">
+                        <tree create="false" delete="false" edit="false">
+                            <field name="previous_roll_id"/>
+                            <field name="previous_roll_quantity"/>
+                            <field name="is_fully_consumed"/>
+                            <field name="consumed_qty" sum="Total"/>
+                            <field name="remained_qty"/>
+                            <field name="final_total_qty"/>
+                            <field name="final_yards_qty"/>
                         </tree>
                     </field>
                 </group>

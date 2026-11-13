@@ -25,6 +25,10 @@ class MrpWorkorder(models.Model):
     outs = fields.Float(related="production_id.outs", string="Outs")
     put_up_size = fields.Float(related="production_id.put_up_size", string="Put up size")
     final_roll_line_ids = fields.One2many('final.wo.roll', 'workorder_id', string='Final Roll Lines')
+    # Read-only view of every input roll behind the Final Yield lines.
+    final_input_line_ids = fields.One2many(
+        'final.wo.roll.input', 'workorder_id', string='Final Yield Input Rolls',
+        readonly=True)
     total_final_yards_qty = fields.Float(
         string='Total Final Yards',
         compute='_compute_total_final_yards_qty',

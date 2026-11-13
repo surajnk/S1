@@ -1,10 +1,10 @@
 {
     'name': 'MO Workorder Rolls',
     'summary': 'Display workorders and output rolls for a manufacturing order',
-    'version': '14.0.1.0.0',
+    'version': '14.0.1.0.1',
     'category': 'Manufacturing',
     'author': 'Example',
-    'depends': ['mrp','mrp_shop_floor_control'],
+    'depends': ['mrp', 'mrp_shop_floor_control', 'mrp_enhancement'],
     'data': [
         'security/ir.model.access.csv',
         'views/wo_roll_summary_wizard.xml',

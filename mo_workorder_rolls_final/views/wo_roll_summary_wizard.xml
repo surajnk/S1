@@ -35,7 +35,7 @@
                                 <group string="Final Output Rolls">
                                     <field name="final_roll_line_ids" widget="one2many_list" nolabel="1">
                                         <tree editable="false" create="false" delete="false">
-                                            <field name="previous_roll_id"/>
+                                            <field name="input_roll_summary" string="Input Rolls"/>
                                             <field name="user_id"/>
                                             <field name="remained_qty"/>
                                             <field name="is_fully_consumed"/>
@@ -44,6 +44,29 @@
                                             <field name="yards_qty"/>
                                             <field name="date"/>
                                         </tree>
+                                        <form string="Final Output Roll">
+                                            <group>
+                                                <group>
+                                                    <field name="input_roll_summary" string="Input Rolls"/>
+                                                    <field name="user_id"/>
+                                                    <field name="date"/>
+                                                </group>
+                                                <group>
+                                                    <field name="consumed_qty"/>
+                                                    <field name="total_qty"/>
+                                                    <field name="yards_qty"/>
+                                                </group>
+                                            </group>
+                                            <separator string="Input Rolls"/>
+                                            <field name="input_line_ids" nolabel="1">
+                                                <tree create="false" delete="false">
+                                                    <field name="previous_roll_id"/>
+                                                    <field name="is_fully_consumed"/>
+                                                    <field name="consumed_qty" sum="Total"/>
+                                                    <field name="remained_qty"/>
+                                                </tree>
+                                            </field>
+                                        </form>
                                     </field>
                                 </group>
                             </form>

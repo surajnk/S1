@@ -35,6 +35,9 @@ class FinalWoRollInput(models.Model):
     is_fully_consumed = fields.Boolean(string='Fully Consumed', copy=False)
     remained_qty = fields.Float(
         string='Remained Qty', compute='_compute_remained_qty', store=True)
+    # Shown next to each input roll in the workorder's read-only input list.
+    final_total_qty = fields.Float(related='final_roll_id.total_qty', string='Customer Qty')
+    final_yards_qty = fields.Float(related='final_roll_id.yards_qty', string='Qty(Yards)')
 
     _sql_constraints = [
         ('final_roll_input_roll_uniq',

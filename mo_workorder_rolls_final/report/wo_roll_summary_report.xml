@@ -45,16 +45,29 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr t-foreach="line.final_roll_line_ids" t-as="fr">
-                                    <td><span t-field="fr.previous_roll_id"/></td>
-                                    <td><span t-field="fr.user_id"/></td>
-                                    <td class="text-right"><span t-field="fr.remained_qty"/></td>
-                                    <td><span t-field="fr.is_fully_consumed"/></td>
-                                    <td class="text-right"><span t-field="fr.consumed_qty"/></td>
-                                    <td class="text-right"><span t-field="fr.total_qty"/></td>
-                                    <td class="text-right"><span t-field="fr.yards_qty"/></td>
-                                    <td><span t-field="fr.date"/></td>
-                                </tr>
+                                <t t-foreach="line.final_roll_line_ids" t-as="fr">
+                                    <tr>
+                                        <td><span t-field="fr.input_roll_summary"/></td>
+                                        <td><span t-field="fr.user_id"/></td>
+                                        <td class="text-right"><span t-field="fr.remained_qty"/></td>
+                                        <td><span t-field="fr.is_fully_consumed"/></td>
+                                        <td class="text-right"><span t-field="fr.consumed_qty"/></td>
+                                        <td class="text-right"><span t-field="fr.total_qty"/></td>
+                                        <td class="text-right"><span t-field="fr.yards_qty"/></td>
+                                        <td><span t-field="fr.date"/></td>
+                                    </tr>
+                                    <!-- one line per input roll when a row has several -->
+                                    <t t-if="len(fr.input_line_ids) &gt; 1">
+                                        <tr t-foreach="fr.input_line_ids" t-as="il" class="text-muted">
+                                            <td style="padding-left: 20px;">&#8627; <span t-field="il.previous_roll_id"/></td>
+                                            <td/>
+                                            <td class="text-right"><span t-field="il.remained_qty"/></td>
+                                            <td><span t-field="il.is_fully_consumed"/></td>
+                                            <td class="text-right"><span t-field="il.consumed_qty"/></td>
+                                            <td colspan="3"/>
+                                        </tr>
+                                    </t>
+                                </t>
                             </tbody>
                         </table>
                     </div>
