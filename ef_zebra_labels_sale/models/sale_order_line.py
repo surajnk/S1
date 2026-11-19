@@ -19,6 +19,7 @@ class SaleOrderLine(models.Model):
             "customer": order.partner_id.name,
             "order_name": order.name,
             "part_desc": self.product_id.default_code,
+            "desc": self.product_id.name,
             "ref1": self.x_ref1,
             "po": order.client_order_ref,
             "uom": self.x_order_customer_uom.name,

@@ -2,7 +2,7 @@
 {
     "name": "EF Zebra Labels - Sales",
     "version": "14.0.1.0.0",
-    "summary": "Customer labels (INT505, CRE500, CAR635, ECO515, ECO525) printed from sale order lines",
+    "summary": "Customer labels (INT505, CRE500, CAR635, ECO515, ECO525, SHE570) printed from sale order lines",
     "author": "Your Team",
     "license": "LGPL-3",
     "depends": ["ef_zebra_labels", "ef_sales"],

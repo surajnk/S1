@@ -14,7 +14,7 @@ zpl_utils = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(zpl_utils)
 
 VALUES = {
-    "customer": "INTERNATIONAL PACKAGING", "order_name": "M94932", "part_desc": "70 RAINBOW MIDNIGHT",
+    "customer": "INTERNATIONAL PACKAGING", "order_name": "M94932", "part_desc": "70 RAINBOW MIDNIGHT", "desc": "Rainbow Midnight Board",
     "ref1": "CBM406979", "po": "4500144610", "uom": "Yards", "item_qty": "1", "size": "54x50",
     "putups": "50", "prod_date": "10/25/2026", "embossing": "Rainbow", "copies": 3,
 }
@@ -23,7 +23,7 @@ VALUES = {
 class TestLabels(unittest.TestCase):
     def test_all_labels_listed_with_names(self):
         labels = dict(zpl_utils.list_labels(LABELS))
-        self.assertEqual(sorted(labels), ["CAR635", "CRE500", "ECO515", "ECO525", "INT505"])
+        self.assertEqual(sorted(labels), ["CAR635", "CRE500", "ECO515", "ECO525", "INT505", "SHE570"])
         self.assertEqual(labels["INT505"], "INTERNATIONAL PACKAGING (INT505)")
 
     def test_every_label_renders_cleanly(self):
