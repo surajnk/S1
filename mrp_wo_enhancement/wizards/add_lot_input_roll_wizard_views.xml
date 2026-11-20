@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="add_lot_input_roll_wizard_form_view" model="ir.ui.view">
+        <field name="name">add.lot.input.roll.wizard.form</field>
+        <field name="model">add.lot.input.roll.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Add Lot as Input Roll">
+                <sheet>
+                    <group>
+                        <field name="workorder_id"/>
+                        <field name="lot_id" options="{'no_create': True}"/>
+                        <field name="product_id"/>
+                        <field name="available_qty"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="action_add" string="OK" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_add_lot_input_roll_wizard" model="ir.actions.act_window">
+        <field name="name">Add Lot as Input Roll</field>
+        <field name="res_model">add.lot.input.roll.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="add_lot_input_roll_wizard_form_view"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

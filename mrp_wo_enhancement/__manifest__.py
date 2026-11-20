@@ -23,6 +23,7 @@
         "views/res_users_views.xml",
         "wizards/mrp_wo_scheduling_views.xml",
         "wizards/update_frame_wizard_views.xml",
+        "wizards/add_lot_input_roll_wizard_views.xml",
     ],
     "images": [],
     "auto_install": False,

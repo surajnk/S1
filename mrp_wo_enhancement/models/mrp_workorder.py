@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, fields, models, _, SUPERUSER_ID
+from odoo.exceptions import UserError
 
 
 class MrpWorkorder(models.Model):
@@ -67,6 +68,18 @@ class MrpWorkorder(models.Model):
             'context': {
                 'mrp_workorder_ids': self.ids,
             }
+        }
+
+    def action_open_add_lot_input_roll_wizard(self):
+        if len(self) != 1:
+            raise UserError(_('Please select exactly one work order.'))
+        return {
+            'name': _('Add Lot as Input Roll'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'add.lot.input.roll.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'active_ids': self.ids},
         }
 
     def action_open_update_frame_wizard(self):

@@ -14,6 +14,10 @@
                         type="object"
                         string="Request Downstream Rolls"
                         class="btn-primary"/>
+                    <button name="action_open_add_lot_input_roll_wizard"
+                        type="object"
+                        string="Add Lot as Input Roll"
+                        class="btn-primary"/>
                     <button name="action_open_update_frame_wizard"
                         type="object"
                         string="Update Frame"
