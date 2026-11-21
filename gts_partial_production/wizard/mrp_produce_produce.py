@@ -170,6 +170,38 @@ class MrpProductProduce(models.TransientModel):
         customer_qty = customer_qty - ex_customer_qty
         return customer_qty
 
+    @api.onchange('qty_producing', 'product_uom_id')
+    def _onchange_qty_producing(self):
+        res = super()._onchange_qty_producing()
+        self._show_recorded_consumption()
+        return res
+
+    def _show_recorded_consumption(self):
+        """Components whose consumption was recorded by the workorders (roll
+        tracked) are not written by this wizard: the recorded quantity stays.
+        Show that quantity instead of the quantity-produced x BoM-factor
+        formula, so the wizard matches the MO's Components tab (e.g. 102
+        recorded on a 100 line). To Consume is set to the same number so the
+        strict-consumption check, which compares the two, still passes.
+        One line per (move, lot) shows it, the other lines are left alone.
+        """
+        shown = set()
+        for line in self.raw_workorder_line_ids:
+            move = line.move_id
+            if not move or not line.lot_id or (move.id, line.lot_id.id) in shown:
+                continue
+            if not line._is_roll_tracked_component():
+                continue
+            recorded = sum(move.move_line_ids.filtered(
+                lambda ml: ml.lot_id == line.lot_id).mapped('qty_done'))
+            if recorded <= 0:
+                continue
+            shown.add((move.id, line.lot_id.id))
+            if float_compare(recorded, line.qty_done,
+                             precision_rounding=line.product_uom_id.rounding or 0.01) != 0:
+                line.qty_done = recorded
+                line.qty_to_consume = recorded
+
     def _record_production(self):
         # Check all the product_produce line have a move id (the user can add product
         # to consume directly in the wizard)
@@ -1576,7 +1608,13 @@ class MrpProductProduceLine(models.TransientModel):
         roll_lines = self.env['mrp.wo.roll.line'].search([
             ('prev_roll_id.name', 'in', lots_on_move.mapped('name')),
         ], limit=1)
-        return bool(roll_lines)
+        if roll_lines:
+            return True
+        # A raw roll used only in a Final Yield line (an input roll of
+        # final.wo.roll.input) has its consumption recorded the same way.
+        return bool(self.env['final.wo.roll.input'].search([
+            ('previous_roll_id.roll_id.name', 'in', lots_on_move.mapped('name')),
+        ], limit=1))
 
     def _create_extra_move_lines(self):
         if self.move_id and self._is_roll_tracked_component():
