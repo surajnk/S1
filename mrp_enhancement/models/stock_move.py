@@ -1,9 +1,38 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+import logging
+import traceback
+
+from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        moves = super().create(vals_list)
+        # Diagnostic, off by default: set the system parameter
+        # mrp_enhancement.log_raw_move_create to 1 to log where a component
+        # move comes from when its MO already has an open move of the same
+        # product (to find what adds an extra line next to the BOM's).
+        if str(self.env['ir.config_parameter'].sudo().get_param(
+                'mrp_enhancement.log_raw_move_create', '0')).strip().lower() \
+                in ('1', 'true', 'yes'):
+            for move in moves.filtered('raw_material_production_id'):
+                same = move.raw_material_production_id.move_raw_ids.filtered(
+                    lambda m: m != move and m.product_id == move.product_id
+                    and m.state != 'cancel')
+                if same:
+                    _logger.warning(
+                        "RAW MOVE DUPLICATE: move=%s mo=%s product=%s bom_line=%s "
+                        "demand=%s state=%s others=%s created from:\n%s",
+                        move.id, move.raw_material_production_id.name,
+                        move.product_id.display_name, move.bom_line_id.id,
+                        move.product_uom_qty, move.state, same.ids,
+                        ''.join(traceback.format_stack(limit=30)))
+        return moves
 
     x_pc_split = fields.Boolean(
         string='Split by Operation',
