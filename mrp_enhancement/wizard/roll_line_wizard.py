@@ -155,7 +155,10 @@ class RollLines(models.TransientModel):
                 common['input_line_ids'] = [(0, 0, {
                     'sequence': line.sequence,
                     'previous_roll_id': line.previous_roll_id.id,
-                    'previous_roll_quantity': line.previous_roll_quantity,
+                    # The available qty shown in the popup; worked out here when the
+                    # client did not send it (read-only field).
+                    'previous_roll_quantity': (
+                        line.previous_roll_quantity or line._get_available_qty()),
                     'consumed_qty': line.consumed_qty,
                     'is_fully_consumed': line.is_fully_consumed,
                 }) for line in rec.input_line_ids]

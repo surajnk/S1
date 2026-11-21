@@ -78,7 +78,7 @@
                                     <field name="sequence" widget="handle"/>
                                     <field name="final_wiz_id" invisible="1"/>
                                     <field name="previous_roll_id" context="{'get_prev_roll_from_workorder_id': context.get('workorder_id') or context.get('active_id'), 'workorder_id': context.get('workorder_id') or context.get('active_id')}"/>
-                                    <field name="previous_roll_quantity"/>
+                                    <field name="previous_roll_quantity" force_save="1"/>
                                     <field name="is_fully_consumed"/>
                                     <field name="consumed_qty" sum="Total" required="1"/>
                                     <field name="remained_qty"/>
