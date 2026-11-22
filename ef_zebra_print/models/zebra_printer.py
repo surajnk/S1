@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
 import subprocess
 
 from odoo import api, fields, models, _
@@ -31,6 +32,12 @@ class ZebraPrinter(models.Model):
         "CUPS Queue Name",
         required=True,
         help="Must match `lpstat -p` name, e.g. lr031s"
+    )
+
+    cups_server = fields.Char(
+        "CUPS Server",
+        help="Host (or host:port) of the print server that owns the queue, e.g. 172.16.8.6. "
+             "Leave empty to use the queue of the CUPS running on the Odoo server itself."
     )
 
     # Odoo 14 wants selection keys to be strings, not ints.
@@ -70,6 +77,13 @@ class ZebraPrinter(models.Model):
 
     notes = fields.Text("Notes / Location / Usage")
 
+    @api.constrains("cups_server")
+    def _check_cups_server(self):
+        for rec in self:
+            server = (rec.cups_server or "").strip()
+            if server and not re.match(r"^[A-Za-z0-9._-]+(:\d{1,5})?$", server):
+                raise ValidationError(_("CUPS server must be a host name or IP, optionally with :port."))
+
     @api.constrains("queue_name")
     def _check_queue_name(self):
         for rec in self:
@@ -82,13 +96,21 @@ class ZebraPrinter(models.Model):
         if not self.queue_name:
             raise UserError(_("No queue_name configured on printer '%s'") % self.name)
 
+        cmd = ["lp"]
+        server = (self.cups_server or "").strip()
+        if server:
+            cmd += ["-h", server]  # remote print server: no local queue needed
+        cmd += ["-d", self.queue_name, "-o", "raw"]
+
         try:
-            subprocess.run(
-                ["lp", "-d", self.queue_name, "-o", "raw"],
-                input=raw_bytes,
-                check=True
-            )
-            _logger.info("Sent job to printer %s (queue %s)", self.name, self.queue_name)
+            subprocess.run(cmd, input=raw_bytes, check=True, timeout=30,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            _logger.info("Sent job to printer %s (queue %s%s)", self.name, self.queue_name,
+                         " on " + server if server else "")
+        except subprocess.CalledProcessError as e:
+            err = (e.stderr or b"").decode("utf-8", "replace").strip() or str(e)
+            _logger.error("CUPS send failed for printer %s: %s", self.name, err)
+            raise UserError(_("Printing failed for %s: %s") % (self.name, err))
         except Exception as e:
             _logger.exception("CUPS send failed for printer %s", self.name)
             raise UserError(_("Printing failed for %s: %s") % (self.name, e))
