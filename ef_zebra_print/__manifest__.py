@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "EF Zebra Print (Raw ZPL via CUPS/LPD)",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.1.0",
     "summary": "Register Zebra printers and send ZPL directly to CUPS/LPD queues",
     "author": "Your Team",
     "license": "LGPL-3",

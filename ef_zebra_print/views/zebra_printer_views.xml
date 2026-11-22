@@ -20,6 +20,7 @@
                 <field name="sequence"/>
                 <field name="name"/>
                 <field name="queue_name"/>
+                <field name="cups_server"/>
                 <field name="dpi"/>
                 <field name="label_width_mm"/>
                 <field name="label_height_mm"/>
@@ -48,6 +49,7 @@
                             <field name="sequence"/>
                             <field name="name"/>
                             <field name="queue_name"/>
+                            <field name="cups_server" placeholder="172.16.8.6"/>
                             <field name="notes"/>
                         </group>
 
