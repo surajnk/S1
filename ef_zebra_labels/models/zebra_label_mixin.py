@@ -52,13 +52,17 @@ class ZebraLabelMixin(models.AbstractModel):
         self.ensure_one()
         return {}
 
-    def _zebra_render_label(self, code, copies=1, overrides=None):
-        """Return the ZPL body (no ^XA/^XZ) for this record."""
-        self.ensure_one()
+    def _zebra_label_body(self, code):
+        """ZPL body for a label code. Override to supply labels that are not .zpl files."""
         label = self._zebra_label_files().get(code)
         if not label:
             raise UserError(_("Label %s is not defined for %s.") % (code, self._description))
-        body = zpl_utils.read_label(label[1], code)
+        return zpl_utils.read_label(label[1], code)
+
+    def _zebra_render_label(self, code, copies=1, overrides=None):
+        """Return the ZPL body (no ^XA/^XZ) for this record."""
+        self.ensure_one()
+        body = self._zebra_label_body(code)
         values = dict(self._zebra_label_values(), **(overrides or {}))
         values["copies"] = max(int(copies or 1), 1)
         try:

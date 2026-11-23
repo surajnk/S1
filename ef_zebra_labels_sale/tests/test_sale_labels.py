@@ -34,6 +34,11 @@ class TestLabels(unittest.TestCase):
             self.assertNotIn("^XZ", out, code)
             self.assertTrue(out.rstrip().endswith("^PQ3"), code)
 
+    def test_normalize_body(self):
+        out = zpl_utils.normalize_body("^XA\n^FDx^FS\n^XZ")
+        self.assertEqual(out, "^FDx^FS\n^PQ{{ copies }}")
+        self.assertEqual(zpl_utils.normalize_body("^FDx^FS^PQ2"), "^FDx^FS^PQ2")
+
     def test_values_are_escaped(self):
         out = zpl_utils.render("^FD{{ a }}^FS", {"a": "AC^ME~ \n x"})
         self.assertEqual(out, "^FDACME x^FS")

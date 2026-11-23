@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import models
+from odoo import _, api, models
+from odoo.exceptions import UserError
+
+from odoo.addons.ef_zebra_labels import zpl_utils
+
+CUSTOMER_LABEL = "CUSTOMER"
 
 
 def _num(value):
@@ -10,10 +15,28 @@ class SaleOrderLine(models.Model):
     _name = "sale.order.line"
     _inherit = ["sale.order.line", "zebra.label.mixin"]
 
-    def _zebra_default_label_code(self):
+    @api.model
+    def _zebra_label_codes(self):
+        codes = super()._zebra_label_codes()
+        return [(CUSTOMER_LABEL, _("Customer label (from customer master)"))] + codes
+
+    def _zebra_customer_zpl(self):
         self.ensure_one()
         partner = self.order_id.partner_id
-        return partner.zebra_label_code or partner.commercial_partner_id.zebra_label_code or False
+        return partner.zebra_label_zpl or partner.commercial_partner_id.zebra_label_zpl or ""
+
+    def _zebra_default_label_code(self):
+        self.ensure_one()
+        return CUSTOMER_LABEL if self._zebra_customer_zpl().strip() else False
+
+    def _zebra_label_body(self, code):
+        if code != CUSTOMER_LABEL:
+            return super()._zebra_label_body(code)
+        zpl = self._zebra_customer_zpl().strip()
+        if not zpl:
+            raise UserError(_("Customer %s has no label ZPL. Fill in 'Zebra Label (ZPL)' on the customer.")
+                            % self.order_id.partner_id.display_name)
+        return zpl_utils.normalize_body(zpl)
 
     def _zebra_label_values(self):
         self.ensure_one()

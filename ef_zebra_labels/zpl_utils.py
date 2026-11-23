@@ -50,3 +50,18 @@ def render(body, values):
     if missing:
         raise KeyError(", ".join(missing))
     return _PLACEHOLDER.sub(lambda m: zpl_text(values[m.group(1)]), body)
+
+
+_XA_XZ = re.compile(r"\^X[AZ]", re.I)
+
+
+def normalize_body(body):
+    """Make pasted ZPL fit the printer wrapper.
+
+    ^XA / ^XZ are added by zebra.printer, so drop them; and if the label has
+    no ^PQ, append one so the Copies field is honoured.
+    """
+    body = _XA_XZ.sub("", body or "").strip()
+    if "^PQ" not in body.upper():
+        body += "\n^PQ{{ copies }}"
+    return body
