@@ -42,6 +42,11 @@ class ZebraLabelMixin(models.AbstractModel):
         """[(code, name)] of the labels available for this model."""
         return sorted((code, name) for code, (name, _folder) in self._zebra_label_files().items())
 
+    def _zebra_default_label_code(self):
+        """Label code preselected in the print wizard for this record. Override per model."""
+        self.ensure_one()
+        return False
+
     def _zebra_label_values(self):
         """Placeholder values for one record. Override per model."""
         self.ensure_one()

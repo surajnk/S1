@@ -24,4 +24,16 @@
         </field>
     </record>
 
+    <!-- Customer: default label -->
+    <record id="view_partner_form_zebra_label" model="ir.ui.view">
+        <field name="name">res.partner.form.zebra.label</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales_purchases']//group[@name='sale']" position="inside">
+                <field name="zebra_label_code"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

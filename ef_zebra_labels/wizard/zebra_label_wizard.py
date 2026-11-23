@@ -36,16 +36,21 @@ class ZebraLabelWizard(models.TransientModel):
 
     @api.model
     def open_for(self, records):
+        context = {
+            "default_res_model": records._name,
+            "default_res_ids": json.dumps(records.ids),
+        }
+        # preselect the label only when every record agrees on it
+        codes = {rec._zebra_default_label_code() for rec in records}
+        if len(codes) == 1 and codes != {False}:
+            context["default_label_code"] = codes.pop()
         return {
             "type": "ir.actions.act_window",
             "name": _("Print Label"),
             "res_model": self._name,
             "view_mode": "form",
             "target": "new",
-            "context": {
-                "default_res_model": records._name,
-                "default_res_ids": json.dumps(records.ids),
-            },
+            "context": context,
         }
 
     def action_print(self):

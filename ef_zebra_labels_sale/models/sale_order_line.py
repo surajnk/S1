@@ -10,6 +10,11 @@ class SaleOrderLine(models.Model):
     _name = "sale.order.line"
     _inherit = ["sale.order.line", "zebra.label.mixin"]
 
+    def _zebra_default_label_code(self):
+        self.ensure_one()
+        partner = self.order_id.partner_id
+        return partner.zebra_label_code or partner.commercial_partner_id.zebra_label_code or False
+
     def _zebra_label_values(self):
         self.ensure_one()
         order = self.order_id
