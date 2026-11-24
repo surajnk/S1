@@ -1,1 +1,1 @@
-from . import zebra_label_mixin
+from . import zebra_label_template

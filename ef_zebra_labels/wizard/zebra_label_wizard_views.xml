@@ -9,7 +9,8 @@
                 <group>
                     <field name="res_model" invisible="1"/>
                     <field name="res_ids" invisible="1"/>
-                    <field name="label_code"/>
+                    <field name="template_id" options="{'no_create': True}"
+                           domain="[('model_name', '=', res_model)]"/>
                     <field name="printer_id" options="{'no_create': True}"/>
                     <field name="copies"/>
                     <field name="item_qty"/>

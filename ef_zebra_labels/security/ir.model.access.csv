@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_zebra_label_wizard_user,Zebra Label Wizard User,model_zebra_label_wizard,base.group_user,1,1,1,1
+access_zebra_label_template_user,Zebra Label Template User,model_zebra_label_template,base.group_user,1,0,0,0
+access_zebra_label_template_admin,Zebra Label Template Admin,model_zebra_label_template,base.group_system,1,1,1,1
+access_zebra_label_template_variable_user,Zebra Label Variable User,model_zebra_label_template_variable,base.group_user,1,0,0,0
+access_zebra_label_template_variable_admin,Zebra Label Variable Admin,model_zebra_label_template_variable,base.group_system,1,1,1,1

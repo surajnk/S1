@@ -50,3 +50,50 @@ def render(body, values):
     if missing:
         raise KeyError(", ".join(missing))
     return _PLACEHOLDER.sub(lambda m: zpl_text(values[m.group(1)]), body)
+
+
+_XA_XZ = re.compile(r"\^X[AZ]", re.I)
+
+
+def normalize_body(body):
+    """Make pasted ZPL fit the printer wrapper.
+
+    ^XA / ^XZ are added by zebra.printer, so drop them; and if the label has
+    no ^PQ, append one so the Copies field is honoured.
+    """
+    body = _XA_XZ.sub("", body or "").strip()
+    if "^PQ" not in body.upper():
+        body += "\n^PQ{{ copies }}"
+    return body
+
+
+# ---- field expressions: "{order_id.name}", "{product_uom_qty:%g}", "{x_w:%g}x{x_l:%g}" -------------
+_EXPR = re.compile(r"\{([A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*)(?::([^{}]*))?\}")
+
+
+def placeholders(body):
+    """Names of the {{ placeholders }} used in a ZPL body."""
+    return sorted(set(_PLACEHOLDER.findall(body or "")))
+
+
+def expression_paths(expression):
+    """Field paths used in an expression."""
+    return [m.group(1) for m in _EXPR.finditer(expression or "")]
+
+
+def format_value(value, fmt=None):
+    if value is None or value is False:
+        return ""
+    if hasattr(value, "strftime"):
+        return value.strftime(fmt or "%m/%d/%Y")
+    if isinstance(value, (int, float)):
+        try:
+            return (fmt or "%g") % value
+        except (TypeError, ValueError):
+            raise ValueError("Bad number format %r" % fmt)
+    return str(value)
+
+
+def expand(expression, getter):
+    """Replace every {path[:format]} with format_value(getter(path), format)."""
+    return _EXPR.sub(lambda m: format_value(getter(m.group(1)), m.group(2)), expression or "")
