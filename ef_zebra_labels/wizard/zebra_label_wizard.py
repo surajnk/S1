@@ -11,7 +11,7 @@ class ZebraLabelWizard(models.TransientModel):
 
     res_model = fields.Char(required=True)
     res_ids = fields.Char(required=True, help="JSON list of record ids")
-    label_code = fields.Selection(selection="_selection_label_code", string="Label", required=True)
+    template_id = fields.Many2one("zebra.label.template", string="Label", required=True)
     printer_id = fields.Many2one(
         "zebra.printer", string="Printer", required=True,
         default=lambda self: self.env["zebra.printer"].search([], limit=1),
@@ -19,20 +19,15 @@ class ZebraLabelWizard(models.TransientModel):
     copies = fields.Integer("Copies", default=1, required=True)
     item_qty = fields.Float(
         "Item Quantity",
-        help="Quantity printed on the label. Leave 0 to use the record's own quantity.",
+        help="Quantity printed on the label ({{ item_qty }}). Leave 0 to use the record's own quantity.",
     )
 
-    @api.model
-    def _selection_label_code(self):
-        model = self.env.context.get("default_res_model")
-        if model in self.env and hasattr(self.env[model], "_zebra_label_codes"):
-            return self.env[model]._zebra_label_codes()
-        # model unknown (e.g. while the views load): offer every label
-        codes = {}
-        for name in self.env.registry.models:
-            if hasattr(self.env[name], "_zebra_label_codes") and name != "zebra.label.mixin":
-                codes.update(dict(self.env[name]._zebra_label_codes()))
-        return sorted(codes.items())
+    @api.onchange("template_id")
+    def _onchange_template_id(self):
+        if self.template_id.printer_id:
+            self.printer_id = self.template_id.printer_id
+        if self.template_id.copies:
+            self.copies = self.template_id.copies
 
     @api.model
     def open_for(self, records):
@@ -40,10 +35,14 @@ class ZebraLabelWizard(models.TransientModel):
             "default_res_model": records._name,
             "default_res_ids": json.dumps(records.ids),
         }
-        # preselect the label only when every record agrees on it
-        codes = {rec._zebra_default_label_code() for rec in records}
-        if len(codes) == 1 and codes != {False}:
-            context["default_label_code"] = codes.pop()
+        # preselect the customer's label when every record agrees on it
+        template = self.env["zebra.label.template"]._best_for(records)
+        if template:
+            context["default_template_id"] = template.id
+            if template.printer_id:
+                context["default_printer_id"] = template.printer_id.id
+            if template.copies:
+                context["default_copies"] = template.copies
         return {
             "type": "ir.actions.act_window",
             "name": _("Print Label"),
@@ -58,16 +57,17 @@ class ZebraLabelWizard(models.TransientModel):
         records = self.env[self.res_model].browse(json.loads(self.res_ids)).exists()
         if not records:
             raise UserError(_("Nothing to print."))
-        if self.label_code not in dict(records._zebra_label_codes()):
-            raise UserError(_("Label %s is not available for these records.") % self.label_code)
+        if self.template_id.model_name != self.res_model:
+            raise UserError(_("Label %s is not for these records.") % self.template_id.code)
         overrides = {"item_qty": "%g" % self.item_qty} if self.item_qty else None
-        records._zebra_print_label(self.label_code, self.printer_id, self.copies, overrides)
+        for rec in records:
+            self.template_id.print_record(rec, self.printer_id, self.copies, overrides)
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": _("Label sent"),
-                "message": _("%s sent to %s") % (self.label_code, self.printer_id.name),
+                "message": _("%s sent to %s") % (self.template_id.code, self.printer_id.name),
                 "type": "success",
                 "next": {"type": "ir.actions.act_window_close"},
             },

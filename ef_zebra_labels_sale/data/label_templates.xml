@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo noupdate="1">
+
+    <!-- Starter templates, one per customer label. Link each to its customer (Customer field). -->
+
+    <record id="label_template_car635" model="zebra.label.template">
+        <field name="name">Cartamundi E.L.M. Llc</field>
+        <field name="code">CAR635</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX CARTAMUNDI E.L.M. LLC (CAR635)
+^CI0^FWN^LRN
+^FO0,0^AVR,80,100^FD  ^FS
+^FO200,15^A0B,60,55^FB1625,1,,,^FDPurchase Order: {{ po }}^FS
+^FO200,15^A0B,60,55^FB812,1,,,^FDPart #: {{ ref1 }}^FS
+^FO400,15^A0B,90,85^FB1625,1,,,^FDSHEETS FACE DOWN^FS
+^FO400,15^A0B,90,85^FB812,1,,,^FDGRAIN DIRECTION^FS
+^FO600,15^A0B,90,85^FB812,1,,,^FD<<-------->>^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'po', 'expression': '{order_id.client_order_ref}'}),
+            (0, 0, {'name': 'ref1', 'expression': '{x_ref1}'})]"/>
+    </record>
+
+    <record id="label_template_cre500" model="zebra.label.template">
+        <field name="name">Crescent Cardboard</field>
+        <field name="code">CRE500</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX CRESCENT CARDBOARD (CRE500)
+^CI0^FWN^LRN
+^FO25,15^A0B,50,45^FB1625,1,,C^FDECOLOGICAL FIBERS, INC.^FS
+^FO70,15^A0B,25,20^FB1625,1,,C^FD40 Pioneer Drive, Lunenburg, MA 01462 * T (978) 537-0003 * F (978) 537-2238^FS
+^FO95,50^GB5,1620,3.5^FS
+^FT150,1410^A0B,48,40^CI0^FD{{ customer }}^FS
+^FT275,1610^A0B,48,40^CI0^FDPart #^FS
+^BY5,3:1,150
+^FT325,1410^BCB,150,Y,N,N^FD{{ ref1 }}^FS
+^FT495,1610^A0B,48,40^CI0^FDQuantity:^FS
+^FT545,1410^BCB,150,Y,N,N^FD{{ item_qty }}^FS
+^FT580,810^A0B,48,40^CI0^FD{{ uom }}^FS
+^FT710,1610^A0B,48,40^CI0^FDP.O. # :^FS
+^FT760,1410^BCB,150,Y,N,N^FD{{ po }}^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'customer', 'expression': '{order_id.partner_id.name}'}),
+            (0, 0, {'name': 'item_qty', 'expression': '{product_uom_qty:%g}'}),
+            (0, 0, {'name': 'po', 'expression': '{order_id.client_order_ref}'}),
+            (0, 0, {'name': 'ref1', 'expression': '{x_ref1}'}),
+            (0, 0, {'name': 'uom', 'expression': '{x_order_customer_uom.name}'})]"/>
+    </record>
+
+    <record id="label_template_eco515" model="zebra.label.template">
+        <field name="name">Ecological Fibers Inc - La</field>
+        <field name="code">ECO515</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX ECOLOGICAL FIBERS INC - LA (ECO515)
+^CI0^FWN^LRN
+^FO200,0^A0B,60,50^FB1625,1,,^FDProduct:^FS
+^FO300,0^A0B,120,60^FB1625,1,,^FD{{ size }} {{ part_desc }}^FS
+^FO500,0,0^A0B,50,40^FB1625,1,,^FDProduct Putup:^FS
+^FO600,0,0^A0B,50,40^FB1625,1,,^FD{{ putups }}^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'part_desc', 'expression': '{product_id.default_code}'}),
+            (0, 0, {'name': 'putups', 'expression': '{uom_put_up:%g}'}),
+            (0, 0, {'name': 'size', 'expression': '{x_customer_order_width:%g}x{x_customer_order_length:%g}'})]"/>
+    </record>
+
+    <record id="label_template_eco525" model="zebra.label.template">
+        <field name="name">Ecological Fibers Inc - India</field>
+        <field name="code">ECO525</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX ECOLOGICAL FIBERS INC - INDIA (ECO525)
+^CI0^FWN^LRN
+^FO75,15^A0B,70,60^FB1625,1,,C^FDECOLOGICAL FIBERS, INC.^FS
+^FO200,0^A0B,60,50^FB1625,1,,^FDProduction Order: {{ order_name }}^FS
+^FO200,0^A0B,60,50^FB650,1,,^FDProduction Date: {{ prod_date }}^FS
+^FO300,0^A0B,60,50^FB1625,1,,^FDProduct: {{ size }} {{ part_desc }}^FS
+^FO400,0^A0B,60,50^FB1625,1,,^FDEmbossing: {{ embossing }}^FS
+^FO500,0,0^A0B,60,50^FB1625,1,,^FDProduct Putup: {{ putups }}^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'embossing', 'expression': '{x_order_line_embossing.display_name}'}),
+            (0, 0, {'name': 'order_name', 'expression': '{order_id.name}'}),
+            (0, 0, {'name': 'part_desc', 'expression': '{product_id.default_code}'}),
+            (0, 0, {'name': 'prod_date', 'expression': '{order_id.x_order_custom_del_date:%m/%d/%Y}'}),
+            (0, 0, {'name': 'putups', 'expression': '{uom_put_up:%g}'}),
+            (0, 0, {'name': 'size', 'expression': '{x_customer_order_width:%g}x{x_customer_order_length:%g}'})]"/>
+    </record>
+
+    <record id="label_template_int505" model="zebra.label.template">
+        <field name="name">International Packaging</field>
+        <field name="code">INT505</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX INTERNATIONAL PACKAGING (INT505)
+^CI0^FWN^LRN
+^FO25,15^A0B,50,45^FB1625,1,,C^FDECOLOGICAL FIBERS, INC.^FS
+^FO70,15^A0B,25,20^FB1625,1,,C^FD40 Pioneer Drive, Lunenburg, MA 01462 * T (978) 537-0003 * F (978) 537-2238^FS
+^FO95,50^GB5,1620,3.5^FS
+^FT150,1410^A0B,48,40^CI0^FD{{ customer }} - {{ order_name }}^FS
+^FT275,1610^A0B,48,40^CI0^FD{{ part_desc }}^FS
+^FT455,1610^A0B,48,40^CI0^FDPart #^FS
+^BY5,3:1,150
+^FT505,1410^BCB,150,Y,N,N^FD{{ ref1 }}^FS
+^FT605,1610^A0B,48,40^CI0^FDQuantity:^FS
+^FT725,1410^BCB,150,Y,N,N^FD{{ item_qty }}^FS
+^FT760,810^A0B,48,40^CI0^FD{{ uom }}^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'customer', 'expression': '{order_id.partner_id.name}'}),
+            (0, 0, {'name': 'item_qty', 'expression': '{product_uom_qty:%g}'}),
+            (0, 0, {'name': 'order_name', 'expression': '{order_id.name}'}),
+            (0, 0, {'name': 'part_desc', 'expression': '{product_id.default_code}'}),
+            (0, 0, {'name': 'ref1', 'expression': '{x_ref1}'}),
+            (0, 0, {'name': 'uom', 'expression': '{x_order_customer_uom.name}'})]"/>
+    </record>
+
+    <record id="label_template_she570" model="zebra.label.template">
+        <field name="name">Shridan Kentucky</field>
+        <field name="code">SHE570</field>
+        <field name="model_id" ref="sale.model_sale_order_line"/>
+        <field name="partner_path">order_id.partner_id</field>
+        <field name="zpl_body"><![CDATA[^FX SHRIDAN KENTUCKY (SHE570)
+^CI0^FWN^LRN
+^FO100,1100^BQN,2,10^FDMM,A{{ po }}^FS
+^FO350,20^A0B,40,35^FB1400,,,^FD{{ po }}^FS
+^FO500,1100^BQN,2,10^FDMM,A{{ size }}^FS
+^FO750,20^A0B,40,35^FB1400,,,^FD{{ size }}^FS
+^FO100,500^BQN,2,10^FDMM,A{{ item_qty }}^FS
+^FO350,20^A0B,40,35^FB800,,,^FD{{ item_qty }}^FS
+^FO500,500^BQN,2,10^FDMM,A{{ desc }}^FS
+^FO770,20^A0B,40,35^FB800,,,^FD{{ desc }}^FS
+^PQ{{ copies }}]]></field>
+        <field name="variable_ids" eval="[
+            (0, 0, {'name': 'desc', 'expression': '{product_id.name}'}),
+            (0, 0, {'name': 'item_qty', 'expression': '{product_uom_qty:%g}'}),
+            (0, 0, {'name': 'po', 'expression': '{order_id.client_order_ref}'}),
+            (0, 0, {'name': 'size', 'expression': '{x_customer_order_width:%g}x{x_customer_order_length:%g}'})]"/>
+    </record>
+
+</odoo>

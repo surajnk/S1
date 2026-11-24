@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_zebra_label_template_tree" model="ir.ui.view">
+        <field name="name">zebra.label.template.tree</field>
+        <field name="model">zebra.label.template</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="partner_id"/>
+                <field name="printer_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_zebra_label_template_form" model="ir.ui.view">
+        <field name="name">zebra.label.template.form</field>
+        <field name="model">zebra.label.template</field>
+        <field name="arch" type="xml">
+            <form string="Label Template">
+                <header>
+                    <button name="action_sync_variables" type="object" string="Add Missing Variables"/>
+                    <button name="action_create_print_action" type="object" string="Add Print Button to Model"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="partner_path" placeholder="order_id.partner_id"/>
+                            <field name="printer_id"/>
+                            <field name="copies"/>
+                            <field name="sequence"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="ZPL" name="zpl">
+                            <div class="text-muted">
+                                Leave out ^XA / ^XZ. Write {{ name }} where a value goes, then define each name under Variables.
+                                {{ copies }} is built in; if the label has no ^PQ, one is added automatically.
+                            </div>
+                            <field name="zpl_body" nolabel="1" widget="text"/>
+                        </page>
+                        <page string="Variables" name="variables">
+                            <field name="variable_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="expression" placeholder="{order_id.client_order_ref}"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_zebra_label_template" model="ir.actions.act_window">
+        <field name="name">Label Templates</field>
+        <field name="res_model">zebra.label.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_zebra_label_templates"
+              name="Label Templates"
+              parent="ef_zebra_print.menu_zebra_root"
+              action="action_zebra_label_template"
+              sequence="30"/>
+
+</odoo>

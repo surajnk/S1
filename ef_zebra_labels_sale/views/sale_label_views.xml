@@ -31,14 +31,15 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='sales_purchases']" position="inside">
-                <group string="Zebra Label (ZPL)" name="zebra_label">
-                    <div colspan="2" class="text-muted">
-                        ZPL used when printing labels from this customer's sale orders. Leave out ^XA / ^XZ.
-                        Placeholders: {{ po }} {{ size }} {{ item_qty }} {{ desc }} {{ part_desc }} {{ ref1 }}
-                        {{ customer }} {{ order_name }} {{ uom }} {{ putups }} {{ prod_date }} {{ embossing }} {{ copies }}
-                    </div>
-                    <field name="zebra_label_zpl" nolabel="1" colspan="2" widget="text"
-                           placeholder="^CI0^FWN^LRN&#10;^FO100,1100^BQN,2,10^FDMM,A{{ po }}^FS&#10;..."/>
+                <group string="Zebra Labels" name="zebra_label">
+                    <field name="zebra_label_template_ids" nolabel="1" colspan="2"
+                           context="{'default_partner_id': id}">
+                        <tree>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="model_id"/>
+                        </tree>
+                    </field>
                 </group>
             </xpath>
         </field>
